@@ -10,3 +10,6 @@
 
 *.fdb_latexmk
 *.synctex.gz
+
+# Proposal document
+proposal
