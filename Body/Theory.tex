@@ -1,9 +1,30 @@
 \part{Introduction}
 
-\textit{Neural Network training and inference in Embedded Environments. NN Optimisations, Tiny ML, Embedded Environments, i.MX6}
+\textit{Neural network training and inference in embedded environments}
+
+{\color{blue}
+Machine learning applications present abundant oppurtunities especially within the world of tiny devices. Estimates put the total number of these devices north of 20 billion, however much of the potential of running machine learning appilations on them remain unattained due to the difficulties in creating these applications
+}
+
+{\color{blue}
+Among the approaches that would be salient on these platforms, neural network approaches are the most sought after owing to the unprecedented progress made in their practical applications. Tiny Machine Learning is a burgeoning field that looks at how this space of embedded devices can be made more suitable to create and explore the potential machine learning applications that it can support
+}
+
+{\color{blue}
+An important feature of machine learning applications are their iterative improvement process. For neural network applications this happens during the training process which traditionally consumes a lot of compute resource
+}
 
 \subsubsection{Why perform training and inference on ECUs?}
+
+{\color{blue}
+In the world of embedded systems resources such as compute, memory, network bandwith etc. are all limited. The traditional model of sending data from embedded device sensors off-board to compute clusters on the cloud presents several challenges such as bandwith consumption, privacy considerations, and more that makes it attractive to perform both training and inference on-board the embedded device
+}
+
 \textit{Federated Learning}
+
+{\color{blue}
+One approach to making this training loop take place from within these platforms is Federated Learning which cruicially allows for the data to remain on the device
+}
 
 \chapter{Background}
 \textit{Describe ECU systems, Tiny ML}
@@ -14,11 +35,15 @@
 \section{Anomally Detection}
 \textit{Explain the problem. Introduce terminlogy that will get explained in the next chapter}
 
+{\color{blue}
+\subsection{Considerations in Embedded Environments}
+}
+
 \section{Scania Embedded Systems}
-\textit{ECU systems, the kind of data they generate, and the potential of federated learning}
+\textit{ECU systems, the kind of data they generate, and the potential applications}
 
 \subsection{i.MX6 Target Processor}
-\textit{i.MX6 specifications, constraints}
+\textit{i.MX6 specifications and constraints}
 
 \section{Development for Embedded Linux}
 \textit{Short introduction to writing applications for embedded linux}
