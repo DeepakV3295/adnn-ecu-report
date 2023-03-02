@@ -13,6 +13,8 @@
 
 \section[iMX6 Processor]{i.MX6 Processor}
 \textit{Information about the processor in general - ISA, Memory, Clock \dots}
+The i.MX6 series of ARM processors, comprising the Cortex A9 and Cortex A7, offers quad-core, dual-core and single-core configurations respectively. Each processor provides a 32/64-bit DDR3/LVDDR3/LPDDR2-800 memory interface and a number of other interfaces for connecting peripherals, such as WLAN, Bluetooth, GPS, hard drive, displays, and camera sensors
+
 
 \subsection[ANN Acceleration]{i.MX6 as an ANN application target}
 \textit{Describe performance optimisations possible using NEON(SIMD) \dots}
@@ -31,12 +33,8 @@ ANN heavily derived from \href[]{http://neuralnetworksanddeeplearning.com}{neura
 Our primary target was to evaluate the training phase of an ANN.
 
 \subsection[HDR-NN Training]{The Learning Algorithm}
-{\color{red}
-	\begin{itemize}
-		\item batched SGD
-	\end{itemize}
-}
-{\color{blue}link with Theory chapter content}
+
+\textit{Outline Batched Stochastic Gradient Descent using Back Propagation. Necessary Details will be layed out in Theory chapter.}
 
 \chapter{Development}
 
@@ -46,6 +44,9 @@ Our primary target was to evaluate the training phase of an ANN.
 \end{itemize}
 
 \section[iMX6 Custom Board Target]{Targetting an i.MX6 based custom board}
+
+\subsection{Overview of the Board H/W}
+The board is designed for high performance low power applications and is configured with a single Cortex A9 core. This core utilises the ARMv7 architecture and features an advanced floating point unit (FPU) for efficient computation and storage of floating point numbers. Moreover, it supports the full range of single-instruction multiple-data (SIMD) instructions, allowing for SIMD vector operation to be executed quickly. Additionally, Cortex A9 includes NEON Technology, which is an advanced media processing engine for applications such as video and image encoding and decoding. This allows for efficient processing of multimedia data and multimedia applications to be implemented with minimal performance degradation
 
 \subsection{Testing on Device}
 \textit{Process for testing on device - flashing, benchmarking (perf)}
@@ -58,12 +59,8 @@ With the primary focus on training, MNIST dataset was primarily loaded in an eas
 \subsection[Python - Numpy]{Python Numpy based HDRNN}
 
 \subsection[Tensorflow Lite]{Tensorflow Lite based HDRNN}
-{\color{red}
-	\begin{itemize}
-		\item Keras based, easy to write
-		\item TFLite build less easy, still straightforward
-	\end{itemize}
-}
+
+Developing ANNs on tensorflow using Keras is straightforward with good support and well documented APIs. Building the same model for a Tensorflow Lite (TFLite) was more involved however still straightforward
 
 \subsection[C]{C based HDRNN}
 

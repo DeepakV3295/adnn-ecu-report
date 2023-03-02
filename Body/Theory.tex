@@ -1,20 +1,19 @@
 \part{Introduction}
 
-\textit{Neural network training and inference in embedded environments}
+Embedded systems are equipped with a combination of hardware and software components to achieve a specific task. Often, embedded systems are built into a larger device or system and are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour. Embedded systems are becoming increasingly common in everyday applications due to their simplicity, flexibility and cost-effectiveness
 
-{\color{red}
-	Estimates put the number of tiny embedded systems devices north of 20 billion (attach reference) and the potential of running machine learning applications on that compute is enormous. Furthermore the notion of utilising the existing embedded infrastructure for the purpose of performing ML compute as a means for achiever greater utilisation and as opposed to deploying new specialised devices for those applications has an appeal from a sustainability standpoint. However much of the potential of running machine learning appilations on these devices remain unattained due to the difficulties in creating these applications ...
+Machine learning on embedded systems is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. But this technology presents a unique set of challenges due to the limited resources available on these systems. Embedded systems are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded systems are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded systems has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles. This technology can be used to automate tasks, improve efficiency, and make better decisions, all while using fewer resources
 
-	Among the approaches that would be salient on these platforms, neural network approaches are the most sought after owing to the unprecedented progress made in their practical applications. Tiny Machine Learning is a burgeoning field that looks at how this space of embedded devices can be made more suitable to create and explore the potential machine learning applications that it can support. An important feature of machine learning applications are their iterative improvement process. For neural network applications this happens during the training process which traditionally consumes a lot of compute resource
-}
+Estimates put the number of tiny embedded systems devices north of 20 billion (attach reference) and the potential of running machine learning applications on that compute is enormous. Furthermore the notion of utilising the existing embedded infrastructure for the purpose of performing ML compute as a means for achiever greater utilisation and as opposed to deploying new specialised devices for those applications has an appeal from a sustainability standpoint. However much of the potential of running machine learning appilations on these devices remain unattained due to the difficulties in creating these applications ...
+
+Among the approaches that would be salient on these platforms, neural network approaches are the most sought after owing to the unprecedented progress made in their practical applications. Tiny Machine Learning is a burgeoning field that looks at how this space of embedded devices can be made more suitable to create and explore the potential machine learning applications that it can support. An important feature of machine learning applications are their iterative improvement process. For neural network applications this happens during the training process which traditionally consumes a lot of compute resource
 
 \subsubsection{Why perform training and inference on ECUs?}
 
 In the world of embedded systems resources such as compute, memory, network bandwith etc. are all limited. The traditional model of sending data from embedded device sensors off-board to compute clusters on the cloud presents several challenges such as bandwith consumption, privacy considerations, and more that makes it attractive to perform both training and inference on-board the embedded device
 
-{\color{red}
-	\textit{Federated Learning}
-One approach to making this training loop take place from within these platforms is Federated Learning which cruicially allows for the data to remain on the device
+\paragraph{Federated Learning}{
+	One approach to making this training loop take place from within these platforms is Federated Learning which cruicially allows for the data to remain on the device
 }
 
 \chapter{Background}
@@ -23,13 +22,12 @@ One approach to making this training loop take place from within these platforms
 \vspace{1em}
 \noindent \textbf{Hypothesis}: Training and inference of (small) neural networks in embedded systems can be considerably improved compared to general purpose neural networks frameworks
 
-{\color{red}
-	The space of salient applications for automotive embedded systems is enormous with examples such as anomaly detection within an automobile, a subcomponent of the automobile, or with the interactions between subsystems
-}
+The space of salient applications for automotive embedded systems is enormous with examples such as anomaly detection within an automobile, a subcomponent of the automobile, or with the interactions between subsystems
 
 \begin{itemize}
 	\item \textit{Introduce general information about artificial neural networks (ANNs), MLOps, etc - state that there is more information in the Theory chapter}
 	\item \textit{Introduce how an anomaly detection application could be run}
+	\item \textit{Include literature study elements from Federated Learning}
 \end{itemize}
 
 \section[Anomaly Detection using Machine Learning]{Anomaly Detection On Board}
@@ -50,8 +48,34 @@ One approach to making this training loop take place from within these platforms
 \subsection[Build Systems : The Yocto Project]{The Yocto Project}
 \textit{Outline the Yocto Project Build System}
 
+\begin{itemize}
+	\item \textit{Motivate the choice comparing against buildroot for e.g}
+\end{itemize}
+
+The Yocto Project is an open source collaborative project that provides users with a set of tools to create custom Linux-based systems for embedded products. It's based on the OpenEmbedded framework and is backed by the Linux Foundation. The Yocto Project works with hardware vendors, open source communities, and hundreds of developers to provide a robust development environment for embedded products
+
+Yocto Project allows developers to create unique Linux-based systems for embedded devices. Yocto Project provides developers with the tools to customise their embedded Linux systems to meet the specific needs of their products. Yocto Project is used by many companies for their embedded products. It is especially useful for those developing custom embedded products, as it allows users to quickly create a customised Linux-based operating system.
+
+Yocto Project provides many features that make it a great choice for embedded Linux development. These features include:
+
+\begin{enumerate}
+	\item \textbf{Open Source} Yocto Project is an open source project backed by the Linux Foundation. This means it is free to use and developers can access the source code to customise their systems as needed
+	\item \textbf{Compatibility} Yocto Project is compatible with many types of embedded hardware, including ARM, PowerPC, MIPS, and x86. This makes it easy to use for any type of embedded project
+	\item \textbf{Robust Development Environment} Yocto Project provides a robust development environment for embedded Linux development. It includes libraries, tools, and debugging support to make development easier
+	\item \textbf{High Performance} Yocto Project provides an optimised development environment for embedded systems. This helps developers to create high-performance products quickly and easily
+	\item \textbf{Flexibility} Yocto Project provides developers with the flexibility to create custom Linux-based systems for their embedded devices. This allows developers to tailor their systems to meet the specific needs of their products
+	\item \textbf{Time Savings} Yocto Project makes it easier and faster to create custom Linux-based systems. This helps to reduce development time and save money
+\end{enumerate}
+
+\subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
+\textit{Describe their usage. Will show up again in Development chapter}
+
 \section[Development of Neural Network Application]{Development Of Neural Network Application}
 \textit{Contrast general purpose frameworks - TFlite etc with handwritten applications}
+
+\begin{itemize}
+	\item \textit{Include literature study elements from Tiny ML}
+\end{itemize}
 
 \subsection{Different Programming Paradigms}
 \textit{Approaches to doing Machine Learning in Embedded Environments. Emphasis on how these applications are developed - e.g TFLite}
@@ -71,7 +95,10 @@ One approach to making this training loop take place from within these platforms
 \textit{Contrast traditional implementations in resource rich environments and the constraints of embedded environment. Layout general strategies to acquire performance improvements with little losses to accuracy - Purning, Quantisation. State the emphasis on training}
 
 \section{ARM's CMSIS-NN}
-\textit{Introduction to ARM CMSIS-NN kernels, mentioned again in Development chapter}
+\textit{Introduction to ARM CMSIS-NN kernels, mentioned again in Development chapter. Refer to the CMSIS-NN paper}
+
+\section{ARM based Embedded Linux}
+\textit{Describe the process of boot flow introducing concepts such as Boot ROM, eMMC, IVT, bootloader, kernel, file systems etc.}
 
 \section{Performance Evaluation}
 \textit{Describe and motivate performance measures used in the Results chapter}
