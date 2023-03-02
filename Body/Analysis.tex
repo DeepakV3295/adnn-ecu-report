@@ -4,25 +4,39 @@
 \chapter{Results}
 \textit{The performance of the different neural networks on the i.MX6 processor}
 
-\section{Neural Network Performance}
-\textit{Performance measure considered. Execution times vs Neural Network Accuracy etc\dots}
+\section{HDRNN comparisons}
+\begin{itemize}
+	\item \textit{State the reasoning behind comparisons of HDRNN implementations - e.g same accuracy when initialised with the same random weights \dots}
+	\item \textit{Describe the performance measure considered - execution times, network accuracy, power usage \dots motivated in Theory chapter}
 
-\subsection{ADNN on Tensorflow-Lite}
-\textit{Performance of a CNN application performing Anomally Detection running on tensorflow lite}
+\end{itemize}
 
-\subsection{ADNN written in C}
+\subsection[Python - Numpy]{Python Numpy based HDRNN}
+\textit{Performance of textbook HDRNN using Python \& Numpy}
+
+\subsection[Tensorflow Lite]{Tensorflow-Lite based HDRNN}
+\textit{Performance of a similar network on Tensorflow lite}
+
+\subsection[C]{C based HDRNN}
 \textit{Performance of a similar network written in C}
 
-\subsection{ADNN written using CMSIS-NN}
-\textit{Performance of a similar network utilising CMSIS-NN}
+\subsection[CPP - Eigen]{CPP based HDRNN}
+\textit{Performance of a similar network written in CPP}
 
-\section{Further Neural Network Optmisations}
+\section{CMSIS-NN based Optmisations}
 \textit{Further breakdown of the performance achieved from different optimisation techniques}
 
+\subsection{Quantisation}
+\textit{future: Training Network with Quantized weights}
+
 \subsection{Pruning the Network}
+\textit{future}
 
 \chapter{Discussion}
-\textit{Which optimisation approaches gave the most in improvement?}
+\begin{itemize}
+	\item \textit{Contrast development process for the ML programming paradigms}
+	\item \textit{Which optimisation approaches gave the most in improvement?}
+\end{itemize}
 
 \chapter{Conclusion and Future Work}
 \textit{What does it all mean? Where do we go from here?}

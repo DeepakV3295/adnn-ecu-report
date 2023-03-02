@@ -1,45 +1,75 @@
 \part{Implementation}
 
-\textit{Approach to writing Tiny Neural Networks and the nature of their target environments}
+\textit{Developing multiple benchmark ANN programs for the i.MX6 target}
 
 \chapter{Design}
-\textit{Describe the system design of the Real-Time Linux environment, support provided for the neural network execution, performance engineering based on the hardware, and design and optimisation of the neural network that is executed}
+\textit{Motivate and describe the HDRNN based ANNs used to benchmark training}
 
-{\color{yellow}
-	NOTE: Talk about the reason why MNIST database was chosen and also elaborate how the idx gunziped version was also avoided to remove the dependency of a gzip library crate / package etc
+\section[Artificial Neural Network Development Process]{ANN Development Process}
+\begin{itemize}
+	\item \textit{Toolchains and Yocto recipes}
+	\item \textit{State target board exploration explored in later chapter}
+\end{itemize}
+
+\section[iMX6 Processor]{i.MX6 Processor}
+\textit{Information about the processor in general - ISA, Memory, Clock \dots}
+
+\subsection[ANN Acceleration]{i.MX6 as an ANN application target}
+\textit{Describe performance optimisations possible using NEON(SIMD) \dots}
+
+\subsection[CMSIS-NN]{Available Optimisation Frameworks : CMSIS-NN}
+\textit{Describe ARM's CMSIS-NN as a framework worth adding}
+
+\section[Handwritten Digit Recognition (HDR)]{Benchmark ANN - HDRNN}
+\begin{itemize}
+	\item \textit{Motiviate using HDRNN to measure training performance}
+	\item \textit{Describe the architecture of the HDRNN}
+\end{itemize}
+
+MNIST database is the standard benchmark for ANN applications.
+ANN heavily derived from \href[]{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}.
+Our primary target was to evaluate the training phase of an ANN.
+
+\subsection[HDR-NN Training]{The Learning Algorithm}
+{\color{red}
+	\begin{itemize}
+		\item batched SGD
+	\end{itemize}
 }
-
-\section[Embedded Operating System]{Embedded Linux Environment}
-\textit{Information regarding configuration and other details}
-
-\subsection{Neural Network Support}
-\textit{Leveraging hardware support for the application from the OS layer}
-
-\subsection{CMSIS-NN Kernels}
-\textit{Utilising ARM's CMSIS-NN Kernels}
-
-\subsection{Hooks for the Applications}
-\textit{Application design}
-
-\section{Tiny Neural Network}
-\textit{The architecture of the Anomally Detection Neural Network}
+{\color{blue}link with Theory chapter content}
 
 \chapter{Development}
-\textit{Details of how different neural networks were implemented}
+
+\begin{itemize}
+	\item \textit{Detail the exploration on i.MX6 based board}
+	\item \textit{Describe the HDRNN implementations}
+\end{itemize}
+
+\section[iMX6 Custom Board Target]{Targetting an i.MX6 based custom board}
+
+\subsection{Testing on Device}
+\textit{Process for testing on device - flashing, benchmarking (perf)}
+
+\section{HDRNN Implementation}
+\textit{Motivate why HDRNN via MNIST dataset was chosen}
+
+With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms
+
+\subsection[Python - Numpy]{Python Numpy based HDRNN}
+
+\subsection[Tensorflow Lite]{Tensorflow Lite based HDRNN}
+{\color{red}
+	\begin{itemize}
+		\item Keras based, easy to write
+		\item TFLite build less easy, still straightforward
+	\end{itemize}
+}
+
+\subsection[C]{C based HDRNN}
+
+\subsection[CPP - Eigen]{CPP based HDRNN}
+
+\section{CMSIS-NN based Optimisations}
+\textit{}
 
 \section{General Distribution of Work}
-
-\section{The C Implementation}
-\textit{}
-
-\section{CMSIS-NN Implementation}
-\textit{}
-
-\section{Testing on Device}
-\textit{Process for testing on device}
-
-\subsection{Flashing the application}
-\textit{Where the device comes in the development loop}
-
-\subsection{Performance Evaluation}
-\textit{Perf tools and profiling techniques}

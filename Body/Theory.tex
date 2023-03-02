@@ -3,10 +3,9 @@
 \textit{Neural network training and inference in embedded environments}
 
 {\color{red}
-	Talk about the number of devices in the space of embedded systems / tiny devices (Estimates put the total number of these devices north of 20 billion) and about the potential of running machine learning on that compute. Introduce sustainability notion of utilising those embedded devices for the purpose of performing ML computes as a means of efficient utilisation ... However  much of the potential of running machine learning appilations on them remain unattained due to the difficulties in creating these applications
+	Estimates put the number of tiny embedded systems devices north of 20 billion (attach reference) and the potential of running machine learning applications on that compute is enormous. Furthermore the notion of utilising the existing embedded infrastructure for the purpose of performing ML compute as a means for achiever greater utilisation and as opposed to deploying new specialised devices for those applications has an appeal from a sustainability standpoint. However much of the potential of running machine learning appilations on these devices remain unattained due to the difficulties in creating these applications ...
 
 	Among the approaches that would be salient on these platforms, neural network approaches are the most sought after owing to the unprecedented progress made in their practical applications. Tiny Machine Learning is a burgeoning field that looks at how this space of embedded devices can be made more suitable to create and explore the potential machine learning applications that it can support. An important feature of machine learning applications are their iterative improvement process. For neural network applications this happens during the training process which traditionally consumes a lot of compute resource
-
 }
 
 \subsubsection{Why perform training and inference on ECUs?}
@@ -19,42 +18,60 @@ One approach to making this training loop take place from within these platforms
 }
 
 \chapter{Background}
-\textit{Describe ECU systems, Tiny ML}
+\textit{Describe ECU systems, Tiny ML, Anomaly Detection, Yocto Project etc}
 
 \vspace{1em}
 \noindent \textbf{Hypothesis}: Training and inference of (small) neural networks in embedded systems can be considerably improved compared to general purpose neural networks frameworks
 
-\section{Anomally Detection}
-\textit{Explain the problem. Introduce terminlogy that will get explained in the next chapter}
+{\color{red}
+	The space of salient applications for automotive embedded systems is enormous with examples such as anomaly detection within an automobile, a subcomponent of the automobile, or with the interactions between subsystems
+}
 
-\subsection{Considerations in Embedded Environments}
+\begin{itemize}
+	\item \textit{Introduce general information about artificial neural networks (ANNs), MLOps, etc - state that there is more information in the Theory chapter}
+	\item \textit{Introduce how an anomaly detection application could be run}
+\end{itemize}
 
-\section{Scania Embedded Systems}
-\textit{ECU systems, the kind of data they generate, and the potential applications}
+\section[Anomaly Detection using Machine Learning]{Anomaly Detection On Board}
+\textit{Introduce how the ANN application would be executing on the automobile}
 
-\subsection{i.MX6 Target Processor}
-\textit{i.MX6 specifications and constraints}
+\subsection[Machine Learning on Embedded Devices]{MLOps On Embedded Systems}
+\textit{Nature of (CAN) data generated on ECU systems and how they could be consumed - described from an MLOps viewpoint }
 
-\section{Development for Embedded Linux}
-\textit{Short introduction to writing applications for embedded linux}
+\subsection[Considerations of Embedded Environments]{Considerations Of Embedded Environments}
+\begin{itemize}
+	\item \textit{State hardware requirements within the context of the ANN functionality}
+	\item \textit{Express intent to benchmark the training phase. State the Motivation}
+\end{itemize}
 
-\subsection{Yocto Project}
-\textit{Outline the Yocto Project based Build environment}
+\section[Development Process for Embedded Linux]{Development For Embedded Linux}
+\textit{Introduce build systems for embedded linux. Motivate the section in terms of targetting embedded hardware}
+
+\subsection[Build Systems : The Yocto Project]{The Yocto Project}
+\textit{Outline the Yocto Project Build System}
+
+\section[Development of Neural Network Application]{Development Of Neural Network Application}
+\textit{Contrast general purpose frameworks - TFlite etc with handwritten applications}
+
+\subsection{Different Programming Paradigms}
+\textit{Approaches to doing Machine Learning in Embedded Environments. Emphasis on how these applications are developed - e.g TFLite}
 
 \chapter{Theory}
-\textit{Theoretical foundations}
+{\color{blue} \textit{Describe the arrangement of this chapter}}
 
-\section{Expectations for the Hardware}
-\textit{Layout the Architecture of the i.MX6 - ISA and specifications. Optimisation possibilities through using the SIMD etc}
+\section[Artificial Neural Network (ANN)]{Artificial Neural Networks}
+\textit{General introduction to ANNs. Explaining topics from inference, training, till federated learning systems}
 
-\subsection{Training vs Inference}
-\textit{Requirements for Training and uploading the wieghts vs Inference}
+\begin{itemize}
+	\item \textit{Explain the different ways of building out the ANN applications - Training on board vs off board, associated factors such as uploading data vs learned model}
+	\item \textit{Compare training with inference}
+\end{itemize}
 
-\section{Neural Network Performance Optimisations Techniques}
-\textit{Contrast traditional implementations in resource rich environments and the constraints of embedded environment. Layout general strategies to acquire performance improvements with little losses to accuracy e.g Purning, Quantisation}
-
-\section{Tiny Machine Learning}
-\textit{Approaches to doing Machine Learning in Embedded Environments}
+\section{ANN Performance Optimisations Techniques}
+\textit{Contrast traditional implementations in resource rich environments and the constraints of embedded environment. Layout general strategies to acquire performance improvements with little losses to accuracy - Purning, Quantisation. State the emphasis on training}
 
 \section{ARM's CMSIS-NN}
-\textit{Introduction to ARM CMSIS-NN Kernels}
+\textit{Introduction to ARM CMSIS-NN kernels, mentioned again in Development chapter}
+
+\section{Performance Evaluation}
+\textit{Describe and motivate performance measures used in the Results chapter}
