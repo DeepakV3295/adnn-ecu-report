@@ -36,7 +36,7 @@
 \else
 	% Plain LaTeX specific packages and settings
 	% Language, diacritics and hyphenation
-    % Use English and Swedish languages.
+	% Use English and Swedish languages.
 	\usepackage[swedish, english]{babel}
 
 	% Font settings
@@ -49,6 +49,41 @@
 	\usepackage{graphicx}
 \fi
 
+% Draw diagrams
+\usepackage{tikz}
+\usepackage{listofitems} % for \readlist to create arrays
+
+\tikzset{>=latex} % for LaTeX arrow head
+
+\tikzstyle{node}=[
+	very thick,circle,
+	draw=Cerulean,
+	minimum size=22,
+	inner sep=0.5,
+	outer sep=0.6
+]
+\tikzstyle{connect}=[->,thick,RoyalPurple,shorten >=1]
+
+\tikzset{ % node styles, numbered for easy mapping with \nstyle
+	node 1/.style={
+		node,OliveGreen,
+		draw=JungleGreen,
+		fill=JungleGreen!25
+		},
+	node 2/.style={
+		node,RoyalPurple,
+		draw=Cerulean,
+		fill=Cerulean!20
+		},
+	node 3/.style={
+		node,BrickRed,
+		draw=OrangeRed,
+		fill=OrangeRed!20
+		},
+}
+
+% map layer number onto 1, 2, or 3
+\def\nstyle{int(\lay<\Nnodlen?min(2,\lay):3)}
 
 % Tables
 \usepackage{booktabs}
@@ -74,45 +109,45 @@
 
 \begin{document}
 \frontmatter
-    % Creates the front matter (title page(s), abstract, list of papers)
-    % for either a Comprehensive Summary or a Monograph.
-    % Authors of Comprehensive Summaries use this front matter
-    % \frontmatterCS
-    % Monograph authors use this front matter
-    % \frontmatterMonograph
+	% Creates the front matter (title page(s), abstract, list of papers)
+	% for either a Comprehensive Summary or a Monograph.
+	% Authors of Comprehensive Summaries use this front matter
+	% \frontmatterCS
+	% Monograph authors use this front matter
+	% \frontmatterMonograph
 
    % Optional dedication
    % \dedication{dedication ...}
 
-    % Environment used to create a list of papers
-    % \begin{listofpapers}
-    % 	\item A Paper Discussed in this Thesis \label{apaperlabel}
-    % \end{listofpapers}
+	% Environment used to create a list of papers
+	% \begin{listofpapers}
+	% 	\item A Paper Discussed in this Thesis \label{apaperlabel}
+	% \end{listofpapers}
 
 
-    \begingroup
-        % To adjust the indentation in your table of contents, uncomment and enter the widest numbers for each level
-        %  E.g.  \settocnumwidth{widest chapter number}{widest section number}{widest subsection number}...{...}
-       %  \settocnumwidth{5}{4}{5}{3}{3}{3}
-        \tableofcontents
-    \endgroup
+	\begingroup
+		% To adjust the indentation in your table of contents, uncomment and enter the widest numbers for each level
+		%  E.g.  \settocnumwidth{widest chapter number}{widest section number}{widest subsection number}...{...}
+	   %  \settocnumwidth{5}{4}{5}{3}{3}{3}
+		\tableofcontents
+	\endgroup
 
-    % Optional tables
-    %\listoftables
-    %\listoffigures
+	% Optional tables
+	%\listoftables
+	%\listoffigures
 
 \mainmatter
-    % Body of the Report
-    \input{Body/Theory.tex}
-    \input{Body/Methodology.tex}
-    \input{Body/Analysis.tex}
+	% Body of the Report
+	\input{Body/Theory.tex}
+	\input{Body/Methodology.tex}
+	\input{Body/Analysis.tex}
 
 \backmatter
-    % References
-    % No restriction is set to the reference styles
-    % Save your references in References.bib
-    \nocite{*} % Remove this for your own citations
-    \bibliographystyle{plain}
-    \bibliography{References}
+	% References
+	% No restriction is set to the reference styles
+	% Save your references in References.bib
+	\nocite{*} % Remove this for your own citations
+	\bibliographystyle{plain}
+	\bibliography{References}
 
 \end{document}
