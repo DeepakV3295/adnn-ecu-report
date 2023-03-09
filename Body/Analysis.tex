@@ -47,7 +47,6 @@ The HDR-NN training implementations were benchmarked on the iMX6SDB evaluation b
 				(102714,6650)
 				(203530,15581)
 			};
-			\legend{C}
 
 
 		\addplot[
@@ -63,17 +62,29 @@ The HDR-NN training implementations were benchmarked on the iMX6SDB evaluation b
 				(101770,22670)
 				(102714,23744)
 			};
-			\legend{C}
+			\legend{C, Numpy}
 
 		\end{axis}
 	\end{tikzpicture}
 \end{center}
+The training time was recorded for hidden layer sizes of 2, 8, 32, and 128 and 
+found that it increases exponentially with the number of parameters. This is due to 
+the fact that the amount of calculation in a fully connected network increases with the 
+number of neurons, leading to longer training times. 
+Further, when the number of 
+neurons in a single layer exceeds 32, the accuracy of the model is observed to decrease 
+due to overfitting. To improve accuracy, adding another layer with 16 neurons is found to 
+be beneficial without significantly increasing the time required for computation. 
+In fact, for larger network sizes, it is observed to even reduce the computation time required. 
+Regardless of the hidden layer sizes, the peak memory utilisation remains constant because the 
+peak usage occurs when \dots  
 
 \subsection[Tensorflow Lite]{Tensorflow-Lite based HDRNN}
 \textit{Performance of a similar network on Tensorflow lite}
 
 \subsection[C]{C based HDRNN}
 \textit{Performance of a similar network written in C}
+
 
 \subsection[CPP - Eigen]{CPP based HDRNN}
 \textit{Performance of a similar network written in CPP}
