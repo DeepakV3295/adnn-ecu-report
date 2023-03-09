@@ -27,7 +27,7 @@ The i.MX6 series of ARM processors has several variations out of which our selec
 
 \section[Handwritten Digit Recognition (HDR)]{Benchmark ANN - HDRNN}
 
-The handwritten digit recognition neural network is a fully connected neural network and derives from the popular neural network textbook \href[]{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}
+The handwritten digit recognition neural network is a fully connected neural network and derives from the popular neural network textbook \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}
 
 \begin{center}
 
@@ -76,29 +76,35 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 
 The HDRNN benchmark applications will all share the same standard training algorithm, namely Backpropagation with Stochastic Gradient Descent. Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists in the wild, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm in through out the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations
 
+\subsection[Verifying Correctness]{Verifying Correctness}
+
+The model structure can be configured in the same manner across the implementations, as well as the learning algorithm configuration. To verify their mutual correctness, all the implementations initialize HDRNN using the same PRNG
+
 \chapter{Development}
 
-\begin{itemize}
-	\item \textit{Detail the exploration on i.MX6 based board}
-	\item \textit{Describe the HDRNN implementations}
-\end{itemize}
+The HDRNN benchmark application were completed in different programming languages and in neural network frameworks like Tensorflow
 
 \section[iMX6 Custom Board Target]{Targetting an i.MX6 based custom board}
 
-Exploring the target ECU board involved several examinations of known state of the board. The linux kernel binaries were made via the Yocto project however there was no access to source code such as the recipes or the meta-layers themselves
+Exploring the target ECU board involved several examinations of a known state of the board. The linux kernel binaries were made via the Yocto project however there was no access to source code such as the recipes or the meta-layers themselves
+
+The i.MX SoCs have a special boot mode named Serial Download Mode (SDM) typically accessible through boot switches. When configured into this mode, the ROM code will poll for a connection on a USB OTG port
 
 \subsection{Overview of the Board H/W}
-The board is designed for high performance low power applications and is configured with a single Cortex A9 core. This core utilises the ARMv7 architecture and features an advanced floating point unit (FPU) for efficient computation and storage of floating point numbers. Moreover, it supports the full range of single-instruction multiple-data (SIMD) instructions, allowing for SIMD vector operation to be executed quickly. Additionally, Cortex A9 includes NEON Technology, which is an advanced media processing engine for applications such as video and image encoding and decoding. This allows for efficient processing of multimedia data and multimedia applications to be implemented with minimal performance degradation
+
+The board is designed for high performance low power applications and is configured with a single Cortex A9 core with the ARMv7 ISA. The processor supports single-instruction multiple-data (SIMD) instructions, allowing for SIMD vector operation to be executed quickly. Additionally, Cortex A9 includes NEON Technology, which is an advanced media processing engine for applications such as video and image encoding and decoding. This allows for efficient processing of multimedia data and multimedia applications to be implemented with minimal performance degradation
 
 \subsection{Testing on Device}
-\textit{Process for testing on device - flashing, benchmarking (perf)}
+
+The benchmark tests were performed on ... using the perf tool
 
 \section{HDRNN Implementation}
-\textit{Motivate why HDRNN via MNIST dataset was chosen}
 
-With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms
+With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms and the correctness verification routines and execution statistics measurement runs were seperated. The benchmark executions did not produce disk I/O after the dataset was read, unlike the correctness verification runs which produced the final weights from the execution runs that were subsequently compared with the other benchmark program execution output weights
 
 \subsection[Python - Numpy]{Python Numpy based HDRNN}
+
+This is the baseline implementation and follows close to the implementation exhibitied on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library
 
 \subsection[Tensorflow Lite]{Tensorflow Lite based HDRNN}
 

@@ -2,7 +2,8 @@
 \textit{Results from the implementation}
 
 \chapter{Results}
-\textit{The performance of the different neural networks on the i.MX6 processor}
+
+The HDR-NN training implementations were benchmarked on the iMX6SDB evaluation board. Model accuracy, execution time and peak memory utilised during the training of the model is compared while varying the number of layers and the neurons in each layer
 
 \section{HDRNN comparisons}
 \begin{itemize}
@@ -13,6 +14,60 @@
 
 \subsection[Python - Numpy]{Python Numpy based HDRNN}
 \textit{Performance of textbook HDRNN using Python \& Numpy}
+
+\begin{center}
+	\begin{tikzpicture}
+		\begin{axis}[
+			title={Execution Times for HDRNN Training},
+			xlabel={Number of Parameters},
+			ylabel={Execution Times in Seconds},
+			xmin=0, xmax=110000,
+			ymin=0, ymax=30000,
+			xtick={0,10000,30000,50000,70000,90000,110000},
+			ytick={0,5000,10000,15000,20000,25000,30000},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+		]
+
+		\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1600,85)
+				(3190,164)
+				(6370,351)
+				(12730,725)
+				(25450,1470)
+				(25818,1509)
+				(50890,2983)
+				(51450,3068)
+				(101770,6885)
+				(102714,6650)
+				(203530,15581)
+			};
+			\legend{C}
+
+
+		\addplot[
+			color=orange,
+			mark=triangle,
+			]
+			coordinates {
+				(1600,1978)
+				(3190,2171)
+				(6370,2589)
+				(25450,5799)
+				(25818,6628)
+				(101770,22670)
+				(102714,23744)
+			};
+			\legend{C}
+
+		\end{axis}
+	\end{tikzpicture}
+\end{center}
 
 \subsection[Tensorflow Lite]{Tensorflow-Lite based HDRNN}
 \textit{Performance of a similar network on Tensorflow lite}

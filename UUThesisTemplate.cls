@@ -1181,7 +1181,7 @@
 }
 
 \renewcommand{\maketitle}{%
-	\providecommand{\titlepagelogo}{UU_logo_sv_42}%
+	\providecommand{\titlepagelogo}{UU_logo.jpeg}%
 	\begin {titlepage}%
 		\def\first##1{##1}%
 		\def\last##1{##1}%
