@@ -8,22 +8,13 @@ The benchmark applications test the training phase of a Handwritten Digit Recogn
 
 \section[Artificial Neural Network Development Process]{ANN Development Process}
 
-The target environment necessitates the use of cross compilers and as part of the development process multiple build environments and systems were examined - some of the details of this process is layed out in the following chapter. The primary platform used was the Yocto Project eSDK based application development process running on a standard linux based build environment
+The target environment necessitates the use of cross compilers and as part of the development process multiple build environments and systems were examined. Ultimately, the primary platform that ended up being used was the Yocto Project extensible SDK (eSDK) based application development process running on a standard linux based build environment
 
 \subsection[Cross compilers \& Build System]{Compiler Toolchains \& Yocto Recipes}
 
-The meta-freescale Yocto layer provides an SDK that was primarily used to test and develop the benchmark applications. GCC based cross compilers and debuggers were usefull for the C, C++ programs. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well. For further optimisations that relies on hardware specific features such as ARM\textquotesingle s CMSIS-NN cannot be so easily ported however
+The \textit{meta-freescale} Yocto BSP layer by NXP supports the target processor and in combination with Poky can provide an eSDK that was primarily used to test and develop the benchmark applications.
 
-\section[iMX6 Processor]{i.MX6 Processor}
-
-The i.MX6 series of ARM processors has several variations out of which our selected target board contains Cortex A9 \dots
-
-
-\subsection[ANN Acceleration]{i.MX6 as an ANN application target}
-\textit{Describe performance optimisations possible using NEON(SIMD) \dots}
-
-\subsection[CMSIS-NN]{Available Optimisation Frameworks : CMSIS-NN}
-\textit{Describe ARM's CMSIS-NN as a framework worth adding}
+GCC based cross compilers and debuggers were usefull for the C, C++ programs. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well. For further optimisations that relies on hardware specific features such as ARM\textquotesingle s CMSIS-NN cannot be so easily ported however
 
 \section[Handwritten Digit Recognition (HDR)]{Benchmark ANN - HDRNN}
 
@@ -82,7 +73,7 @@ The model structure can be configured in the same manner across the implementati
 
 \chapter{Development}
 
-The HDRNN benchmark application were completed in different programming languages and in neural network frameworks like Tensorflow
+The HDRNN benchmark application were completed in different programming languages and in neural network frameworks like Tensorflow. Details about the target environment and the benchmark implementations are layed out in this chapter
 
 \section[iMX6 Custom Board Target]{Targetting an i.MX6 based custom board}
 
@@ -90,9 +81,9 @@ Exploring the target ECU board involved several examinations of a known state of
 
 The i.MX SoCs have a special boot mode named Serial Download Mode (SDM) typically accessible through boot switches. When configured into this mode, the ROM code will poll for a connection on a USB OTG port
 
-\subsection{Overview of the Board H/W}
+\subsection[ECU / iMX6 Evaluation Board Overview]{i.MX6 Overview}
 
-The board is designed for high performance low power applications and is configured with a single Cortex A9 core with the ARMv7 ISA. The processor supports single-instruction multiple-data (SIMD) instructions, allowing for SIMD vector operation to be executed quickly. Additionally, Cortex A9 includes NEON Technology, which is an advanced media processing engine for applications such as video and image encoding and decoding. This allows for efficient processing of multimedia data and multimedia applications to be implemented with minimal performance degradation
+The iMX6 series is designed for high performance low power applications and target boards are configured with a single Cortex A9 core with the ARMv7 ISA. The processor supports NEON single-instruction multiple-data (SIMD) instructions, allowing for SIMD vector operations within the training program
 
 \subsection{Testing on Device}
 
@@ -102,15 +93,17 @@ The benchmark tests were performed on ... using the perf tool
 
 With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms and the correctness verification routines and execution statistics measurement runs were seperated. The benchmark executions did not produce disk I/O after the dataset was read, unlike the correctness verification runs which produced the final weights from the execution runs that were subsequently compared with the other benchmark program execution output weights
 
-\subsection[Python - Numpy]{Python Numpy based HDRNN}
+\subsection[Python - Numpy]{The Reference HDR-NN in Python}
 
-This is the baseline implementation and follows close to the implementation exhibitied on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library
+This is the baseline implementation and follows close to the implementation exhibitied on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library Numpy
 
 \subsection[Tensorflow Lite]{Tensorflow Lite based HDRNN}
 
 Developing ANNs on tensorflow using Keras is straightforward with good support and well documented APIs. Building the same model for a Tensorflow Lite (TFLite) was more involved however still straightforward
 
 \subsection[C]{C based HDRNN}
+
+The C implementation had the least amount of external dependencies and contained the network in float arrays within structs.
 
 \subsection[CPP - Eigen]{CPP based HDRNN}
 
