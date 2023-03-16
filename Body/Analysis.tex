@@ -13,6 +13,24 @@ Further, when the number of neurons in a single layer exceeds 32, the accuracy o
 
 Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the same application regardless of the network configuration
 
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.57]{accuracy}
+	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.61]{exec-time}
+	\caption[Execution Time vs Model Parameters]{Comparing total run time for training the different HDR-NN programs}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.47]{memory-bar}
+	\caption[Peak Memory Utilisation]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
+\end{figure}
+
 \subsection[Python - Numpy]{Python Numpy based HDR-NN}
 
 The Numpy implementation consistantly took longer duration to perform the same training cycle as compared to the C implementation
@@ -26,14 +44,6 @@ C implementation had lower execution times and memory usage
 
 \subsection[CPP - Eigen]{CPP based HDR-NN}
 \textit{Benchmark pending \dots}
-
-\includegraphics[scale=0.37]{memory-bar}
-
-\includegraphics[scale=0.37]{exec-time-funnel}
-
-\includegraphics[scale=0.37]{accuracy}
-
-\includegraphics[scale=0.37]{exec-time}
 
 \section{CMSIS-NN based Optimisations to Training}
 \textit{Further breakdown of the performance achieved from different optimisation techniques}

@@ -49,43 +49,8 @@
 	\usepackage{graphicx}
 \fi
 
-% Draw diagrams
-\usepackage{tikz}
-\usepackage{graphicx}
+% Diagrams
 \graphicspath{ {./Body/diagrams/} }
-\usepackage{listofitems} % for \readlist to create arrays
-
-\tikzset{>=latex} % for LaTeX arrow head
-
-\tikzstyle{node}=[
-	very thick,circle,
-	draw=Cerulean,
-	minimum size=22,
-	inner sep=0.5,
-	outer sep=0.6
-]
-\tikzstyle{connect}=[->,thick,RoyalPurple,shorten >=1]
-
-\tikzset{ % node styles, numbered for easy mapping with \nstyle
-	node 1/.style={
-		node,OliveGreen,
-		draw=JungleGreen,
-		fill=JungleGreen!25
-		},
-	node 2/.style={
-		node,RoyalPurple,
-		draw=Cerulean,
-		fill=Cerulean!20
-		},
-	node 3/.style={
-		node,BrickRed,
-		draw=OrangeRed,
-		fill=OrangeRed!20
-		},
-}
-
-% map layer number onto 1, 2, or 3
-\def\nstyle{int(\lay<\Nnodlen?min(2,\lay):3)}
 
 % Tables
 \usepackage{booktabs}
@@ -99,14 +64,6 @@
 
 % Including headings down to the subsection level in contents
 \contentsdepth{subsection}
-
-
-% Uncomment to use a custom abstract dummy text
-%\abstractdummy{
-%	\begin{abstract}
-%		Please use no more than 300 words and avoid mathematics or complex script.
-%	\end{abstract}
-%}
 
 \author{Prasanth Shaji, Deepak Venkataram}
 \title{Training Neural Networks on Embedded Devices}
@@ -156,5 +113,8 @@
 	\nocite{*} % Remove this for your own citations
 	\bibliographystyle{plain}
 	\bibliography{References}
+
+	\part{Appendixes}
+	\input{Appendix/c300.tex}
 
 \end{document}

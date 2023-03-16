@@ -244,9 +244,9 @@
 
 % No indentation of footnotes
 \renewcommand\@makefntext[1]{%
-    \parindent 1em%
-    \noindent%
-    \hb@xt@0.4em{\hss\@makefnmark}#1%
+	\parindent 1em%
+	\noindent%
+	\hb@xt@0.4em{\hss\@makefnmark}#1%
 }
 
 \renewcommand\footnoterule{{\leftskip 0pt\noindent\rule{26mm}{.5pt}\vspace{3pt}\par}}
@@ -1040,20 +1040,20 @@
 	\@ifundefined{pdfbookmark}{}{\pdfbookmark[0]{\listofpapersname}{lop}}%
 	\chapter*{\listofpapersname}%
 	\noindent {\@listofpapersintro}\vspace{1\baselineskip}%
-    \setcounter{listofpapersc}{0}%
-    \begin{list}{\Roman{listofpapersc}}{%
-    	\def\@currentlabel{\Roman{listofpapersc}}%
-    	\UU@RaggedRight%
-    	\hyphenpenalty=10000%
-        \usecounter{listofpapersc}%
-            \setlength{\leftmargin}{2,5em}%
-            \setlength{\labelsep}{1em}%
-            \setlength{\itemsep}{1em plus 0.2em minus 0.2em}%
-            \setlength{\parsep}{0mm}%
-            \setlength{\topsep}{0mm}}%
+	\setcounter{listofpapersc}{0}%
+	\begin{list}{\Roman{listofpapersc}}{%
+		\def\@currentlabel{\Roman{listofpapersc}}%
+		\UU@RaggedRight%
+		\hyphenpenalty=10000%
+		\usecounter{listofpapersc}%
+			\setlength{\leftmargin}{2,5em}%
+			\setlength{\labelsep}{1em}%
+			\setlength{\itemsep}{1em plus 0.2em minus 0.2em}%
+			\setlength{\parsep}{0mm}%
+			\setlength{\topsep}{0mm}}%
 }{%
-    \end{list}\nopagebreak%
-    \vspace{1\baselineskip}\noindent {\@listofpapersoutro}%
+	\end{list}\nopagebreak%
+	\vspace{1\baselineskip}\noindent {\@listofpapersoutro}%
 }
 
 
@@ -1262,74 +1262,74 @@
 	\newenvironment{numberedlist}{
 		\begin{enumerate}
 		\setlistmargin[5]
-    }{\end{enumerate}}
+	}{\end{enumerate}}
 
 	\newenvironment{numberedlist-indent}{
 		\setlength{\UU@listindent}{1cm}
-    		\addtolength{\leftmargini}{\UU@listindent}
+			\addtolength{\leftmargini}{\UU@listindent}
 		\begin{enumerate}
 		\setlistmargin[5]
-    }{\end{enumerate}}
+	}{\end{enumerate}}
 
 	\newenvironment{enumerate-indent}{
 		\setlength{\UU@listindent}{1cm}
-    		\addtolength{\leftmargini}{\UU@listindent}
+			\addtolength{\leftmargini}{\UU@listindent}
 		\begin{enumerate}
 		\setlistmargin[5]
-    }{\end{enumerate}}
+	}{\end{enumerate}}
 
-    \newenvironment{bulletlist}{
+	\newenvironment{bulletlist}{
 		\begin{itemize}
 		\setlistmargin
-    }{\end{itemize}}
+	}{\end{itemize}}
 
-    \newenvironment{bulletlist-indent}{
+	\newenvironment{bulletlist-indent}{
 		\setlength{\UU@listindent}{1cm}
-    		\addtolength{\leftmargini}{\UU@listindent}
+			\addtolength{\leftmargini}{\UU@listindent}
 		\begin{itemize}
 		\setlistmargin
-    }{\end{itemize}}
+	}{\end{itemize}}
 
-    \newenvironment{itemize-indent}{
+	\newenvironment{itemize-indent}{
 		\setlength{\UU@listindent}{1cm}
-    		\addtolength{\leftmargini}{\UU@listindent}
+			\addtolength{\leftmargini}{\UU@listindent}
 		\begin{itemize}
 		\setlistmargin
-    }{\end{itemize}}
+	}{\end{itemize}}
 
-    \newenvironment{romanlist}{
-        \renewcommand{\labelenumi}{\Roman{enumi}.}
-        \renewcommand{\labelenumii}{\roman{enumii}.}
-        \begin{enumerate}
-        \setlistmargin[8]
-    }{\end{enumerate}}
-    \newenvironment{romanlist-indent}{
-    	\setlength{\UU@listindent}{1cm}
-    	\addtolength{\leftmargini}{\UU@listindent}
-        \begin{romanlist}
-    }
-    {\end{romanlist}}
-    \newenvironment{simplelist}
-        {\begin{list}{}{
-            \setlength{\leftmargin}{0mm}
-            \setlength{\itemsep}{0mm}
-            \setlength{\parsep}{0mm}
-            \setlength{\topsep}{0mm}}}
-        {\end{list}}
-    \newenvironment{simplelist-indent}
-        {\begin{list}{}{
-            \setlength{\leftmargin}{1cm}
-            \setlength{\itemsep}{0mm}
-            \setlength{\parsep}{0mm}
-            \setlength{\topsep}{0mm}}}
-        {\end{list}}
-    \newenvironment{definitionlist}[1][]
-        {\@afterindenttrue\par\parindent -1em\advance\leftskip-\parindent\renewcommand{\item}[1]{\par{\it #1 ##1} -- \ignorespaces}}
-        {\par}
-    \newenvironment{definitionlist-indent}[1][]
-        {\leftskip 1cm\begin{definitionlist}[#1]}
-        {\end{definitionlist}}
-    \newcommand{\code}[1]{{\small\texttt{#1}}}
+	\newenvironment{romanlist}{
+		\renewcommand{\labelenumi}{\Roman{enumi}.}
+		\renewcommand{\labelenumii}{\roman{enumii}.}
+		\begin{enumerate}
+		\setlistmargin[8]
+	}{\end{enumerate}}
+	\newenvironment{romanlist-indent}{
+		\setlength{\UU@listindent}{1cm}
+		\addtolength{\leftmargini}{\UU@listindent}
+		\begin{romanlist}
+	}
+	{\end{romanlist}}
+	\newenvironment{simplelist}
+		{\begin{list}{}{
+			\setlength{\leftmargin}{0mm}
+			\setlength{\itemsep}{0mm}
+			\setlength{\parsep}{0mm}
+			\setlength{\topsep}{0mm}}}
+		{\end{list}}
+	\newenvironment{simplelist-indent}
+		{\begin{list}{}{
+			\setlength{\leftmargin}{1cm}
+			\setlength{\itemsep}{0mm}
+			\setlength{\parsep}{0mm}
+			\setlength{\topsep}{0mm}}}
+		{\end{list}}
+	\newenvironment{definitionlist}[1][]
+		{\@afterindenttrue\par\parindent -1em\advance\leftskip-\parindent\renewcommand{\item}[1]{\par{\it #1 ##1} -- \ignorespaces}}
+		{\par}
+	\newenvironment{definitionlist-indent}[1][]
+		{\leftskip 1cm\begin{definitionlist}[#1]}
+		{\end{definitionlist}}
+	\newcommand{\code}[1]{{\small\texttt{#1}}}
 	\newcommand\listheading[1]{%
 		\if@noskipsec\leavevmode\fi %
 		\par\@tempskipa 13pt \@plus 2pt \@minus 3pt\relax\@afterindentfalse%
@@ -1346,3 +1346,47 @@
 %\emergencystretch 4em
 %\selectlanguage{swedish}
 %\hyphenation{}
+
+
+
+
+% ============================================
+%        Diagrams
+% ============================================
+
+\usepackage{graphicx}
+
+\usepackage{tikz}
+\usepackage{listofitems} % for \readlist to create arrays
+
+\tikzset{>=latex} % for LaTeX arrow head
+
+\tikzstyle{node}=[
+	very thick,circle,
+	draw=Cerulean,
+	minimum size=22,
+	inner sep=0.5,
+	outer sep=0.6
+]
+\tikzstyle{connect}=[->,thick,RoyalPurple,shorten >=1]
+
+\tikzset{ % node styles, numbered for easy mapping with \nstyle
+	node 1/.style={
+		node,OliveGreen,
+		draw=JungleGreen,
+		fill=JungleGreen!25
+		},
+	node 2/.style={
+		node,RoyalPurple,
+		draw=Cerulean,
+		fill=Cerulean!20
+		},
+	node 3/.style={
+		node,BrickRed,
+		draw=OrangeRed,
+		fill=OrangeRed!20
+		},
+}
+
+% map layer number onto 1, 2, or 3
+\def\nstyle{int(\lay<\Nnodlen?min(2,\lay):3)}
