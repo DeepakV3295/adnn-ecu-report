@@ -1,12 +1,10 @@
 \part{Introduction}
 
-Embedded systems are equipped with a combination of hardware and software components to achieve a specific task. Often, embedded systems are built into a larger device or system where they are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour.
+Embedded devices are a category of tiny devices with physical, computational, and real-time computing constraints constituting an embedded system. An embedded system is a combination of hardware and software components put together to achieve specific tasks. Often, embedded systems are built into a larger device or system where they are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour.
 
-%Embedded systems are common in everyday applications due to their simplicity, flexibility and cost-effectiveness.
+Like most of the automotive industry, Scania employs embedded devices called Electronic Control Units (ECUs) in their trucks to supervise and regulate essential subsystems such as the engine, transmission, braking, and electrical systems. Each of these subsystems has one or more ECUs to gather system data and transmit it to a central communicator via the Controller Area Network (CAN) interface. The existing fleet of trucks will receive upgraded ECUs and communicators with higher performance hardware enabling faster and advanced data collection. This upgrade presents an opportunity to reuse the on-board hardware that is currently operational.
 
-Scania employs embedded devices called Electronic Control Units (ECUs) in their trucks to supervise and regulate essential subsystems such as the engine, transmission, braking, and electrical systems. Each of these subsystems has one or more ECUs to gather system data and transmit it to a central communicator via the Controller Area Network (CAN) interface. The existing fleet of trucks will receive upgraded ECU's and communicators with higher performance hardware enabling faster and advanced data collection. This upgrade presents an opportunity to reuse the on-board hardware that is currently operational.
-
-Machine learning (ML) on embedded systems is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. But this technology presents a unique set of challenges due to the limited resources available on these systems. Embedded systems are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded systems often have expectations such as real-time behaviour which can complicate the ML development process. Despite these challenges, machine learning on embedded systems has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles. %This technology can be used to automate tasks, improve efficiency, and make better decisions, all while using fewer resources.
+One such opportunity lies in performing machine learning (ML) applications on these ECUs. Machine learning has the ability to provide real-time insight and intelligence to devices however their implementation in these systems presents a unique set of challenges due to limited resources available on embedded devices. Embedded systems are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded systems often have expectations such as real-time behaviour which can complicate the ML development process. Despite these challenges, machine learning on embedded systems has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles.
 
 One such application Scania has been working on in their \textsc{LOBSTR} \cite{lobstr} and \textsc{FAMOUS} projects is anomaly and fault detection. Targeting to run the anomaly detection models on the existing ECUs with limited resources provides many benefits.
 
@@ -28,6 +26,8 @@ As part of this commitment, Scania is exploring the possibility of repurposing e
 
 Among the ML approaches to take, Artifical Neural Networks are especially interesting for anomaly detection due to several factors such as minimal data preprocessing \dots To get the best out of this approache, training of the model needs to be performed on-board. However much of the potential of running machine learning applications on these devices remain unattained due to the difficulties in creating these applications and running training on-board.
 
+\subsubsection{Problem Description}
+
 The scope of the thesis is to explore the challenges of building and training artificial neural networks on embedded devices using different approaches and evaluating their performance.
 
 %An important feature of machine learning applications are their iterative improvement process. For neural network applications this happens during the training process which traditionally consumes a lot of compute resource
@@ -46,27 +46,23 @@ The development and maintainance of neural network applications on a fleet of em
 
 \section[Development Process for Embedded Linux]{Development For Embedded Linux}
 
-\subsection[Build Systems : The Yocto Project]{The Yocto Project}
-
-The Yocto Project is an open source collaborative project that provides users with a set of tools to create custom Linux-based systems for embedded products. It's based on the OpenEmbedded framework and is backed by the Linux Foundation. The Yocto Project works with hardware vendors, open source communities, and hundreds of developers to provide a robust development environment for embedded products
-
-Yocto Project allows developers to create unique Linux-based systems for embedded devices. Yocto Project provides developers with the tools to customise their embedded Linux systems to meet the specific needs of their products.
+Build systems are . An overview is presented in Appendix \hyperref[buildsystems]{I}
 
 \subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
 \textit{Describe their usage. Will show up again in Development chapter}
 
-Support for embedded hardware requires a stack that includes several components covered in this chapter. The initial target machine was an ECU filling the role of a coordinator on the truck, however due to certain components missing from are contained in the Appendix \cite{}
+Support for embedded hardware requires a stack that includes several software components covered in this chapter. The initial target machine was an ECU filling the role of a coordinator on the truck, however due to certain components missing from are contained in the Appendix \hyperref[rtc-c300]{II}
 
 \section{Training on Device}
 
+\textit{Mention traditional offboard training and onboard inference architecture vs approaches with training on board. Reference Tiny ML research}
+
 \subsection{Federated Learning}
+
+\textit{link to federated learning, mention FAMOUS again}
 
 \section[Development of Neural Network Application]{Development Of Neural Network Application}
 \textit{Contrast general purpose frameworks - TFlite etc with handwritten applications}
-
-\begin{itemize}
-	\item \textit{Include literature study elements from Tiny ML}
-\end{itemize}
 
 \subsection{Different Programming Paradigms}
 \textit{Approaches to doing Machine Learning in Embedded Environments. Emphasis on how these applications are developed - e.g TFLite}
@@ -86,8 +82,6 @@ Support for embedded hardware requires a stack that includes several components 
 
 \section{Embedded Linux}
 \textit{Describe the process of boot flow introducing concepts such as Boot ROM, eMMC, IVT, bootloader, kernel, file systems etc.}
-
-\section{Software Development Kits for Embedded Targets}
 
 \section{Performance Evaluation}
 \textit{Describe and motivate performance measures used in the Results chapter}
