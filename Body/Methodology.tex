@@ -69,7 +69,7 @@ The HDR-NN benchmark applications will all share the same standard training algo
 
 \subsection[Verifying Correctness]{Verifying Correctness}
 
-The model structure can be configured in the same manner across the implementations, as well as the learning algorithm configuration. To verify their mutual correctness, all the implementations initialize HDR-NN using the same PRNG
+The model structure can be configured in the same manner across the implementations, as well as the learning algorithm configuration. This means that the shape of the model, the input parameters, the connections between the neuron can be configured in the same manner across the implementations. Furthermore, the learning rate, the number of epochs, and the batch size are also configurable in the same manner. Once the different implementations are configured in a similar manner, the training of the model is completed and the resulting weights are compared.
 
 \chapter{Development}
 
