@@ -5,39 +5,47 @@
 
 The HDR-NN training implementations were benchmarked on the iMX6SDB evaluation board. Model accuracy, execution time and peak memory utilised during the training of the model is compared while varying the number of layers and the neurons in each layer
 
-\section{HDRNN comparisons}
-\begin{itemize}
-	\item \textit{State the reasoning behind comparisons of HDRNN implementations - e.g same accuracy when initialised with the same random weights \dots}
-	\item \textit{Describe the performance measure considered - execution times, network accuracy, power usage \dots motivated in Theory chapter}
+\section{HDR-NN comparisons}
 
-\end{itemize}
+The execution times for HDR-NN training were recorded for different network configurations such as differing hidden layer sizes of 2, 8, 32, and 128. The run times increased exponentially with the number of parameters. This is due to the fact that the amount of calculation in a fully connected network increases with the number of neurons, leading to longer training times
 
-\subsection[Python - Numpy]{Python Numpy based HDRNN}
-\textit{Performance of textbook HDRNN using Python \& Numpy}
+Further, when the number of neurons in a single layer exceeds 32, the accuracy of the model is observed to decrease due to overfitting. To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required
 
-The training time was recorded for hidden layer sizes of 2, 8, 32, and 128 and 
-found that it increases exponentially with the number of parameters. This is due to 
-the fact that the amount of calculation in a fully connected network increases with the 
-number of neurons, leading to longer training times. 
-Further, when the number of 
-neurons in a single layer exceeds 32, the accuracy of the model is observed to decrease 
-due to overfitting. To improve accuracy, adding another layer with 16 neurons is found to 
-be beneficial without significantly increasing the time required for computation. 
-In fact, for larger network sizes, it is observed to even reduce the computation time required. 
-Regardless of the hidden layer sizes, the peak memory utilisation remains constant because the 
-peak usage occurs when \dots  
+Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the same application regardless of the network configuration
 
-\subsection[Tensorflow Lite]{Tensorflow-Lite based HDRNN}
-\textit{Performance of a similar network on Tensorflow lite}
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.17]{accuracy}
+	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations}
+\end{figure}
 
-\subsection[C]{C based HDRNN}
-\textit{Performance of a similar network written in C}
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.19]{exec-time}
+	\caption[Execution Time vs Model Parameters]{Comparing total run time for training the different HDR-NN programs}
+\end{figure}
 
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.21]{memory-bar}
+	\caption[Peak Memory Utilisation]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
+\end{figure}
 
-\subsection[CPP - Eigen]{CPP based HDRNN}
-\textit{Performance of a similar network written in CPP}
+\subsection[Python - Numpy]{Python Numpy based HDR-NN}
 
-\section{CMSIS-NN based Optmisations}
+The Numpy implementation consistantly took longer duration to perform the same training cycle as compared to the C implementation
+
+\subsection[Tensorflow Lite]{Tensorflow-Lite based HDR-NN}
+\textit{Benchmark pending \dots}
+
+\subsection[C]{C based HDR-NN}
+
+C implementation had lower execution times and memory usage
+
+\subsection[CPP - Eigen]{CPP based HDR-NN}
+\textit{Benchmark pending \dots}
+
+\section{CMSIS-NN based Optimisations to Training}
 \textit{Further breakdown of the performance achieved from different optimisation techniques}
 
 \subsection{Quantisation}
