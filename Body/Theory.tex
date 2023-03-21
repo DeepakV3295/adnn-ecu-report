@@ -1,17 +1,27 @@
 \part{Introduction}
 
-Embedded systems are equipped with a combination of hardware and software components to achieve a specific task. Often, embedded systems are built into a larger device or system and are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour. 
+An embedded system is a combination of hardware and software components put together to achieve a specific task. Often, embedded systems are built into a larger device or system and are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour. Embedded devices are a category of tiny devices with physical, computational and memory constraints that are programmable to perform dedicated tasks.   
 %Embedded systems are common in everyday applications due to their simplicity, flexibility and cost-effectiveness. 
-Scania employs Electronic Control Units (ECUs), which are embedded systems, in their trucks to supervise and regulate essential subsystems like the Engine, Transmission, Braking, and Electrical systems. Each of these subsystems has an ECU to gather system data and transmit it to a central communicator via the Controller Area Network (CAN) interface. The existing fleet of trucks
-will receive upgraded ECU's and communicators with higher performance hardware enabling faster and advanced data collection. This upgrade presents an opportunity to reuse the on-board hardware that is currently available.
+Like most of the automotive industry, Scania employs embedded systems called Electronic Control Units (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems has one or more ECUs to gather system data and transmit it to a central communicator via the Controller Area Network (CAN) interface. The latest fleet of trucks will receive upgraded ECUs and communicators with high performance hardware enabling faster and advanced data collection. This upgrade presents an opportunity to reuse the on-board hardware that is currently available.
 
-Machine learning on embedded systems is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. But this technology presents a unique set of challenges due to the limited resources available on these systems. Embedded systems are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded systems are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded systems has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles. %This technology can be used to automate tasks, improve efficiency, and make better decisions, all while using fewer resources. 
-One such application Scania is has been working on in their  \textsc{LOBSTR} and \textsc{FAMOUS} projects is anomaly and fault detection. Targeting to run the anomaly detection models on the existing ECU's with limited resources provides many benefits. 
+Machine learning (ML) on embedded devices is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. But this technology presents a unique set of challenges due to the limited resources available on these devices. Embedded devices are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded devices are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded devices has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles. %This technology can be used to automate tasks, improve efficiency, and make better decisions, all while using fewer resources. 
 
-Scania currently runs a massive fleet of more than 100,000 trucks and has been adding another 60,000 trucks annually since 2014. The company's truck sales make up 62\% of its global sales. Scania has a substantial fleet of connected trucks with electronic control units (ECUs) and communication devices that are due for an upgrade. However, this upgrade will result in a massive amount of e-waste, which could be prevented. Scania is actively working towards a sustainable and autonomous future by devising strategies to promote a shift towards eco-friendly transport systems.
- As part of this commitment, Scania is exploring the possibility of repurposing existing ECU's to run machine learning models. This innovative approach aligns with Scania's vision of leading the way towards a sustainable future. 
- %The company is committed to promoting a shift towards eco-friendly transport systems, which is crucial for reducing carbon emissions and creating a greener future.
+One such ML application Scania is has been developing in their \textsc{LOBSTR} and \textsc{FAMOUS} projects is the anomaly and fault detection models in a federated learning environment. Targeting to run the anomaly detection models on the existing ECUs with limited resources has many benefits and challenges. Some of them are described below - 
 
+Benefits :
+\begin{itemize}
+	\item Scania currently runs a massive fleet of more than 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually. The latest addition of connected trucks will be embedded with upgraded ECUs and communication devices. However, this upgrade will make the stock of older hardware devices to become obsolete and regarded as e-waste, which could be prevented. Scania is committed to promote a shift towards autonomous and eco-friendly transport systems. Exploring the possibility of repurposing existing ECUs to run ML models aligns with Scania's vision of leading the way towards a sustainable future. 
+	\item Federated Learning approaches enables running anomaly detection models on the ECUs of the Scania's distributed fleet of connected trucks. This allows for cruicial data to remain on the device and reduces network bandwidth requirements as only the model updates is communicated over the network instead of the entire data samples. 
+	\item benefits of using NN for anomaly detection
+\end{itemize}
+
+Challenges :
+\begin{itemize}
+	\item To reap the best benefits of these approaches, training of the model needs to be performed on-board. However much of the potential of running machine learning applications on these devices remain unattained due to the difficulties in creating these applications and running training on-board.(explore TinyML and other frameworks that enable EdgeAI. explain EdgeAI)
+	But these approaches are limited to inference and there is no support in the existing infrastructure for training of ML models.
+	\item challenges of repurposing ECU
+	\item 
+\end{itemize}
 % Reason : 
 	% 1. Sustainabililty - check
 	% 2. Potential in tiny ML (billions of devices) and Federated Learning approaches 
@@ -20,17 +30,13 @@ Scania currently runs a massive fleet of more than 100,000 trucks and has been a
 %Gap  in the market: No support for training ML models on embedded devices 
 %Scope: Exploring the challenges of building and training NN's on embedded devices using different approaches and evaluating their performances.    
 
-
 Estimates put the number of tiny embedded systems devices north of 20 billion (TODO: attach reference) and the potential of running machine learning applications on that compute is enormous. Tiny Machine Learning is a burgeoning field that looks at how this space of embedded devices can be made more suitable to create and explore the potential machine learning applications that it can support. Among the approaches that would be salient on these platforms, neural network approaches are the most sought after owing to the unprecedented progress made in their practical applications. (Reason building NN applications for embedded devices)
 
-Furthermore, Federated Learning approaches provides a distributed learning opportunity and allows for cruicial data to remain on the device. (explain security, bandwidth, privacy benefits of federated learning training on embedded device)
+Furthermore, Federated Learning approaches provides a distributed learning opportunity and enables running anomaly detection models on the ECUs of the Scania's distributed fleet of connected trucks. This allows for cruicial data to remain on the device and reduces network bandwidth requirements as only the model updates is transferred on the network instead of the data samples. 
 
-To reap the best benefits of these approaches, training of the model needs to be performed on-board. However much of the potential of running machine learning applications on these devices remain unattained due to the difficulties in creating these applications and running training on-board. 
-(explore TinyML and other frameworks that enable EdgeAI. explain EdgeAI)
-But these approaches are limited to inference and there is no support in the existing infrastructure for training of ML models. A big gap has been observed in the development of EdgeAI and there is a need to investigate on the solutions. 
+A big gap has been observed in the development of frameworks that support training of NN models on embedded devices and there is a need to investigate on the solutions. 
 
-The scope of the thesis is to explore the challenges of building and training NN's on embedded devices using different approaches and evaluating their performances.
-
+The scope of the thesis is to repurpose the existing Scania ECU and explore the challenges of building targeted NN models and training them on repurposed ECU using different approaches and evaluating their performances.
 
 %An important feature of machine learning applications are their iterative improvement process. For neural network applications this happens during the training process which traditionally consumes a lot of compute resource
 
