@@ -1,6 +1,6 @@
 \part{Implementation}
 
-ANN training presents an important gap in the current efforts in Tiny ML. This section contains the description of benchmark ANN training applications created to test the performance of an ANN training cycle on an embedded board. The neural network structure, learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in C and other languages
+Neural network inference has recieved a lot of attension in Tiny ML. The popular  with efforts such as  providing neural network application programmers a framework to port. Targetting even smaller devices with Tensorflow based neural network models is possible for inference only applications via Tensorflow Lite Micro \cite{tflm}. This section contains the description of benchmark training applications created to test the performance of an ANN training cycle on an embedded board. The neural network structure, learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in C and other languages
 
 \chapter{Design}
 
@@ -75,7 +75,7 @@ The model structure can be configured in the same manner across the implementati
 
 The HDR-NN benchmark application were completed in different programming languages and in neural network frameworks like Tensorflow. Details about the target environment and the benchmark implementations are layed out in this chapter
 
-\section[iMX6 Custom Board Target]{Targetting an i.MX6 based custom board}
+\section[iMX6 Custom Board Target]{Target Hardware}
 
 Exploring the target ECU board involved several examinations of a known state of the board. The linux kernel binaries were made via the Yocto project however there was no access to source code such as the recipes or the meta-layers themselves
 

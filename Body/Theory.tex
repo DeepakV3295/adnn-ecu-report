@@ -42,16 +42,21 @@ The scope of the thesis is to explore the challenges of building and training ar
 
 \chapter{Background}
 
-The development and maintainance of neural network applications on a fleet of embedded devices has several design considerations and relies heavily on technological innovations. This makes embedded linux an attractive platform to build these applications and motivates an examination of build systems that target embedded environments.
+Developing and maintaining applications that rely on neural network models on a fleet of embedded devices has several considerations. The application deployment process should allow for continual updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, and not interfere with the other applications on the embedded device while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
+
+The target embedded devices to run these applications are the ECUs aboard a Scania truck which have application processor cores that are capable of running rich operating systems such as linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs automotive applications in addition to a guest operating system . Linux is
+
+The next section looks at developing such an embedded linux environment and the process of developing neural network applications for that operating system.
 
 \section[Development Process for Embedded Linux]{Development For Embedded Linux}
 
-Build systems are . An overview is presented in Appendix \hyperref[buildsystems]{I}
+Building the linux kernel requires .An overview of these build systems are presented in \hyperref[buildsystems]{Appendix I}.
 
 \subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
-\textit{Describe their usage. Will show up again in Development chapter}
 
-Support for embedded hardware requires a stack that includes several software components covered in this chapter. The initial target machine was an ECU filling the role of a coordinator on the truck, however due to certain components missing from are contained in the Appendix \hyperref[rtc-c300]{II}
+Creating applications that are to be run on an embedded devices requires a set of software components that are usually collectively referred to as a Software Development Kits (SDK). This suite usually contains a toolchain that is capable of converting C or C++ source code into executables that can be run on the target embedded device
+
+Supporting embedded hardware requires a software stack that includes several components covered in the preceding section. The initial target machine was an ECU filling the role of a coordinator on the truck. However due to certain components missing from the stack layed out previously, namely board level support components such as Yocto meta layer, or the board level The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}. Ultimately a similiar board, namely the , with the required information publicly provided by NXP - the vendors that provide the processor chip on the intial target ECU
 
 \section{Training on Device}
 
@@ -61,8 +66,9 @@ Support for embedded hardware requires a stack that includes several software co
 
 \textit{link to federated learning, mention FAMOUS again}
 
-\section[Development of Neural Network Application]{Development Of Neural Network Application}
-\textit{Contrast general purpose frameworks - TFlite etc with handwritten applications}
+\section{Neural Network Applications on Embedded Devices}
+
+Neural network applications are generally written using machine learning libraries such as Tensorflow or PyTorch
 
 \subsection{Different Programming Paradigms}
 \textit{Approaches to doing Machine Learning in Embedded Environments. Emphasis on how these applications are developed - e.g TFLite}
@@ -71,17 +77,13 @@ Support for embedded hardware requires a stack that includes several software co
 
 \chapter{Theory}
 
-\section[Artificial Neural Network (ANN)]{Artificial Neural Networks}
-\textit{General introduction to ANNs. Explaining topics from inference, training, till federated learning systems}
+\section{Neural Networks}
 
-\section{ANN Performance Optimisations Techniques}
-\textit{Contrast traditional implementations in resource rich environments and the constraints of embedded environment. Layout general strategies to acquire performance improvements with little losses to accuracy - Purning, Quantisation}
+\section{Support for Neural Networks in Embedded Hardware}
 
-\section{Hardware Support for Neural Networks}
-\textit{Introduction to ARM-NN kernels, mentioned again in Development chapter}
-
-\section{Embedded Linux}
+\section{Embedded Linux Environment}
 \textit{Describe the process of boot flow introducing concepts such as Boot ROM, eMMC, IVT, bootloader, kernel, file systems etc.}
 
 \section{Performance Evaluation}
-\textit{Describe and motivate performance measures used in the Results chapter}
+
+Performance evaluation of programs
