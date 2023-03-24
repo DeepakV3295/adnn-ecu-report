@@ -11,15 +11,14 @@ One such ML application Scania is has been developing in their \textsc{LOBSTR} a
 Benefits :
 \begin{itemize}
 	\item Scania currently runs a massive fleet of more than 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually. The latest addition of connected trucks will be embedded with upgraded ECUs and communication devices. However, this upgrade will make the stock of older hardware devices to become obsolete and regarded as e-waste, which could be prevented. Scania is committed to promote a shift towards autonomous and eco-friendly transport systems. Exploring the possibility of repurposing existing ECUs to run ML models aligns with Scania's vision of leading the way towards a sustainable future. 
-	\item Federated Learning approaches enables running anomaly detection models on the ECUs of the Scania's distributed fleet of connected trucks. This allows for cruicial data to remain on the device and reduces network bandwidth requirements as only the model updates is communicated over the network instead of the entire data samples. 
+	\item Federated Learning approaches enables running anomaly detection models on the ECUs of the Scania's distributed fleet of connected trucks. Any fault or failures can be prevented by detecting the issue early. Further, this allows for cruicial data to remain on the device and reduces dependencies on network bandwidth requirements as only the aggregated model updates is communicated over the network instead of the entire data samples. 
 	\item benefits of using NN for anomaly detection
 \end{itemize}
 
 Challenges :
 \begin{itemize}
-	\item To reap the best benefits of these approaches, training of the model needs to be performed on-board. However much of the potential of running machine learning applications on these devices remain unattained due to the difficulties in creating these applications and running training on-board.(explore TinyML and other frameworks that enable EdgeAI. explain EdgeAI)
-	But these approaches are limited to inference and there is no support in the existing infrastructure for training of ML models.
-	\item challenges of repurposing ECU
+	\item To reap the best benefits of these approaches, training of the model needs to be performed on-board. However much of the potential of running machine learning applications on these devices remain unattained due to the difficulties in creating these applications and running training on-board.Approaches such as TensorFlow Lite (TFLite), Edge Impulse, STM CubeAI implemented along the TinyML frameworks, enable running ML models targeted for small resource devices. (explore TinyML and other frameworks that enable EdgeAI. explain EdgeAI)	But these approaches are limited to inference and there is no support in the existing infrastructure for training of ML models.
+	\item Scania ECU is developed and maintained by an OEM. The information shared about the hardware design, memory layout, and operating system (OS) is limited. The device tree, Memory layout and bootflow are cruciul information required to build an embedded OS for a custom hardware. It is huge challenge to reverse engineer and obtain these information from a working board. 
 	\item 
 \end{itemize}
 % Reason : 
