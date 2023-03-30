@@ -5,11 +5,8 @@
 %  ii. NN implementations : challenges in developing model & build for target HW
 % iii. Different performance measurements: Training time, Model accuracy, Peak 	%	   memory utilised and memory footprint
 %  iv. 
+A hand digit recognition neural network (HDR-NN) model is implementated in C, C++ Eigen, Python Numpy and Tensorflow/Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. Furthermore, we address the obstacles encountered in developing the NN model and compiling it to operate on the target hardware.
 
-
-The HDR-NN training implementations were benchmarked on the iMX6SDB evaluation board. Model accuracy, execution time and peak memory utilised during the training of the model is compared while varying the number of layers and the neurons in each layer
-
-\chapter{Results}
 %Ideas: 1. Coefficient of variation
 %		2. optimisation flags
 %		3. Measurements using different tools 
@@ -17,25 +14,38 @@ The HDR-NN training implementations were benchmarked on the iMX6SDB evaluation b
 %		5. Choosing Model parameters
 %		6. Extrapolation
 
-\section{HDR-NN comparisons}
+\chapter{Results}
+The HDR-NN models implemented in all paradigms have a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
+\begin{itemize}
+	\item C and C++ Eigen: 2, 4, 8, 32, 128, (32,16), and (128,16)
+	\item Python-Numpy: 2, 8, 32, (32,16)
+	\item Tensorflow/Pytorch:
+\end{itemize}
 
-The execution times for HDR-NN training were recorded for different network configurations such as differing hidden layer sizes of 2, 8, 32, and 128. The run times increased exponentially with the number of parameters. This is due to the fact that the amount of calculation in a fully connected network increases with the number of neurons, leading to longer training times
+The model accuracy, training time, and peak memory usage are measured for each implementation and all its hidden layer settings. This experiment is repeated 10 times and the final values are the average of all iterations.
 
-Further, when the number of neurons in a single layer exceeds 32, the accuracy of the model is observed to decrease due to overfitting. To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required
-
-Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the same application regardless of the network configuration
-
+\section{Accuracy}
+The different implementation perform similarly in model accuracy. This is expected as the models have the exact structure and configurations.  
 \begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.37]{accuracy}
-	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations}
+	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations.}
 \end{figure}
+
+Further, when the number of neurons in a single layer exceeds 32, the accuracy of the model is observed to decrease due to overfitting. To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required.
+
+
+\section{Execution Time}
+The run times increased exponentially with the number of parameters. This is due to the fact that the amount of calculation in a fully connected network increases with the number of neurons, leading to longer training times
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.35]{exec-time}
 	\caption[Execution Time vs Model Parameters]{Comparing total run time for training the different HDR-NN programs}
 \end{figure}
+
+\section{Peak Memory Usage}
+Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the same application regardless of the network configuration. C++ Eigen implementation has the least run time memory footprint while Python Numpy is the worse performing.
 
 \begin{figure}[ht]
 	\centering
@@ -66,11 +76,21 @@ C implementation had lower execution times and memory usage
 \subsection{Pruning the Network}
 \textit{future}
 
+\section{Coefficient of variation}
+A total of 10 iterations were conducted to ensure that the results remained consistent. To assess the degree of variability among the various trials, the mean and standard deviation were calculated across all runs, and their ratio was determined. This ratio indicates the level of variation between the different tests.
+
 \chapter{Discussion}
+
 \begin{itemize}
 	\item \textit{Contrast development process for the ML programming paradigms}
 	\item \textit{Which optimisation approaches gave the most in improvement?}
 \end{itemize}
+
+\section{Early stopping}
+The training for all the implementations were executed by configuring the number of epochs as 30. This leads to the accuracy of model dropping significantly due to overfitting, which could be avoided if early stopping was implemented.
+But, early stopping is not implemented as the performance would be completely different and there wouldn't be a standard setting to compare the implementations.
+
+
 
 \chapter{Conclusion and Future Work}
 \textit{What does it all mean? Where do we go from here?}
