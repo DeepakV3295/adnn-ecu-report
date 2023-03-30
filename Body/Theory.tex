@@ -39,7 +39,7 @@ A big gap can be observed in the development of frameworks that support the trai
 \subsubsection{Problem Description}
 A big gap can be observed in the development of frameworks that support the training of NN models on embedded devices and there is a need to investigate the solutions.
 
-%The scope of the thesis is to explore the challenges of building and training artificial neural networks on embedded devices using different approaches and evaluating their performance.
+%The scope of the thesis is to explore the challenges of building and training neural networks on embedded devices using different approaches and evaluating their performance.
 
 %An important feature of machine learning applications are their iterative improvement process. For neural network applications this happens during the training process which traditionally consumes a lot of compute resource
 
@@ -53,7 +53,7 @@ A big gap can be observed in the development of frameworks that support the trai
 
 \chapter{Background}
 
-Developing and maintaining applications that rely on neural network models on a fleet of embedded devices has several considerations. The application deployment process should allow for continual updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, and not interfere with the other applications on the embedded device while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
+Developing and maintaining applications that rely on neural network models on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, and not interfere with the other applications on the embedded device while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
 
 The target embedded devices to run these applications are the ECUs aboard a Scania truck which have application processor cores that are capable of running rich operating systems such as linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system. This approach has the advantage of mitigating application crashes in the guest operating system and provides a level of protection against software vulnerabilities. Linux is the prefered choice for such a guest operating system due to its configurability and rich support for application development.
 
