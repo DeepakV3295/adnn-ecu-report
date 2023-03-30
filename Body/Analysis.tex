@@ -4,7 +4,13 @@
 %  ii. NN implementations : challenges in developing model & build for target HW
 % iii. Different performance measurements: Training time, Model accuracy, Peak 	%	   memory utilised and memory footprint
 %  iv.
-A hand digit recognition neural network (HDR-NN) model is implementated in C, C++ Eigen, Python Numpy and Tensorflow/Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. Furthermore, we address the obstacles encountered in developing the NN model and compiling it to operate on the target hardware.
+A hand digit recognition neural network (HDR-NN) model is implementated in straightforward approaches such as C, C++ Eigen, Python Numpy and also in a general purpose framework Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. 
+
+Furthermore, we address the obstacles encountered in developing the application NN model and compiling it to execute on the target hardware. 
+
+(discuss some results regarding the reserve engineering of ECUs)
+
+(efforts into the implementations such as Tensorflow, Tensorflow Lite, Rust, CMSIS-NN which did not yeild the desired results will also be discussed)
 
 %Ideas: 1. Coefficient of variation
 %		2. optimisation flags
@@ -14,28 +20,28 @@ A hand digit recognition neural network (HDR-NN) model is implementated in C, C+
 %		6. Extrapolation
 
 \chapter{Results}
-The HDR-NN models implemented in all paradigms have a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
+The benchmark HDR-NN applications implemented in all paradigms have a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
 \begin{itemize}
 	\item C and C++ Eigen: 2, 4, 8, 32, 128, (32,16), and (128,16)
 	\item Python-Numpy: 2, 8, 32, (32,16)
 	\item Tensorflow/Pytorch:
 \end{itemize}
 
-The model accuracy, training time, and peak memory usage are measured for each implementation and all its hidden layer settings. This experiment is repeated 10 times and the final values are the average of all iterations.
+The model accuracy, training time, and peak memory usage are measured for each implementation and all its hidden layer settings. This experiment is repeated 10 times and the final values are the average of all the iterations.
 
 \section{Accuracy}
-The different implementation perform similarly in model accuracy. This is expected as the models have the exact structure and configurations.
+It is not surprising that the different implementations yield similar model accuracy, as the models have the same structure and configurations. 
+
 \begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.37]{accuracy}
 	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations.}
 \end{figure}
 
-Further, when the number of neurons in a single layer exceeds 32, the accuracy of the model is observed to decrease due to overfitting. To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required.
-
+Further, when the number of neurons in a single layer exceeds 32, the accuracy of the C implementation is observed to decrease due to (a bug). To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required. (separate plot for this behaviour)
 
 \section{Execution Time}
-The run times increased exponentially with the number of parameters. This is due to the fact that the amount of calculation in a fully connected network increases with the number of neurons, leading to longer training times
+The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process.
 
 \begin{figure}[ht]
 	\centering
@@ -43,16 +49,21 @@ The run times increased exponentially with the number of parameters. This is due
 	\caption[Execution Time vs Model Parameters]{Comparing total run time for training the different HDR-NN programs}
 \end{figure}
 
+(percentage or ratio between the different execution time of the different implementations)
+
 \section{Peak Memory Usage}
-Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the same application regardless of the network configuration. C++ Eigen implementation has the least run time memory footprint while Python Numpy is the worse performing.
+Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the NN application across all implementations. The C++ Eigen implementation has the lowest run time memory footprint, while Python Numpy is the least efficient.
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[scale=0.31]{memory-bar}
+	\includegraphics[scale=0.30]{memory-bar}
 	\caption[Peak Memory Utilisation]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
 \end{figure}
 
-\subsection[Python - Numpy]{Python Numpy based HDR-NN}
+(percentage or ratio between the different run time memory usage of the different implementations)
+
+
+\section[Python - Numpy]{Python Numpy based HDR-NN}
 
 The Numpy implementation consistantly took longer duration to perform the same training cycle as compared to the C implementation
 
