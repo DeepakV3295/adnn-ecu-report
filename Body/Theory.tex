@@ -65,9 +65,11 @@ An overview of these build systems are presented in \hyperref[buildsystems]{Appe
 
 \subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
 
-Creating applications that are to be run on an embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting C or C++ source code into executables that can be run on the target embedded device. \textit{more content to follow}
+Creating applications that are to be run on an embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in C or C++, into executables that can be run on the target embedded device.
 
-Supporting embedded hardware requires a software stack that includes several components covered in the preceding section. The initial target machine was an ECU filling the role of a coordinator on the truck. However due to certain components missing from the stack layed out previously, namely board level support components such as Yocto meta layer, or the board level The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}. Ultimately a similiar board, namely the , with the required information publicly provided by NXP - the vendors that provide the processor chip on the intial target ECU
+Such software development toolchains consists of a compiler, linker, libraries, debuggers etc to create executable programs for a target device.
+
+Supporting embedded hardware requires a software stack that includes several components covered in the preceding section. The initial target machine was an ECU filling the role of a coordinator on the truck. However due to certain components missing from the stack layed out previously, namely board level support components such as Yocto meta layer, or the board level The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}. Ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform.
 
 \section{Training on Device}
 
