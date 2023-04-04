@@ -87,10 +87,6 @@ The i.MX SoCs have a special boot mode named Serial Download Mode (SDM) typicall
 
 The iMX6 series is designed for high performance low power applications and target boards are configured with a single Cortex A9 core with the ARMv7 ISA. The processor supports NEON single-instruction multiple-data (SIMD) instructions, allowing for SIMD vector operations within the training program
 
-\subsection{Testing on Device}
-
-The benchmark tests were performed on ... using the perf tool
-
 \section{HDR-NN Implementation}
 
 With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms and the correctness verification routines and execution statistics measurement runs were seperated. The benchmark executions did not produce disk I/O after the dataset was read, unlike the correctness verification runs which produced the final weights from the execution runs that were subsequently compared with the other benchmark program execution output weights

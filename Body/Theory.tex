@@ -1,30 +1,32 @@
 \part{Introduction}
 
 An embedded system is a combination of hardware and software components put together to achieve a specific task. Often, embedded systems are built into a larger device or system and are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour. Embedded devices are a category of tiny devices with physical, computational and memory constraints that are programmable to perform dedicated tasks.
-%Embedded systems are common in everyday applications due to their simplicity, flexibility and cost-effectiveness.
+
 Like most of the automotive industry, Scania employs embedded systems called Electronic Control Units (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems has one or more ECUs to gather system data and transmit it to a central communicator where the data is processed and the systems operations are monitored.
 
-Scania currently runs a massive fleet of around 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually \cite{scania-report}. This large fleet of rolling vehicles that are connected though the communicators opens up new possibilities. The different connnected devices that monitor the health and state of the vehicle can be trained to predict the system maintainance accurately and efficiently. (For example, if the system can predict accurately that tire changes are required in 100kms then the driver can plan the route smartly to reach the workshop before the vehicle breaksdown.) This opportunity can be realised by running smart algorithms on the hardware that is currently available.
+Scania currently runs a massive fleet of around 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually \cite{scania-report}. This large fleet of {\color{red}rolling vehicles} that are connected though the communicators opens up new possibilities. The different connected devices that monitor the health and state of the vehicle can be trained to predict system maintainance needs accurately and efficiently. For example, if the system can predict accurately that tire changes are required in 100kms then the driver can plan the route smartly to reach the workshop before the vehicle breaksdown. This opportunity can be realised by running smart algorithms on the hardware that is currently available.
 
 Machine learning (ML) on embedded devices is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. This technology can be used to automate tasks, improve efficiency, and make better decisions. But this technology presents a unique set of challenges due to the limited resources available on these devices. Embedded devices are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded devices are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded devices has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles.
 
-One such ML application Scania is has been developing in their \textsc{LOBSTR} \cite{lobstr} and \textsc{FAMOUS} \cite{famous} projects is the anomaly and fault detection models in a federated learning environment. Targeting to run the anomaly detection models on the existing ECUs with limited resources has many benefits and challenges. Some of them are described below:
+One such ML application Scania is has been developing in their \textsc{LOBSTR} \cite{lobstr} and \textsc{FAMOUS} \cite{famous} projects is the anomaly and fault detection models in a federated learning environment. Targeting to run the anomaly detection models on the existing ECUs with limited resources has many benefits and challenges.
 
-Benefits :
+\subsection*{Benefits to performing Anomaly Detection on ECUs}
+
 \begin{itemize}
 	\item Scania is committed to promote a shift towards autonomous and eco-friendly transport systems. The latest addition of Scania's connected trucks and buses will be embedded with upgraded ECUs and communication devices. However, this upgrade will make the stock of older hardware devices to become obsolete and regarded as e-waste, which could be prevented. Exploring the possibility of repurposing existing ECUs to run ML models aligns with Scania's vision of leading the way towards a sustainable future.
-	\item Neural networks (NNs) are a type of machine learning that can detect intricate patterns not only across multiple data signals but also over time. Achieving this level of performance is computationally demanding, and training NNs on embedded devices requires careful resource management. However, being able to efficiently train NNs on embedded devices with high accuracy could unlock significant potential for future advancements. (could include benefits of NN for anomaly detection)
+	\item Neural networks (NNs) are a type of machine learning that can detect intricate patterns not only across multiple data signals but also over time. \textit{include benefits to NN approach to Anomaly Detection}
+	%Achieving this level of performance is computationally demanding, and training NNs on embedded devices requires careful resource management. However, being able to efficiently train NNs on embedded devices with high accuracy could unlock significant potential for future advancements. (could include benefits of NN for anomaly detection)
 	\item Federated learning methods facilitate the training of pre-trained anomaly detection models on the ECUs installed in Scania's distributed fleet of connected trucks. Each ECU individually trains the model with its data and transmits the updated model parameters to a central server. This distributed learning approach enables early detection of faults or failures and ensures that critical data remains on the device. Also dependency on network bandwidth is reduced as only the aggregated model updates are communicated over the network, instead of transmitting the entire data sample.
 \end{itemize}
 
-Challenges :
+\subsection*{Challenges to implementing Federated Models}
+
 \begin{itemize}
-	\item To reap the best benefits of these approaches, training of the model needs to be performed on board. However much of the potential of running machine learning applications on these devices remains unattained due to the difficulties in creating these applications and running training on-board. Approaches such as TensorFlow Lite (TFLite), Edge Impulse, and STM Cube AI implemented along the TinyML frameworks, enable running ML models targeted for small resource devices. But these approaches are limited to inference and there is no open source support in the existing infrastructure for training ML models.
+	\item To reap the best benefits of these approaches, training of the model needs to be performed on board. However much of the potential of running machine learning applications on these devices remains unattained due to the difficulties in creating these applications and running training on-board. Approaches such as TensorFlow Lite (TFLite), Edge Impulse, and STM Cube AI implemented along the TinyML frameworks, enable running ML models targeted for small resource devices. {\color{red} But these approaches are limited to inference and there is no open source support in the existing infrastructure for training ML models}.
 
 	\item An Original Equipment Manufacturer (OEM) is responsible for the development and upkeep of the Scania ECU. However, the amount of information made available regarding the hardware design, memory layout, and operating system (OS) is restricted. To construct an embedded OS for a customized hardware, critical details such as the device tree, memory organisation, and boot flow are necessary. Obtaining this information from a functional board can be an enormous task requiring reverse engineering expertise.
 \end{itemize}
 
-A big gap can be observed in the development of frameworks that support the training of NN models on embedded devices and there is a need to investigate the solutions.
 % Reason :
 	% 1. Sustainabililty - check
 	% 2. Potential in tiny ML (billions of devices) and Federated Learning approaches
@@ -53,15 +55,15 @@ The scope of the thesis is to repurpose the existing Scania ECU and explore the 
 
 \chapter{Background}
 
-Developing and maintaining applications that rely on neural network models on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, and not interfere with the other applications on the embedded device while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
+Developing and maintaining applications that rely on neural network models on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, and not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
 
-The target embedded devices to run these applications are the ECUs aboard a Scania truck which have application processor cores that are capable of running rich operating systems such as linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system. This approach has the advantage of mitigating application crashes in the guest operating system and provides a level of protection against software vulnerabilities. Linux is the prefered choice for such a guest operating system due to its configurability and rich support for application development.
+The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have application processor cores that are capable of running rich operating systems such as linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{linux-guest-os}. Linux is the prefered choice for such a guest operating system due to its configurability, rich support for application development, and .
 
 The next section looks at developing such an embedded linux environment and the process of developing neural network applications for that operating system.
 
 \section[Development Process for Embedded Linux]{Development For Embedded Linux}
 \textit{Detail embedded linux development process}
-An overview of these build systems are presented in \hyperref[buildsystems]{Appendix I}.
+An overview of these two build systems are presented in \hyperref[buildsystems]{Appendix I}.
 
 \subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
 
@@ -70,6 +72,8 @@ Creating applications that are to be run on an embedded devices requires a set o
 Such software development toolchains consists of a compiler, linker, libraries, debuggers etc to create executable programs for a target device.
 
 Supporting embedded hardware requires a software stack that includes several components covered in the preceding section. The initial target machine was an ECU filling the role of a coordinator on the truck. However due to certain components missing from the stack layed out previously, namely board level support components such as Yocto meta layer, or the board level The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}. Ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform.
+
+\subsection{Developing using QEMU}
 
 \section{Training on Device}
 
