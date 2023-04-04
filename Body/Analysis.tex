@@ -1,5 +1,4 @@
 \part{Analysis}
-\textit{Results from the implementation}
 %present the details of the experiments
 %   i. Hardware and Software info
 %  ii. NN implementations : challenges in developing model & build for target HW
@@ -9,13 +8,17 @@ A hand digit recognition neural network (HDR-NN) model is implementated in C, C+
 
 %Ideas: 1. Coefficient of variation
 %		2. optimisation flags
-%		3. Measurements using different tools 
+%		3. Measurements using different tools
 %		4. Early stopping
 %		5. Choosing Model parameters
 %		6. Extrapolation
 
+\chapter{Measurement}
+
+The benchmark applications were executed on an embedded linux operating system and the measurements were taken primarily based on the perf\_events linux API
+
 \chapter{Results}
-The HDR-NN models implemented in all paradigms have a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
+The benchmark HDR-NN applications implemented in all paradigms have a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
 \begin{itemize}
 	\item C and C++ Eigen: 2, 4, 8, 32, 128, (32,16), and (128,16)
 	\item Python-Numpy: 2, 8, 32, (32,16)
@@ -42,72 +45,44 @@ The model accuracy, training time, and peak memory usage are measured for each i
 
 
 \section{Accuracy}
-The different implementation perform similarly in model accuracy. This is expected as the models have the exact structure and configurations.  
+The different implementation perform similarly in model accuracy. This is expected as the models have the exact structure and configurations.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.37]{accuracy}
 	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations.}
 \end{figure}
 
-Further, when the number of neurons in a single layer exceeds 32, the accuracy of the model is observed to decrease due to overfitting. To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required.
-
+Further, when the number of neurons in a single layer exceeds 32, the accuracy of the C implementation is observed to decrease due to (a bug). To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required. (separate plot for this behaviour)
 
 \section{Execution Time}
-The run times increased exponentially with the number of parameters. This is due to the fact that the amount of calculation in a fully connected network increases with the number of neurons, leading to longer training times
+The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process.
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[scale=0.35]{exec-time}
+	\includegraphics[scale=0.32]{exec-time}
 	\caption[Execution Time vs Model Parameters]{Comparing total run time for training the different HDR-NN programs}
 \end{figure}
 
+
 \section{Peak Memory Usage}
-Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the same application regardless of the network configuration. C++ Eigen implementation has the least run time memory footprint while Python Numpy is the worse performing. 
+Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the NN application across all implementations. The C++ Eigen implementation has the lowest run time memory footprint, while Python Numpy is the least efficient.
+
 \begin{figure}[ht]
 	\centering
-	\includegraphics[scale=0.31]{memory-bar}
+	\includegraphics[scale=0.30]{memory-bar}
 	\caption[Peak Memory Utilisation]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
 \end{figure}
 
-
-\subsection[Python - Numpy]{Python Numpy based HDR-NN}
-
-The Numpy implementation consistantly took longer duration to perform the same training cycle as compared to the C implementation
-
-\subsection[Tensorflow Lite]{Tensorflow-Lite based HDR-NN}
-\textit{Benchmark pending \dots}
-
-\subsection[C]{C based HDR-NN}
-
-C implementation had lower execution times and memory usage
-
-\subsection[CPP - Eigen]{CPP based HDR-NN}
-\textit{Benchmark pending \dots}
-
-\section{CMSIS-NN based Optimisations to Training}
-\textit{Further breakdown of the performance achieved from different optimisation techniques}
-
-\subsection{Quantisation}
-\textit{future: Training Network with Quantized weights}
-
-\subsection{Pruning the Network}
-\textit{future}
+\chapter{Discussion}
 
 \section{Coefficient of variation}
 A total of 10 iterations were conducted to ensure that the results remained consistent. To assess the degree of variability among the various trials, the mean and standard deviation were calculated across all runs, and their ratio was determined. This ratio indicates the level of variation between the different tests.
 
-\chapter{Discussion}
-
-\begin{itemize}
-	\item \textit{Contrast development process for the ML programming paradigms}
-	\item \textit{Which optimisation approaches gave the most in improvement?}
-\end{itemize}
+\section{Developer Experience}
 
 \section{Early stopping}
 The training for all the implementations were executed by configuring the number of epochs as 30. This leads to the accuracy of model dropping significantly due to overfitting, which could be avoided if early stopping was implemented.
 But, early stopping is not implemented as the performance would be completely different and there wouldn't be a standard setting to compare the implementations.
-
-
 
 \chapter{Conclusion and Future Work}
 \textit{What does it all mean? Where do we go from here?}

@@ -1,12 +1,14 @@
 \part{Implementation}
 
-ANN training presents an important gap in the current efforts in Tiny ML. This section contains the description of benchmark ANN training applications created to test the performance of an ANN training cycle on an embedded board. The neural network structure, learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in C and other languages
+Neural network inference has recieved a lot of attension in Tiny ML. The popular  with efforts such as  providing neural network application programmers a framework to port. Targetting even smaller devices with Tensorflow based neural network models is possible for inference only applications via Tensorflow Lite Micro \cite{tflm}.
+
+This section contains the description of benchmark training applications created to test the performance of an ANN training cycle on an embedded board. The neural network structure, learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in C and other languages
 
 \chapter{Design}
 
 The benchmark applications test the training phase of a Handwritten Digit Recognition Neural Network (HDR-NN) on the MNIST \cite{mnist} dataset. MNIST is a popular dataset of handwritten digits commonly used for training image processing systems. It is a popular starting point for neural network implementations and has been used as the primary dataset in the benchmark experiments. The target embedded device is an Electronic Control Unit (ECU) board based on an iMX6 series processor
 
-\section[Artificial Neural Network Development Process]{ANN Development Process}
+\section{Neural Network Development Process}
 
 The target environment necessitates the use of cross compilers and as part of the development process multiple build environments and systems were examined. Ultimately, the primary platform that ended up being used was the Yocto Project extensible SDK (eSDK) based application development process running on a standard linux based build environment
 
@@ -75,7 +77,7 @@ The model structure can be configured in the same manner across the implementati
 
 The HDR-NN benchmark application were completed in different programming languages and in neural network frameworks like Tensorflow. Details about the target environment and the benchmark implementations are layed out in this chapter
 
-\section[iMX6 Custom Board Target]{Targetting an i.MX6 based custom board}
+\section[iMX6 Custom Board Target]{Target Hardware}
 
 Exploring the target ECU board involved several examinations of a known state of the board. The linux kernel binaries were made via the Yocto project however there was no access to source code such as the recipes or the meta-layers themselves
 
@@ -84,10 +86,6 @@ The i.MX SoCs have a special boot mode named Serial Download Mode (SDM) typicall
 \subsection[ECU / iMX6 Evaluation Board Overview]{i.MX6 Overview}
 
 The iMX6 series is designed for high performance low power applications and target boards are configured with a single Cortex A9 core with the ARMv7 ISA. The processor supports NEON single-instruction multiple-data (SIMD) instructions, allowing for SIMD vector operations within the training program
-
-\subsection{Testing on Device}
-
-The benchmark tests were performed on ... using the perf tool
 
 \section{HDR-NN Implementation}
 
