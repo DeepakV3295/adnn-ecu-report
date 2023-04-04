@@ -57,13 +57,15 @@ The scope of the thesis is to repurpose the existing Scania ECU and explore the 
 
 Developing and maintaining applications that rely on neural network models on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, and not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
 
-The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have application processor cores that are capable of running rich operating systems such as linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{linux-guest-os}. Linux is the prefered choice for such a guest operating system due to its configurability, rich support for application development, and .
+The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have application processor cores that are capable of running rich operating systems such as linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{linux-guest-os}. Linux is the prefered choice for such a guest operating system due to its configurability and rich support for application development.
 
 The next section looks at developing such an embedded linux environment and the process of developing neural network applications for that operating system.
 
 \section[Development Process for Embedded Linux]{Development For Embedded Linux}
-\textit{Detail embedded linux development process}
-An overview of these two build systems are presented in \hyperref[buildsystems]{Appendix I}.
+
+Building and maintaining embedded linux distributions with linux kernel and user made applications require tools that can provide build configuration support at multiple levels, interface or build a cross compiling toolchain, support for sveral c and also support for project management. There are several tools that provide this support such as OpenRT, but the primary candidates with the most generic applicability is Yocto and Buildroot. These systems have several advanatages as can understood from.
+
+
 
 \subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
 
