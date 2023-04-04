@@ -5,7 +5,7 @@
 %  ii. NN implementations : challenges in developing model & build for target HW
 % iii. Different performance measurements: Training time, Model accuracy, Peak 	%	   memory utilised and memory footprint
 %  iv. 
-A hand digit recognition neural network (HDR-NN) model is implementated in C, C++ Eigen, Python Numpy and Tensorflow/Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. Furthermore, we address the obstacles encountered in developing the NN model and compiling it to operate on the target hardware.
+A hand digit recognition neural network (HDR-NN) model is implementated in C, C++ Eigen, Python Numpy and Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. Furthermore, we address the obstacles encountered in developing the NN model and compiling it to operate on the target hardware. 
 
 %Ideas: 1. Coefficient of variation
 %		2. optimisation flags
@@ -21,8 +21,25 @@ The HDR-NN models implemented in all paradigms have a constant input size of 784
 	\item Python-Numpy: 2, 8, 32, (32,16)
 	\item Tensorflow/Pytorch:
 \end{itemize}
-
+The model implemented is a fully connected neural network with stocastic gradient descent and mean square error. The biases and wieghts are randomly initialised using the same random generator and initial seed. The hyperparameters   
 The model accuracy, training time, and peak memory usage are measured for each implementation and all its hidden layer settings. This experiment is repeated 10 times and the final values are the average of all iterations.
+% feedforward NN with backpropogation for updating gradients
+% dataset mnist
+% epochs = 30;
+% batchSize = 10;
+% eta = 3;
+% sigmoid activation 
+% unoptimised code with scope for futher improvement
+
+% hardware Cortex A9 processor with armv7 architecture
+% board supports dual/quad core but implementations use single core to train the models
+% fpu support
+% data structures used by different implementations
+% yocto image with fsl-imx-linux distro, zImage and ext4 file system
+% embedded linux size a average size of 500Mb with core-image-base image recipe. 
+
+% perf and GNU time tools for measurements. 10 runs atleast for each configuration of hidden layer size
+
 
 \section{Accuracy}
 The different implementation perform similarly in model accuracy. This is expected as the models have the exact structure and configurations.  
@@ -45,13 +62,13 @@ The run times increased exponentially with the number of parameters. This is due
 \end{figure}
 
 \section{Peak Memory Usage}
-Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the same application regardless of the network configuration. C++ Eigen implementation has the least run time memory footprint while Python Numpy is the worse performing.
-
+Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the same application regardless of the network configuration. C++ Eigen implementation has the least run time memory footprint while Python Numpy is the worse performing. 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.31]{memory-bar}
 	\caption[Peak Memory Utilisation]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
 \end{figure}
+
 
 \subsection[Python - Numpy]{Python Numpy based HDR-NN}
 
