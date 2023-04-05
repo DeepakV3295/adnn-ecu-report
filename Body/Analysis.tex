@@ -18,31 +18,19 @@ A hand digit recognition neural network (HDR-NN) model is implementated in C, C+
 The benchmark applications were executed on an embedded linux operating system and the measurements were taken primarily based on the perf\_events linux API
 
 \chapter{Results}
-The benchmark HDR-NN applications implemented in all paradigms have a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
+A hand digit recognition application is implemented in different paradigms, specifically C, C++, Python, and Pytorch, which are the benchmark applications. Each this application is a fully connected feedforward neural network composed of multiple layers of neurons connected in a directed graph. The model has a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
 \begin{itemize}
 	\item C and C++ Eigen: 2, 4, 8, 32, 128, (32,16), and (128,16)
 	\item Python-Numpy: 2, 8, 32, (32,16)
 	\item Tensorflow/Pytorch:
 \end{itemize}
-The model implemented is a fully connected neural network with stocastic gradient descent and mean square error. The biases and wieghts are randomly initialised using the same random generator and initial seed. The hyperparameters   
-The model accuracy, training time, and peak memory usage are measured for each implementation and all its hidden layer settings. This experiment is repeated 10 times and the final values are the average of all iterations.
-% feedforward NN with backpropogation for updating gradients
-% dataset mnist
-% epochs = 30;
-% batchSize = 10;
-% eta = 3;
-% sigmoid activation 
-% unoptimised code with scope for futher improvement
+The MNIST dataset is selected to train the model. This dataset contains 60,000 training images and 10,000 test images of hand-written digits. The model is trained using stochastic gradient descent, which is an optimization algorithm used to minimize a loss function. The backpropagation algorithm is used to calculate the gradients of the loss function with respect to the weights of the network. Finally, the mean square error loss function is used to measure the difference between the predicted output and the actual output of the network. The values of the biases and weights are initialized randomly with the PNGR random generator and a starting seed which are chosen to be identical for the different benchmark applications. The training hyperparameters are set to 30 epochs with a batch size of 10, a learning rate of 3 and sigmoid activation.  
 
-% hardware Cortex A9 processor with armv7 architecture
-% board supports dual/quad core but implementations use single core to train the models
-% fpu support
-% data structures used by different implementations
-% yocto image with fsl-imx-linux distro, zImage and ext4 file system
-% embedded linux size a average size of 500Mb with core-image-base image recipe. 
+It is essential that the hardware utilsed for benchmarking closely resembles the Scania ECU's IMX6 processor, as this will make it easier to replicate the experiment on a repurposed ECU and will also provide the most precise results. The IMX6Q-SABRE Smart Devices evaluation board, which is armed with four 32-bit Cortex A9 cores, is an ideal choice. The Cortex A9 core is equipped with ARM V7 instruction set architecture and a powerful VFPv3 floating point unit with NEON SIMD capabilities. The processor has 32 KB instruction and data L1 caches, 1 MB L2 cache and 1 GB DDR3 SDRAM memory. The benchmark applications are designed to be run on a single core of the IMX6 processor, although it supports quad-core, to ensure the experiment is straightforward and easier to manage. This will also guarantee that the results are precise and accurate.
 
-% perf and GNU time tools for measurements. 10 runs atleast for each configuration of hidden layer size
+The yocto project is used to create a custom embedded linux distribution for the imx6qsabresd machine. The NXP yocto project guide (link) provides the instructions for building the Linux image, and additional packages such as cmake, python3 are installed during the build. The resulting image file, which used to flash the hardware, has a size of ~300Mb.    
 
+The GNU time program is used to measure benchmark application's execution time and peak memory usage. After each training epoch of the application, the model accuracy is evaluated on the MNIST test set. The accuracy measured after 30 epochs is then used for the analysis. This experiment is repeated 10 times, and the final values are the average of all iterations.
 
 \section{Accuracy}
 The different implementation perform similarly in model accuracy. This is expected as the models have the exact structure and configurations.
