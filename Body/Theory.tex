@@ -62,9 +62,7 @@ The next section looks at developing such an embedded linux environment and the 
 
 \section[Development Process for Embedded Linux]{Development For Embedded Linux}
 
-Building and maintaining embedded linux distributions with linux kernel and user made applications require tools that can provide build configuration support at multiple levels, interface or build a cross compiling toolchain, support for sveral c and also support for project management. There are several tools that provide this support such as OpenRT, but the primary candidates with the most generic applicability is Yocto and Buildroot. These systems have several advanatages as can understood from.
-
-
+Building and maintaining embedded linux distributions with linux kernel and user mode applications require tools that can provide build configuration support at multiple levels, interface or build a cross compiling toolchain, support for sveral c and also support for project management. There are several tools that provide this support such as OpenRT, but the primary candidates with the most generic applicability is Yocto and Buildroot. These systems have several advanatages as can understood from.
 
 \subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
 
@@ -76,31 +74,43 @@ Supporting embedded hardware requires a software stack that includes several com
 
 \subsection{Developing using QEMU}
 
+\section{Neural Network Application Development}
+
+In general, neural network applications are written using machine learning frameworks or software libraries meant for scientific computing. The machine learning frameworks themselves are build on top of multiple software libraries meant for specific aspects of . A typical example would be
+
+\subsection{Embedded Software Stacks for Neural Networks}
+
+One complication caused by relying on software stack of the manner discribed before is software bloat. This causes a bigger problem in the context of embedded devices where resources are limited and . There has been significant efforts made to clear this concern for the world of embedded devices, especially motivated by interests in getting neural network applications ready for mobile devices
+
+\subsection{Choice of Software Stacks and Programming Languages}
+
+As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Machine learning based companies their service offerings such as cloud machine learning platforms almost invariably targets these platforms and provide several productivity tools for developers to utilize. Developers in these platforms enjoy several resources such as productivity tools that allows for continuous integration and development, maintainance and other resources with features for performance profiling, debugging, orchestration etc. ML and neural network service provides always target for these frameworks in their produces. However these platforms are also limited in several ways, such as the fact their python
+
 \section{Training on Device}
 
-\textit{Mention traditional offboard training and onboard inference architecture vs approaches with training on board. Reference Tiny ML research}
+The traditional model for machine learning applications on embedded devices have
 
 \subsection{Federated Learning}
 
 \textit{link to federated learning, mention FAMOUS again}
 
-\section{Neural Network Applications on Embedded Devices}
-
-Neural network applications are generally written using machine learning libraries such as Tensorflow or PyTorch
-
-\subsection{Different Programming Paradigms}
-\textit{Approaches to doing Machine Learning in Embedded Environments. Emphasis on how these applications are developed - e.g TFLite}
-
-\section{General Distribution of Work}
-
 \chapter{Theory}
+
+In the following section an overview of the nature of computations involved in neural network applications is presented. Afterwards introductions are made to some terminology associated with software development for embedded devices, contextualised in embedded linux and its application development.
 
 \section{Neural Networks}
 
-\section{Support for Neural Networks in Embedded Hardware}
+Neural networks are
 
 \section{Embedded Linux Environment}
-\textit{Describe the process of boot flow introducing concepts such as Boot ROM, eMMC, IVT, bootloader, kernel, file systems etc.}
+
+As described in the previous chapter, embedded linux and user mode applications are using embedded build systems such as Buildroot or Yocto.
+
+In general the work flow for targetting a new board consists of.
+
+\textit{Boot ROM, eMMC, IVT, bootloader, kernel, file systems etc.}
+
+\subsection{A Simplified Embedded Boot Sequence}
 
 \section{Performance Evaluation}
 
