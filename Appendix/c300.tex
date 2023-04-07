@@ -1,3 +1,27 @@
 \chapter{Scania C300 Communicator} \label{rtc-c300}
 
-The communicator contains iMX6 series processors
+% The communicator contains iMX6 series processors
+
+Scania ECU was set to be the target hardware to benchmark the training of a machine learning model. In order to be able to port the different implementation applications and it's dependencies on the Scania ECU and successfully execute the programs, certain information regarding the hardware, kernel, supported compilers and libraries is needed. Since the existing ECU is developed by an OEM, obtaining all the information and source files is not possible. 
+It can be achieved by replacing the existing software with a custom developed embedded linux distribution, thus repurposing the custom hardware. 
+The biggest challenge for repurposing an custom board with no information is reverse engineering to obtain the required information for flashing a custom linux kernel. The reverse engineering learnings are stated in this section.
+
+
+(TODO: No development tools, no bootloader access, no serial console prints from the bootloader, no device tree info, no memory layout info, no boot flow info, challenging to port or install any tool/package on device 
+basic information to gather: processor, number of core, architecture, memory units supported, kernel info (name, version, distribution), file system, bootloader, system boot flow)
+
+
+% Research and experiments conducted on the Scania ECU to reverse engineering and obtain the required hardware and software information . Further, repurposing the ECU by flashing a custom operating system to benchmark the neural network applications was also attempted.
+
+% The efforts were conducted both when the ECU started up in its usual operation and when it was booted in serial download mode.
+
+The naive approach of flashing the mtd partition that houses the bootloader. To verify that it possible to flash and boot the board, a dump of the existing bootloader was taken and flashed in the same partition. This worked and the device booted successfully. Next, the u-boot bootloader developed from the yocto project was flashed on the bootloader mtd partition. The broad was bricked (reasons: incorrect u-boot image with wrong device trees or loading kernel failed as version mismatch between bootloader and kernel or checksum failure or size of the file is big overwriting a different region with crucial data).
+
+(TODO: Using mfgtools on board, to collect information from bootloader.) 
+(TODO: Using uuu tool in SDM mode to flash custom image.)
+(TODO: bootloader flashing using dd command)
+
+(TODO: results from varying bootloader environment parameters)
+(TODO: results from mfgtools experiment)
+(TODO: results of unbricking the board) 
+(TODO: reasoning not enough memory layout infomation)
