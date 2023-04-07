@@ -40,46 +40,90 @@ The python script created runs the experiment, executing each of the benchmark a
 
 \section{Evaluating Correctness}
 \subsection{Accuracy}
-The different implementation perform similarly in model accuracy. This is expected as the models have the exact structure and configurations.
-\begin{figure}[ht]
+As the benchmark applications are developed to be identical by keeping the same structure and configurations, the model accuracy is expected to be similar. The (figure 6.1) showcases that the different implementations perform similarly irrespective of the number of parameters. 
+
+\begin{figure}[!ht]
 	\centering
 	\includegraphics[scale=0.37]{accuracy}
 	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations.}
 \end{figure}
-Further, when the number of neurons in a single layer exceeds 32, the accuracy of the C implementation is observed to decrease due to (a bug). To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required. (separate plot for this behaviour)
 
-(Here, we also evaluate the error in accuray and plot it for each network configuration)
+Further, an abnormal behaviour can be observed when the number of parameters exceeds 101770. The accuracy of the C implementation decreases due to (an unknown bug). 
+%To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required. (separate plot for this behaviour)
+
+(TODO: evaluate the mean squared error in accuray between the benchmark applications)
 
 \subsection{Weights and Biases}
-Here, we evaluate the approximation error in the generated weights and biases between the different implementation. Also, we reason how the data structure in each of the implementation influence the error.
+(TODO: evaluate the mean squared error in the generated weights and biases between the different implementation. Also, reason how the data structure in each of the implementation influence the error.)
 
 
 \section{Evaluating effectiveness}
 \subsection{Execution Time}
-The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process.
+The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process. This behaviour can be observeed in (figure 6.2) where the execution time increases drastically as number of parameters increases. 
 
-\begin{figure}[ht]
+\begin{figure}[!ht]
 	\centering
-	\includegraphics[scale=0.32]{exec-time}
+	\includegraphics[scale=0.27]{exec-time}
 	\caption[Execution Time vs Model Parameters]{Comparing total run time for training the different HDR-NN programs}
 \end{figure}
-
-(here we evaluate the percentage/ratio/Coefficient of variation (cov) between the applications.)
 
 \subsection{Peak Memory Usage}
 Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the NN application across all implementations. The C++ Eigen implementation has the lowest run time memory footprint, while Python Numpy is the least efficient.
 
-\begin{figure}[ht]
+\begin{figure}[!ht]
 	\centering
-	\includegraphics[scale=0.30]{memory-bar}
+	\includegraphics[scale=0.35]{memory-bar}
 	\caption[Peak Memory Utilisation]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
 \end{figure}
 
 (here we evaluate the percentage/ratio/cov between the applications.)
 
+\section{Comparing the implementations}
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[scale=0.40]{exec_time_comparisons}
+	\caption[Execution Time vs Model Parameters]{Percentage difference between the implementations. Example: C is 38\% faster than Eigen for the network size of 1600.}
+\end{figure}
+
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.30]{peak_memory_comparisons}
+	\caption[Peak Memory Utilisation]{Percentage difference between the implementations}
+\end{figure}
+
+The tables in (figure 6.4 and figure 6.5) shows the comparison between C-Eigen, Eigen-Numpy and C-Numpy. It is calculated as the percentage of 1 - (x/y) where x is performance value of the application which has lower value and y is performance value of the application that has higher number. 
+
+\subsection{C vs Eigen}
+For smaller models, it can be observed that C is faster than Eigen (for the network size of 1600, C is 38 percent faster than Eigen). But as model becomes complex, Eigen perform better and the difference is execution time is less than 15 percent. Again the abnormal behaviour can be observed in case of network size 101770 where C is 26 percent faster than Eigen. More test on the C implementation needs to conducted to identify the bug causing this behaviour.
+
+With regards to memory utilisation Eigen perform better than C by 30\%. 
+
+\subsection{C vs Numpy}
+C constantly performs much better than Numpy. For the network size 101770, C is 62\% faster. 
+Numpy utilises 17\% more runtime memory than C.
+
+\subsection{Eigen vs Numpy}
+Similar to C, irrespective of network size, Eigen is faster than Numpy by similar margins. 
+
+Eigen is efficient in memory utilisation and 42\% better than Numpy.
+
 \subsection{Profiling}
+(TODO: perform profiling of the benchmark applications and note the results)
 
 \subsection{Failure/Fault testing}
+(TODO: perform the failure tests such as increases the network size until the application fails or system hangs.)
+
+\section{Repurposing Scania ECU}
+Scania ECU is like a black box with no information. A custom encased hardware that supports ethernet over modem and an UART interface along with hardware circuit schematic document was the only information available regarding the ECU. There is no information regarding the processor,  memory support, bootloader. As the ECU is a production unit, there is no development tools on device and no support to port packages and application to the ECU. Many features on the bootloader, kernel were disabled making it futile to execute the common commands that provide system information.
+
+The task of repurposing the Scania ECU comprised of reverse engineering and obtaining the required hardware/software information and flashing a custom operating system to benchmark the neural network applications. 
+The first task was partially successfully as hardware information such as processor, architecture, I/O interfaces, device tree and software information such as kernel, compiler, glic and versions was obtained. But information regarding the memory layout and boot flow could not be concretely reverse engineered. 
+The second task was not achieved as flashing custom embedded linux always resulted in the ECU being bricked. Experiments conducted from booting the normal operation and from serial download mode had different issues and failed. While flashing from the normal boot, only the bootloader is replaced in the mtd partition. This could have failed because of incorrect u-boot image with wrong device trees or loading kernel failed as version mismatch between bootloader and kernel or checksum failure or size of the file is big overwriting a different region with crucial data. Serial download mode flashing required some crucial information regarding the memory load address and entry point for bootloader, kernel, root file system which is configured in the custom device tree. This information could be obtained from reverse engineering. 
+
+
+
 
 \chapter{Discussion}
 
