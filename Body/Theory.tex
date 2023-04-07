@@ -62,7 +62,7 @@ The next section looks at developing such an embedded linux environment and the 
 
 \section[Development Process for Embedded Linux]{Development For Embedded Linux}
 
-Building and maintaining embedded linux distributions with linux kernel and user mode applications require tools that can provide build configuration support at multiple levels, interface or build a cross compiling toolchain, support for sveral c and also support for project management. There are several tools that provide this support such as OpenRT, but the primary candidates with the most generic applicability is Yocto and Buildroot. These systems have several advanatages as can understood from.
+Building and maintaining embedded linux distributions with linux kernel and user mode applications require tools that can provide build configuration support at multiple levels, build a cross compiling toolchain or interface with one, support for several c run times, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc. Out of them Yocto and Buildroot are the most widely used and most featureful. These systems have several advanatages as can understood from.
 
 \subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
 
@@ -78,13 +78,15 @@ Supporting embedded hardware requires a software stack that includes several com
 
 In general, neural network applications are written using machine learning frameworks or software libraries meant for scientific computing. The machine learning frameworks themselves are build on top of multiple software libraries meant for specific aspects of . A typical example would be
 
+\subsection{Choice of Software Stacks and Programming Languages}
+
+As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Machine learning based companies and their service offerings such as cloud machine learning platforms almost invariably targets these platforms and provide several software tools for developers to utilize. Developers in these platforms enjoy several resources such as productivity tools that allows for continuous integration and development, maintainance and other resources with features for performance profiling, debugging, orchestration etc. ML and neural network service provides always target for these frameworks in their produces.
+
+Another aspect to consider is the programming language in which the neural network will be written up in. Python is largely
+
 \subsection{Embedded Software Stacks for Neural Networks}
 
 One complication caused by relying on software stack of the manner discribed before is software bloat. This causes a bigger problem in the context of embedded devices where resources are limited and . There has been significant efforts made to clear this concern for the world of embedded devices, especially motivated by interests in getting neural network applications ready for mobile devices
-
-\subsection{Choice of Software Stacks and Programming Languages}
-
-As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Machine learning based companies their service offerings such as cloud machine learning platforms almost invariably targets these platforms and provide several productivity tools for developers to utilize. Developers in these platforms enjoy several resources such as productivity tools that allows for continuous integration and development, maintainance and other resources with features for performance profiling, debugging, orchestration etc. ML and neural network service provides always target for these frameworks in their produces. However these platforms are also limited in several ways, such as the fact their python
 
 \section{Training on Device}
 
@@ -96,7 +98,7 @@ The traditional model for machine learning applications on embedded devices have
 
 \chapter{Theory}
 
-In the following section an overview of the nature of computations involved in neural network applications is presented. Afterwards introductions are made to some terminology associated with software development for embedded devices, contextualised in embedded linux and its application development.
+In the following section an overview of the nature of computations involved in neural network applications is presented. Afterwards introductions are made to some terminology associated with software development for embedded devices, contextualised in embedded linux and its application development. The final section gives a short overview of conducting application performance evaluation.
 
 \section{Neural Networks}
 
@@ -114,4 +116,6 @@ In general the work flow for targetting a new board consists of.
 
 \section{Performance Evaluation}
 
-Performance evaluation of programs
+There are two primary modes in understanding the performance of an application on a particular device. One is understanding hardware limitations of the hardware and
+
+An important tool in understanding the first of those two perspectives is the roofline model.
