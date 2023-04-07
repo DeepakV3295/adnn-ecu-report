@@ -1,7 +1,5 @@
 \chapter{Scania C300 Communicator} \label{rtc-c300}
-
 % The communicator contains iMX6 series processors
-
 Scania ECU was set to be the target hardware to benchmark the training of a machine learning model. In order to be able to port the different implementation applications and it's dependencies on the Scania ECU and successfully execute the programs, certain information regarding the hardware, kernel, supported compilers and libraries is needed. Since the existing ECU is developed by an OEM, obtaining all the information and source files is not possible. 
 It can be achieved by replacing the existing software with a custom developed embedded linux distribution, thus repurposing the custom hardware. 
 The biggest challenge for repurposing an custom board with no information is reverse engineering to obtain the required information for flashing a custom linux kernel. The reverse engineering learnings are stated in this section.
