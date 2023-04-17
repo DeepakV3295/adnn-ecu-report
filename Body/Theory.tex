@@ -4,7 +4,8 @@ An embedded system is a combination of hardware and software components put toge
 
 Like most of the automotive industry, Scania employs embedded systems called Electronic Control Units (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems has one or more ECUs to gather system data and transmit it to a central communicator where the data is processed and the systems operations are monitored.
 
-Scania currently runs a massive fleet of around 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually \cite{scania-report}. This large fleet of rolling vehicles that are connected though the communicators opens up new possibilities. The different connected devices that monitor the health and state of the vehicle can be trained to predict system maintainance needs accurately and efficiently. For example, if the system can predict accurately that tire changes are required in 100kms then the driver can plan the route smartly to reach the workshop before the vehicle breaksdown. This opportunity can be realised by running smart algorithms on the hardware that is currently available.
+Scania currently runs a massive fleet of around 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually \cite{scania-report}. This large fleet of rolling vehicles that are connected though the communicators opens up new possibilities. These connected devices continuously monitor the state of the vehicle and this data can be used to accurately
+and efficiently schedule vehicle maintainance. For example, if a tire change is predicted to be required in 100 kms then the driver can plan the route smartly to reach the workshop before the vehicle breaks down. This opportunity can be realised by running smart algorithms on the hardware that is currently available.
 
 Machine learning (ML) on embedded devices is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. This technology can be used to automate tasks, improve efficiency, and make better decisions. But this technology presents a unique set of challenges due to the limited resources available on these devices. Embedded devices are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded devices are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded devices has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles.
 
@@ -62,17 +63,17 @@ The next section looks at developing such an embedded linux environment and the 
 
 \section[Development Process for Embedded Linux]{Development For Embedded Linux}
 
-Building and maintaining embedded linux distributions with linux kernel and user mode applications require tools that can provide build configuration support at multiple levels, build a cross compiling toolchain or interface with one, support for several c run times, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc. Out of them Yocto and Buildroot are the most widely used and most featureful.
+Building and maintaining embedded linux distributions with linux kernel and user mode applications require tools that can provide build configuration support at multiple levels, build a cross compiling toolchain or interface with one, support for several \verb!C! run times, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc. Out of them Yocto and Buildroot are the most widely used and most featureful.
 
 \subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
 
-Creating applications that are to be run on an embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in C or C++, into executables that can be run on the target embedded device.
+Creating applications that are to be run on an embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \verb!C!  or \verb!C++! , into executables that can be run on the target embedded device.
 
-Software development toolchains consists of a compiler, linker, libraries, debuggers etc to create and manage executable binary programs for a target device - the most common one being GNU binary utilities, a.k.a binutils. The primary choice for c compilers in this list of utility programs is GCC, with LLVM's Clang being another alternative. For developing applications that interface with the linux operating system APIs the toolchain also produces necessary header files called linux kernel header files. The last important piece of a toolchain will be the C runtime, with the most popular choice being GNU's glibc.
+Software development toolchains consists of a compiler, linker, libraries, debuggers, etc., to create and manage executable binary programs for a target device - the most common one being GNU binary utilities, a.k.a binutils. The primary choice for \verb!C! compilers in this list of utility programs is GCC, with LLVM's Clang being another alternative. For developing applications that interface with the linux operating system APIs the toolchain also produces necessary header files called linux kernel header files. The last important piece of a toolchain will be the \verb!C! runtime, with the most popular choice being GNU's glibc.
 
 Building an embedded linux kernel requires several configuration parameters describing the kernel configuration, enabled feature, and more. To port linux onto a process on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory. This process will also need to be supported by the build system configurations. The majority of the details as to how the boot loader has to be configured will be based on the pariticular hardware that it will be configured for.
 
-Supporting embedded hardware requires a software stack that includes several components that were just presented. The initial target machine was an ECU filling the role of a coordinator on the truck. However due to certain components missing from the stack layed out previously, namely board level support components such as Yocto meta layer, or the board level The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}. Ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform.
+Supporting embedded hardware requires a software stack that includes several components such as the bootloader, the root file system, and the operating system. The initial target machine was an ECU filling the role of a communicator on the truck. Certain support components for this board are unavailable, such as the Yocto meta layer used for the existing software on board, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
 
 \subsection{Developing using QEMU}
 
@@ -82,9 +83,9 @@ In general, neural network applications are written using machine learning frame
 
 \subsection{Choice of Software Stacks and Programming Languages}
 
-As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Machine learning based companies and their service offerings such as cloud machine learning platforms almost invariably targets these platforms and provide several software tools for developers to utilize. Developers in these platforms enjoy several resources such as productivity tools that allows for continuous integration and development, maintainance and other resources with features for performance profiling, debugging, orchestration etc. ML and neural network service provides always target for these frameworks in their produces.
+As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Machine learning based companies and their service offerings such as cloud machine learning platforms almost invariably targets these platforms and provide several software tools for developers to utilize. Developers in these platforms enjoy several resources such as productivity tools that allows for continuous integration and development, maintainance and other resources with features for performance profiling, debugging, orchestration, etc. ML and neural network service provides always target for these frameworks in their produces.
 
-Another aspect to consider is the programming language in which the neural network will be written up in.
+Another aspect to consider is the programming language in which the neural network will be written up in. Most machine learning models at present are written in Python and frameworks like PyTorch and Tensorflow have richer interfaces for Python compared to other programming languages. This is unfavourable to embedded devices where a Python application may take up higher memory and have longer latencies. The programming language of choice for embedded applications however is \verb!C! and \verb!C++! which are supported by the ML frameworks but not to the same extent as their Python interfaces.
 
 \subsection{Embedded Software Stacks for Neural Networks}
 
@@ -92,11 +93,31 @@ One complication caused by relying on software stack of the manner discribed bef
 
 \section{Training on Device}
 
-The traditional model for machine learning applications on embedded devices have
+The traditional model for machine learning applications on embedded devices
+
+\begin{center}
+	\begin{tikzpicture}[node distance=2cm, every node/.style={rectangle, draw, align=center, rounded corners}, arrow/.style={->, >=stealth, thick}]
+	\node (train) {1. Training the neural network};
+	\node (optimize) [below of=train] {2. Model optimization};
+	\node (port) [below of=optimize] {3. Porting the model\ to the embedded device};
+	\node (deploy) [below of=port] {4. Deployment on the embedded device};
+	\node (perf-opt) [below of=deploy] {5. Performance optimization};
+	\node (test) [below of=perf-opt] {6. Testing and validation};
+
+	\draw [arrow] (train) -- (optimize);
+	\draw [arrow] (optimize) -- (port);
+	\draw [arrow] (port) -- (deploy);
+	\draw [arrow] (deploy) -- (perf-opt);
+	\draw [arrow] (perf-opt) -- (test);
+
+	\end{tikzpicture}
+\end{center}
 
 \subsection{Federated Learning}
 
-\textit{link to federated learning, mention FAMOUS again}
+Federated learning is a technique of training ML models in a distributed way, where each client or device uses its own data set to train a local model. A client application on a truck generates sensor data created by the operation of the vehicle. Each vehicle then trains on-board a local model which is then centrally collected and aggregated to build a global model. This global model can then be used for inference in each client. In the LOBSTR \cite{lobstr} and FAMOUS \cite{famous} projects Scania has developed statistical models and NN models for anomaly detection. The statistical models are lightweight and can easily be trained with limited computational resources. These neural network models are computationally heavy and hard to train with limited resources. The existing ECUs are not tailored for ML and general purpose ML frameworks often are hard to use in this embedded systems, specially for training purposes.
+
+This thesis focuses on repurposing existing hardwared (ECU) to ML edge devices that are tailored to train NN in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the commuicator to benchamark and experiment different NN implementations and evauluate the optimal ones.
 
 \chapter{Theory}
 

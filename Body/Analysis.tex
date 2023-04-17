@@ -1,6 +1,6 @@
 \part{Analysis}
 
-A hand digit recognition neural network (HDR-NN) model is implementated in C, C++ Eigen, Python Numpy and Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. The results of these measurements are presented in the following chapters along with discussions on the obstacles encountered in developing the NN model and compiling it to operate on the target hardware.
+A hand digit recognition neural network (HDR-NN) model is implementated in \verb!C!, \verb!C++!, Eigen, Python Numpy and Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. The results of these measurements are presented in the following chapters along with discussions on the obstacles encountered in developing the NN model and compiling it to operate on the target hardware.
 
 %Ideas: 1. Coefficient of variation
 %		2. optimisation flags
@@ -18,29 +18,32 @@ The priliminary measurements for the different executions completed with differe
 \section{Benchmark Application Parameters}
 
 \chapter{Results}
-A hand digit recognition application is implemented in different paradigms, specifically C, C++, Python, and Pytorch, which are the benchmark applications. Each this application is a fully connected feedforward neural network composed of multiple layers of neurons connected in a directed graph. The model has a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
+A hand digit recognition application is implemented in different paradigms, specifically \verb!C!, \verb!C++!,, Python, and Pytorch, which are the benchmark applications. Each this application is a fully connected feedforward neural network composed of multiple layers of neurons connected in a directed graph. The model has a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
+
 \begin{itemize}
-	\item C and C++ Eigen: 2, 4, 8, 32, 128, (32,16), and (128,16)
+	\item \verb!C! and \verb!C++!, Eigen: 2, 4, 8, 32, 128, (32,16), and (128,16)
 	\item Python-Numpy: 2, 8, 32, (32,16)
-	\item Tensorflow/Pytorch:
+	\item Pytorch:
 \end{itemize}
+
 The MNIST dataset is selected to train the model. This dataset contains 60,000 training images and 10,000 test images of hand-written digits. The model is trained using stochastic gradient descent, which is an optimization algorithm used to minimize a loss function. The backpropagation algorithm is used to calculate the gradients of the loss function with respect to the weights of the network. Finally, the mean square error loss function is used to measure the difference between the predicted output and the actual output of the network. The values of the biases and weights are initialized randomly with the PNGR random generator and a starting seed which are chosen to be identical for the different benchmark applications. The training hyperparameters are set to 30 epochs with a batch size of 10, a learning rate of 3 and sigmoid activation.
 
 It is essential that the hardware utilsed for benchmarking closely resembles the Scania ECU's IMX6 processor, as this will make it easier to replicate the experiment on a repurposed ECU and will also provide the most precise results. The IMX6Q-SABRE Smart Devices evaluation board, which is armed with four 32-bit Cortex A9 cores, is an ideal choice. The Cortex A9 core is equipped with ARM V7 instruction set architecture and a powerful VFPv3 floating point unit with NEON SIMD capabilities. The processor has 32 KB instruction and data L1 caches, 1 MB L2 cache and 1 GB DDR3 SDRAM memory. The benchmark applications are designed to be run on a single core of the IMX6 processor, although it supports quad-core, to ensure the experiment is straightforward and easier to manage. This will also guarantee that the results are precise and accurate.
 
-The yocto project is used to create a custom embedded linux distribution for the imx6qsabresd machine. The NXP yocto project guide (link) provides the instructions for building the Linux image, and additional packages such as cmake, python3 are installed during the build. The resulting image file, which used to flash the hardware, has a size of ~300Mb.
+The yocto project is used to create a custom embedded linux distribution for the \texttt{imx6qsabresd} machine. The NXP yocto project guide (link) provides the instructions for building the Linux image, and additional packages such as cmake, python3 are installed during the build. The resulting image file, which used to flash the hardware, has a size of ~300Mb.
 
 The accuracy of the model is evaluated after each training epoch on the MNIST test set. After the training of the model for 30 epochs, the final weights and biases of the network and the accuracy on the test set are saved for analysis. This data is used to verify the correctness of the NN model in each benchmark application.
+
 The GNU time program is a great tool for monitoring the performance of applications. It allows us to measure the execution time and peak memory usage, which is used to compare the effectiveness of training the neural network model on the custom hardware implemented with different paradigms.
 
-The python script created runs the experiment, executing each of the benchmark applications (C, C++, Python, Pytorch) one after the other. Every benchmark application is designed to be repeated 10 times, and all the measurements for each of the hidden layer configurations are saved for each of these iterations. The average values of the model accuracy, execution time and peak memory usage across all iterations are utilized for the analysis.
+A python script was developed to run the experiment, executing each of the benchmark applications (\verb!C!, \verb!C++!,, Python, Pytorch) one after the other. Every benchmark application is designed to be repeated 10 times, and all the measurements for each of the hidden layer configurations are saved for each of these iterations. The average values of the model accuracy, execution time and peak memory usage across all iterations are utilized for the analysis.
 
-(we also reason the impact of execution time in the decision to skip some network configurations and add a table of the experiments conducted)
+% (we also reason the impact of execution time in the decision to skip some network configurations and add a table of the experiments conducted)
 
 
 \section{Evaluating Correctness}
 \subsection{Accuracy}
-As the benchmark applications are developed to be identical by keeping the same structure and configurations, the model accuracy is expected to be similar. The (figure 6.1) showcases that the different implementations perform similarly irrespective of the number of parameters. 
+As the benchmark applications are developed to be identical by keeping the same structure and configurations, the model accuracy is expected to be similar. The (figure 6.1) showcases that the different implementations perform similarly irrespective of the number of parameters.
 
 \begin{figure}[!ht]
 	\centering
@@ -48,7 +51,7 @@ As the benchmark applications are developed to be identical by keeping the same 
 	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations.}
 \end{figure}
 
-Further, an abnormal behaviour can be observed when the number of parameters exceeds 101770. The accuracy of the C implementation decreases due to (an unknown bug). 
+Further, an abnormal behaviour can be observed when the number of parameters exceeds 101770. The accuracy of the \verb!C! implementation decreases due to (an unknown bug).
 %To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required. (separate plot for this behaviour)
 
 (TODO: evaluate the mean squared error in accuray between the benchmark applications)
@@ -59,7 +62,7 @@ Further, an abnormal behaviour can be observed when the number of parameters exc
 
 \section{Evaluating effectiveness}
 \subsection{Execution Time}
-The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process. This behaviour can be observeed in (figure 6.2) where the execution time increases drastically as number of parameters increases. 
+The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process. This behaviour can be observeed in (figure 6.2) where the execution time increases drastically as number of parameters increases.
 
 \begin{figure}[!ht]
 	\centering
@@ -68,7 +71,7 @@ The training time of the neural network applications increases exponentially as 
 \end{figure}
 
 \subsection{Peak Memory Usage}
-Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the NN application across all implementations. The C++ Eigen implementation has the lowest run time memory footprint, while Python Numpy is the least efficient.
+Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the NN application across all implementations. The \verb!C++!, Eigen implementation has the lowest run time memory footprint, while Python Numpy is the least efficient.
 
 \begin{figure}[!ht]
 	\centering
@@ -76,7 +79,9 @@ Regardless of the hidden layer sizes, the peak memory utilisation remains consta
 	\caption[Peak Memory Utilisation]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
 \end{figure}
 
-(here we evaluate the percentage/ratio/cov between the applications.)
+% (here we evaluate the percentage/ratio/cov between the applications.)
+
+Note that the device RAM is 1024 MB however the peak memory utilisation for both \verb!C! and Numpy are higher than this value. This can be explained by over allocation of memory by the operating system utilising the swap space. The peak memory utilisation measure is using the Maximum resident set size measure, which is roughly the total amount of physical memory assigned to a process at a given point in time. It does not count pages that have been swapped out, or that are mapped from a file but not currently loaded into physical memory.
 
 \section{Comparing the implementations}
 
@@ -93,19 +98,19 @@ Regardless of the hidden layer sizes, the peak memory utilisation remains consta
 	\caption[Peak Memory Utilisation]{Percentage difference between the implementations}
 \end{figure}
 
-The tables in (figure 6.4 and figure 6.5) shows the comparison between C-Eigen, Eigen-Numpy and C-Numpy. It is calculated as the percentage of 1 - (x/y) where x is performance value of the application which has lower value and y is performance value of the application that has higher number. 
+The tables in (figure 6.4 and figure 6.5) shows the comparison between C-Eigen, Eigen-Numpy and C-Numpy. It is calculated as the percentage of 1 - (x/y) where x is performance value of the application which has lower value and y is performance value of the application that has higher number.
 
 \subsection{C vs Eigen}
-For smaller models, it can be observed that C is faster than Eigen (for the network size of 1600, C is 38 percent faster than Eigen). But as model becomes complex, Eigen perform better and the difference is execution time is less than 15 percent. Again the abnormal behaviour can be observed in case of network size 101770 where C is 26 percent faster than Eigen. More test on the C implementation needs to conducted to identify the bug causing this behaviour.
+For smaller models, it can be observed that \verb!C! is faster than Eigen (for the network size of 1600, \verb!C! is 38 percent faster than Eigen). But as model becomes complex, Eigen perform better and the difference is execution time is less than 15 percent. Again the abnormal behaviour can be observed in case of network size 101770 where \verb!C! is 26 percent faster than Eigen. More test on the \verb!C! implementation needs to conducted to identify the bug causing this behaviour.
 
-With regards to memory utilisation Eigen perform better than C by 30\%. 
+With regards to memory utilisation Eigen perform better than \verb!C! by 30\%.
 
 \subsection{C vs Numpy}
-C constantly performs much better than Numpy. For the network size 101770, C is 62\% faster. 
+\verb!C! constantly performs much better than Numpy. For the network size 101770, \verb!C! is 62\% faster.
 Numpy utilises 17\% more runtime memory than C.
 
 \subsection{Eigen vs Numpy}
-Similar to C, irrespective of network size, Eigen is faster than Numpy by similar margins. 
+Similar to \verb!C!, irrespective of network size, Eigen is faster than Numpy by similar margins.
 
 Eigen is efficient in memory utilisation and 42\% better than Numpy.
 
@@ -118,9 +123,9 @@ Eigen is efficient in memory utilisation and 42\% better than Numpy.
 \section{Repurposing Scania ECU}
 Scania ECU is like a black box with no information. A custom encased hardware that supports ethernet over modem and an UART interface along with hardware circuit schematic document was the only information available regarding the ECU. There is no information regarding the processor,  memory support, bootloader. As the ECU is a production unit, there is no development tools on device and no support to port packages and application to the ECU. Many features on the bootloader, kernel were disabled making it futile to execute the common commands that provide system information.
 
-The task of repurposing the Scania ECU comprised of reverse engineering and obtaining the required hardware/software information and flashing a custom operating system to benchmark the neural network applications. 
-The first task was partially successfully as hardware information such as processor, architecture, I/O interfaces, device tree and software information such as kernel, compiler, glic and versions was obtained. But information regarding the memory layout and boot flow could not be concretely reverse engineered. 
-The second task was not achieved as flashing custom embedded linux always resulted in the ECU being bricked. Experiments conducted from booting the normal operation and from serial download mode had different issues and failed. While flashing from the normal boot, only the bootloader is replaced in the mtd partition. This could have failed because of incorrect u-boot image with wrong device trees or loading kernel failed as version mismatch between bootloader and kernel or checksum failure or size of the file is big overwriting a different region with crucial data. Serial download mode flashing required some crucial information regarding the memory load address and entry point for bootloader, kernel, root file system which is configured in the custom device tree. This information could be obtained from reverse engineering. 
+The task of repurposing the Scania ECU comprised of reverse engineering and obtaining the required hardware/software information and flashing a custom operating system to benchmark the neural network applications.
+The first task was partially successfully as hardware information such as processor, architecture, I/O interfaces, device tree and software information such as kernel, compiler, glic and versions was obtained. But information regarding the memory layout and boot flow could not be concretely reverse engineered.
+The second task was not achieved as flashing custom embedded linux always resulted in the ECU being bricked. Experiments conducted from booting the normal operation and from serial download mode had different issues and failed. While flashing from the normal boot, only the bootloader is replaced in the mtd partition. This could have failed because of incorrect u-boot image with wrong device trees or loading kernel failed as version mismatch between bootloader and kernel or checksum failure or size of the file is big overwriting a different region with crucial data. Serial download mode flashing required some crucial information regarding the memory load address and entry point for bootloader, kernel, root file system which is configured in the custom device tree. This information could be obtained from reverse engineering.
 
 
 

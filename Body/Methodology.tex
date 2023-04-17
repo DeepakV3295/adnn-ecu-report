@@ -2,7 +2,7 @@
 
 Neural network inference has recieved a lot of attention in Tiny ML. The popular frameworks for machine learning such as PyTorch or Tensorflow do provide approaches for porting neural network application written using those frameworks but with a focus on allowing for model inference. Targetting even smaller devices with Tensorflow based neural network models is possible for inference only applications via Tensorflow Lite Micro \cite{tflm}. Efforts to allow training as well in these frameworks require more effort due to the compute and memory intensive nature of the training process.
 
-This section contains the description of benchmark training applications created to test the performance of an ANN training cycle on an embedded board. The neural network structure, learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in C, C++, and Python. The design and development of these application and an overview of the target hardware to perform the benchmarking are covered in the following chapters.
+This section contains the description of benchmark training applications created to test the performance of an ANN training cycle on an embedded board. The neural network structure, learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in \verb!C!, \verb!C++! , and Python. The design and development of these application and an overview of the target hardware to perform the benchmarking are covered in the following chapters.
 
 \chapter{Design}
 
@@ -16,7 +16,7 @@ The target environment necessitates the use of cross compilers and as part of th
 
 The \textit{meta-freescale} Yocto BSP layer by NXP supports the target processor and in combination with the Poky reference distribution provides an eSDK that was primarily used to test and develop the benchmark applications.
 
-GCC based cross compilers and debuggers were usefull for the C, C++ programs. The \textit{meta-python} layer provided by Open Embedded was also useful in allowing for applications using Python and Numpy. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well. For further optimisations that relies on hardware specific features such as ARM\textquotesingle s CMSIS-NN cannot be so easily ported however
+GCC based cross compilers and debuggers were usefull for the \verb!C!, \verb!C++!  programs. The \textit{meta-python} layer provided by Open Embedded was also useful in allowing for applications using Python and Numpy. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well. For further optimisations that relies on hardware specific features such as ARM\textquotesingle s CMSIS-NN cannot be so easily ported however
 
 \section[Handwritten Digit Recognition (HDR)]{HDR-NN Benchmark Programs}
 
@@ -170,7 +170,7 @@ The model structure can be configured in the same manner across the implementati
 
 \chapter{Development}
 
-The HDR-NN benchmark application were completed in different programming languages and in neural network frameworks like Tensorflow. Details about the target environment and the benchmark implementations are layed out in this chapter
+The HDR-NN benchmark application was completed in different programming languages and in neural network frameworks like PyTorch. Details about the target environment and the benchmark implementations are layed out in this chapter
 
 \section[iMX6 Custom Board Target]{Target Hardware}
 
@@ -196,7 +196,7 @@ Developing ANNs on tensorflow using Keras is straightforward with good support a
 
 \subsection[C]{C based HDR-NN}
 
-The C implementation had the least amount of external dependencies and contained the network in float arrays within structs.
+The \verb!C! implementation had the least amount of external dependencies and contained the network in float arrays within structs.
 
 \subsection[CPP - Eigen]{CPP based HDR-NN}
 
