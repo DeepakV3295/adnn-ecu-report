@@ -2,12 +2,9 @@
 
 A hand digit recognition neural network (HDR-NN) model is implementated in \verb!C!, \verb!C++!, Eigen, Python Numpy and Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. The results of these measurements are presented in the following chapters along with discussions on the obstacles encountered in developing the NN model and compiling it to operate on the target hardware.
 
-%Ideas: 1. Coefficient of variation
-%		2. optimisation flags
-%		3. Measurements using different tools
-%		4. Early stopping
-%		5. Choosing Model parameters
-%		6. Extrapolation
+% ============================================
+%        Measurement
+% ============================================
 
 \chapter{Measurement}
 
@@ -17,7 +14,12 @@ The priliminary measurements for the different executions completed with differe
 
 \section{Benchmark Application Parameters}
 
+% ============================================
+%        Results
+% ============================================
+
 \chapter{Results}
+
 A hand digit recognition application is implemented in different paradigms, specifically \verb!C!, \verb!C++!,, Python, and Pytorch, which are the benchmark applications. Each this application is a fully connected feedforward neural network composed of multiple layers of neurons connected in a directed graph. The model has a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
 
 \begin{itemize}
@@ -38,8 +40,10 @@ The GNU time program is a great tool for monitoring the performance of applicati
 
 A python script was developed to run the experiment, executing each of the benchmark applications (\verb!C!, \verb!C++!,, Python, Pytorch) one after the other. Every benchmark application is designed to be repeated 10 times, and all the measurements for each of the hidden layer configurations are saved for each of these iterations. The average values of the model accuracy, execution time and peak memory usage across all iterations are utilized for the analysis.
 
-% (we also reason the impact of execution time in the decision to skip some network configurations and add a table of the experiments conducted)
+% \section{Coefficient of variation}
+% A total of 10 iterations were conducted to ensure that the results remained consistent. To assess the degree of variability among the various trials, the mean and standard deviation were calculated across all runs, and their ratio was determined. This ratio indicates the level of variation between the different tests.
 
+% TODO: we also reason the impact of execution time in the decision to skip some network configurations and add a table of the experiments conducted
 
 \section{Evaluating Correctness}
 \subsection{Accuracy}
@@ -59,8 +63,10 @@ Further, an abnormal behaviour can be observed when the number of parameters exc
 \subsection{Weights and Biases}
 (TODO: evaluate the mean squared error in the generated weights and biases between the different implementation. Also, reason how the data structure in each of the implementation influence the error.)
 
-
 \section{Evaluating effectiveness}
+
+% TODO: Something should go here format wise
+
 \subsection{Execution Time}
 The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process. This behaviour can be observeed in (figure 6.2) where the execution time increases drastically as number of parameters increases.
 
@@ -75,11 +81,11 @@ Regardless of the hidden layer sizes, the peak memory utilisation remains consta
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[scale=0.35]{memory-bar}
+	\includegraphics[scale=0.32]{memory-bar}
 	\caption[Peak Memory Utilisation]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
 \end{figure}
 
-% (here we evaluate the percentage/ratio/cov between the applications.)
+% TODO: here we evaluate the percentage/ratio/cov between the applications.
 
 Note that the device RAM is 1024 MB however the peak memory utilisation for both \verb!C! and Numpy are higher than this value. This can be explained by over allocation of memory by the operating system utilising the swap space. The peak memory utilisation measure is using the Maximum resident set size measure, which is roughly the total amount of physical memory assigned to a process at a given point in time. It does not count pages that have been swapped out, or that are mapped from a file but not currently loaded into physical memory.
 
@@ -90,7 +96,6 @@ Note that the device RAM is 1024 MB however the peak memory utilisation for both
 	\includegraphics[scale=0.40]{exec_time_comparisons}
 	\caption[Execution Time vs Model Parameters]{Percentage difference between the implementations. Example: C is 38\% faster than Eigen for the network size of 1600.}
 \end{figure}
-
 
 \begin{figure}[ht]
 	\centering
@@ -127,13 +132,11 @@ The task of repurposing the Scania ECU comprised of reverse engineering and obta
 The first task was partially successfully as hardware information such as processor, architecture, I/O interfaces, device tree and software information such as kernel, compiler, glic and versions was obtained. But information regarding the memory layout and boot flow could not be concretely reverse engineered.
 The second task was not achieved as flashing custom embedded linux always resulted in the ECU being bricked. Experiments conducted from booting the normal operation and from serial download mode had different issues and failed. While flashing from the normal boot, only the bootloader is replaced in the mtd partition. This could have failed because of incorrect u-boot image with wrong device trees or loading kernel failed as version mismatch between bootloader and kernel or checksum failure or size of the file is big overwriting a different region with crucial data. Serial download mode flashing required some crucial information regarding the memory load address and entry point for bootloader, kernel, root file system which is configured in the custom device tree. This information could be obtained from reverse engineering.
 
-
-
+% ============================================
+%        Discussion
+% ============================================
 
 \chapter{Discussion}
-
-% \section{Coefficient of variation}
-% A total of 10 iterations were conducted to ensure that the results remained consistent. To assess the degree of variability among the various trials, the mean and standard deviation were calculated across all runs, and their ratio was determined. This ratio indicates the level of variation between the different tests.
 
 \section{Developer Experience}
 

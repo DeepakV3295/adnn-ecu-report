@@ -9,7 +9,7 @@ and efficiently schedule vehicle maintainance. For example, if a tire change is 
 
 Machine learning (ML) on embedded devices is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. This technology can be used to automate tasks, improve efficiency, and make better decisions. But this technology presents a unique set of challenges due to the limited resources available on these devices. Embedded devices are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded devices are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded devices has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles.
 
-One such ML application Scania has been developing in their \textsc{LOBSTR} \cite{lobstr} and \textsc{FAMOUS} \cite{famous} projects is the anomaly and fault detection models in a federated learning environment. Targeting to run the anomaly detection models on the existing ECUs with limited resources has many benefits and challenges.
+One such ML application Scania has been developing in their \textsc{LOBSTR} \cite{lobstr} and \textsc{FAMOUS} \cite{famous} projects is anomaly and fault detection on the vehicles. Targeting to run the anomaly detection models on the existing ECUs with limited resources has many benefits and challenges.
 
 \subsection*{Benefits to performing Anomaly Detection on ECUs}
 
@@ -27,55 +27,47 @@ One such ML application Scania has been developing in their \textsc{LOBSTR} \cit
 	\item An Original Equipment Manufacturer (OEM) is responsible for the development and upkeep of the Scania ECU. However, the amount of information made available regarding the hardware design, memory layout, and operating system (OS) is restricted. To construct an embedded OS for a customized hardware, critical details such as the device tree, memory organisation, and boot flow are necessary. Obtaining this information from a functional board can be an enormous task requiring reverse engineering expertise.
 \end{itemize}
 
-% Reason :
-	% 1. Sustainabililty - check
-	% 2. Potential in tiny ML (billions of devices) and Federated Learning approaches
-			% Needs Training on board
+% Gap in the market: No support for training ML models on embedded devices ❓
 
-% Gap  in the market: No support for training ML models on embedded devices
-% Scope: Exploring the challenges of building and training NN's on embedded devices using different approaches and evaluating their performances.
-% TODO: Attach a reference for the following claim
+% TODO: Attach a reference for the following claim (Ask Niklas)
 
-%Among the ML approaches to take, Artifical Neural Networks are especially interesting for anomaly detection due to several factors such as minimal data preprocessing \dots To get the best out of this approache, training of the model needs to be performed on-board. However much of the potential of running machine learning applications on these devices remain unattained due to the difficulties in creating these applications and running training on-board.
+% Among the ML approaches to take, Artifical Neural Networks are especially interesting for anomaly detection due to several factors such as minimal data preprocessing \dots To get the best out of this approache, training of the model needs to be performed on-board. However much of the potential of running machine learning applications on these devices remain unattained due to the difficulties in creating these applications and running training on-board.
 
 \subsubsection{Problem Description}
+
 The scope of the thesis is to repurpose the existing Scania ECU and explore the challenges of building targeted NN models and training them on repurposed ECU using different approaches and evaluating their performances.
 
-%The scope of the thesis is to explore the challenges of building and training neural networks on embedded devices using different approaches and evaluating their performance.
-
-%An important feature of machine learning applications are their iterative improvement process. For neural network applications this happens during the training process which traditionally consumes a lot of compute resource
-
-% \subsubsection{Why perform training and inference on ECUs?}
-
-% In the world of embedded systems resources such as compute, memory, network bandwith etc. are all limited. The traditional model of sending data from embedded device sensors off-board to compute clusters on the cloud presents several challenges such as bandwith consumption, privacy considerations, and more that makes it attractive to perform both training and inference on-board the embedded device
-
-% \paragraph{Federated Learning}{
-% 	One approach to making this training loop take place from within these platforms is Federated Learning which cruicially allows for the data to remain on the device
-% }
+% ============================================
+%        Background
+% ============================================
 
 \chapter{Background}
 
-Developing and maintaining applications that rely on neural network models on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, and not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
+Developing and maintaining applications that rely on neural network models and run on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
 
 The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have application processor cores that are capable of running rich operating systems such as linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{linux-guest-os}. Linux is the prefered choice for such a guest operating system due to its configurability and rich support for application development.
 
 The next section looks at developing such an embedded linux environment and the process of developing neural network applications for that operating system.
 
-\section[Development Process for Embedded Linux]{Development For Embedded Linux}
+\section{Development Process for Embedded Linux}
 
-Building and maintaining embedded linux distributions with linux kernel and user mode applications require tools that can provide build configuration support at multiple levels, build a cross compiling toolchain or interface with one, support for several \verb!C! run times, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc. Out of them Yocto and Buildroot are the most widely used and most featureful.
+Building and maintaining embedded linux distributions with the linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \verb!C! run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used embedded linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries. The Yocto project was chosen as the primary build system and used to generate the embedded linux and application programs used within this project.
 
-\subsection[SDKs \& Compiler Toolchains]{Toolchains \& Cross compilers}
+\subsection{SDKs and Compiler Toolchains}
 
-Creating applications that are to be run on an embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \verb!C!  or \verb!C++! , into executables that can be run on the target embedded device.
+Creating applications for embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \verb!C!  or \verb!C++!, into executables that can be run on the target embedded device.
 
-Software development toolchains consists of a compiler, linker, libraries, debuggers, etc., to create and manage executable binary programs for a target device - the most common one being GNU binary utilities, a.k.a binutils. The primary choice for \verb!C! compilers in this list of utility programs is GCC, with LLVM's Clang being another alternative. For developing applications that interface with the linux operating system APIs the toolchain also produces necessary header files called linux kernel header files. The last important piece of a toolchain will be the \verb!C! runtime, with the most popular choice being GNU's glibc.
+Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \verb!C! compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the linux operating system APIs, the toolchain also contains necessary header files called linux kernel header files. The last important piece of a toolchain will be the \verb!C! runtime, with the most popular choice being GNU's glibc.
 
-Building an embedded linux kernel requires several configuration parameters describing the kernel configuration, enabled feature, and more. To port linux onto a process on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory. This process will also need to be supported by the build system configurations. The majority of the details as to how the boot loader has to be configured will be based on the pariticular hardware that it will be configured for.
+\subsection{Application Development and Testing}
+
+The software development toolchain described previously can be used on a development machine with different characteristics as the . This form of creating executables for a different platform from some hardware platform is known as cross compiling. For most embedded devices the software that are run on them are created on different computing hardware usually termed host devices.
+
+\subsection{Target Device}
+
+Building an embedded linux kernel suited for a mainboard of an embedded device requires several configuration parameters describing the kernel configuration, enabled feature, and more. To port linux onto a process on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory. This process will also need to be supported by the build system configurations. The majority of the details as to how the boot loader has to be configured will be based on the pariticular hardware that it will be configured for.
 
 Supporting embedded hardware requires a software stack that includes several components such as the bootloader, the root file system, and the operating system. The initial target machine was an ECU filling the role of a communicator on the truck. Certain support components for this board are unavailable, such as the Yocto meta layer used for the existing software on board, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
-
-\subsection{Developing using QEMU}
 
 \section{Neural Network Application Development}
 
@@ -93,31 +85,18 @@ One complication caused by relying on software stack of the manner discribed bef
 
 \section{Training on Device}
 
-The traditional model for machine learning applications on embedded devices
-
-\begin{center}
-	\begin{tikzpicture}[node distance=2cm, every node/.style={rectangle, draw, align=center, rounded corners}, arrow/.style={->, >=stealth, thick}]
-	\node (train) {1. Training the neural network};
-	\node (optimize) [below of=train] {2. Model optimization};
-	\node (port) [below of=optimize] {3. Porting the model\ to the embedded device};
-	\node (deploy) [below of=port] {4. Deployment on the embedded device};
-	\node (perf-opt) [below of=deploy] {5. Performance optimization};
-	\node (test) [below of=perf-opt] {6. Testing and validation};
-
-	\draw [arrow] (train) -- (optimize);
-	\draw [arrow] (optimize) -- (port);
-	\draw [arrow] (port) -- (deploy);
-	\draw [arrow] (deploy) -- (perf-opt);
-	\draw [arrow] (perf-opt) -- (test);
-
-	\end{tikzpicture}
-\end{center}
+The traditional model for developing machine learning applications on embedded devices has several discrete steps such as collecting sensor data from the embedded devices
 
 \subsection{Federated Learning}
 
 Federated learning is a technique of training ML models in a distributed way, where each client or device uses its own data set to train a local model. A client application on a truck generates sensor data created by the operation of the vehicle. Each vehicle then trains on-board a local model which is then centrally collected and aggregated to build a global model. This global model can then be used for inference in each client. In the LOBSTR \cite{lobstr} and FAMOUS \cite{famous} projects Scania has developed statistical models and NN models for anomaly detection. The statistical models are lightweight and can easily be trained with limited computational resources. These neural network models are computationally heavy and hard to train with limited resources. The existing ECUs are not tailored for ML and general purpose ML frameworks often are hard to use in this embedded systems, specially for training purposes.
 
 This thesis focuses on repurposing existing hardwared (ECU) to ML edge devices that are tailored to train NN in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the commuicator to benchamark and experiment different NN implementations and evauluate the optimal ones.
+
+
+% ============================================
+%        Theory
+% ============================================
 
 \chapter{Theory}
 

@@ -1,8 +1,12 @@
 \part{Implementation}
 
-Neural network inference has recieved a lot of attention in Tiny ML. The popular frameworks for machine learning such as PyTorch or Tensorflow do provide approaches for porting neural network application written using those frameworks but with a focus on allowing for model inference. Targetting even smaller devices with Tensorflow based neural network models is possible for inference only applications via Tensorflow Lite Micro \cite{tflm}. Efforts to allow training as well in these frameworks require more effort due to the compute and memory intensive nature of the training process.
+The traditional model for deploying neural network applications on embedded devices has over time developed the neural network inference step. The popular frameworks for machine learning such as PyTorch and Tensorflow provide approaches for porting neural network models written using those frameworks with a focus on allowing for model inference. Targetting even smaller devices with Tensorflow based neural network models is possible for inference only applications via Tensorflow Lite Micro \cite{tflm}. Efforts to allow training as well in these frameworks require more effort due to the compute and memory intensive nature of the training process.
 
-This section contains the description of benchmark training applications created to test the performance of an ANN training cycle on an embedded board. The neural network structure, learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in \verb!C!, \verb!C++! , and Python. The design and development of these application and an overview of the target hardware to perform the benchmarking are covered in the following chapters.
+This section contains the description of applications that train a neural network model to benchmark the training step on an embedded device. The neural network structure, the learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in \verb!C!, \verb!C++!, and Python. The design and development of these application and an overview of the target hardware to perform the benchmarking are covered in the following chapters.
+
+% ============================================
+%        Design
+% ============================================
 
 \chapter{Design}
 
@@ -51,14 +55,6 @@ The handwritten digit recognition neural network is a fully connected neural net
 			\path (N\lay-\N) --++ (0,1+\yshift) node[midway,scale=1.5] {$\vdots$};
 		}
 
-		% LABELS
-		\node[above=3,align=center,OliveGreen!60!black] at (N1-1.90)
-			{input\\[-0.2em]layer};
-		\node[above=2,align=center,RoyalPurple!60!black] at (N2-1.90)
-			{hidden layers};
-		\node[above=3,align=center,BrickRed!60!black] at (N\Nnodlen-1.90)
-			{output\\[-0.2em]layer};
-
 	\end{tikzpicture}
 
 \end{center}
@@ -67,9 +63,9 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 
 \begin{center}
 	\begin{tikzpicture}[x=2.4cm,y=1cm]
-		\readlist\Nnod{4,2,2} % array of number of nodes per layer
-		\readlist\Nstr{1,2,3} % array of string number of nodes per layer
-		\readlist\Cstr{x,h^{(\prev)},y} % array of coefficient symbol per layer
+		\readlist\Nnod{4,2,2,2} % array of number of nodes per layer
+		\readlist\Nstr{1,2,3,4} % array of string number of nodes per layer
+		\readlist\Cstr{x,h^{(\prev)},h^{(\prev)},y} % array of coefficient symbol per layer
 		\def\yshift{0.45} % shift last node for dots
 
 		\foreachitem \N \in \Nnod{ % loop over layers
@@ -92,15 +88,6 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 			}
 			\path (N\lay-\N) --++ (0,1+\yshift) node[midway,scale=1.5] {$\vdots$};
 		}
-
-		% LABELS
-		\node[above=3,align=center,OliveGreen!60!black] at (N1-1.90)
-			{input\\[-0.2em]layer};
-		\node[above=2,align=center,RoyalPurple!60!black] at (N2-1.90)
-			{hidden layers};
-		\node[above=3,align=center,BrickRed!60!black] at (N\Nnodlen-1.90)
-			{output\\[-0.2em]layer};
-
 	\end{tikzpicture}
 	\qquad
 	\begin{tikzpicture}[x=2cm,y=1cm]
@@ -129,14 +116,6 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 			}
 			\path (N\lay-\N) --++ (0,1+\yshift) node[midway,scale=1.5] {$\vdots$};
 		}
-
-		% LABELS
-		\node[above=3,align=center,OliveGreen!60!black] at (N1-1.90)
-			{input\\[-0.2em]layer};
-		\node[above=2,align=center,RoyalPurple!60!black] at (N2-1.90)
-			{hidden layers};
-		\node[above=3,align=center,BrickRed!60!black] at (N\Nnodlen-1.90)
-			{output\\[-0.2em]layer};
 	\end{tikzpicture}
 \end{center}
 
@@ -144,29 +123,31 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 
 The HDR-NN benchmark applications will all share the same standard training algorithm, namely Backpropagation with Stochastic Gradient Descent. Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists in the wild, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm in through out the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations
 
-% \begin{algorithm}[t]
-% 	\begin{algo}{Gradient Descent}{
-% 	\small
-% 	\label{alg:deep-learning-gradient-descent}
-% 	\qinput{initial weights $w^{(0)}$, number of iterations $T$}
-% 	\qoutput{final weights $w^{(T)}$}
-% 	}
-% 		\qfor $t = 0$ \qto $T - 1$\\
-% 			estimate $\nabla \mathcal{L}(w^{(t)})$\\
-% 			compute $\Delta w^{(t)} = - \nabla \mathcal{L}(w^{(t)})$\label{lin:deep-learning-delta-w}\\
-% 			select learning rate $\gamma$\\
-% 			$w^{(t + 1)} := w^{(t)} + \gamma \Delta w^{(t)}$\qrof\\
-% 		\qreturn $w^{(T)}$
-% 	\end{algo}
-% 	% TODO short caption
-% 	\caption[]{The general gradient descent algorithm; different choices of
-% 	the learning rate $\gamma$ and the estimation technique for $\nabla\mathcal{L}(w)$
-% 	may lead to different implementations.}
-% \end{algorithm}
+\begin{algorithm}
+	\caption{Batched stochastic gradient descent with the learning rate $\gamma$ and the Mean Squared Error (\texttt{MSE}) cost function}\label{alg:cap}
+	\begin{algorithmic}
+	\Require initial weights $w^{(0)}$, number of epochs $E$, batch size $B$, training data with $T$ entries
+	\Ensure final weights $w^{(E*T)}$
+	\For{$e = 0 \rightarrow E - 1$}
+		\For{$b = 0 \rightarrow T / B$}
+			\For{$t = b * B \rightarrow (b+1) * B$}
+			\State estimate $\nabla \mathcal{L}(w^{(t)})$ \Comment{$\mathcal{L}$ here is \texttt{MSE}}
+			\State compute $\Delta w^{(b)} += - \nabla \mathcal{L}(w^{(t)})$\label{lin:deep-learning-delta-w}
+			\EndFor
+			\State $w^{(e + 1)} := w^{(e)} + \gamma \Delta w^{(e)}$
+		\EndFor
+	\EndFor
+	\State return $w^{(T)}$
+	\end{algorithmic}
+	\end{algorithm}
 
 \subsection[Verifying Correctness]{Verifying Correctness}
 
 The model structure can be configured in the same manner across the implementations, as well as the learning algorithm configuration. This means that the shape of the model, the input parameters, the connections between the neuron can be configured in the same manner across the implementations. Furthermore, the learning rate, the number of epochs, and the batch size are also configurable in the same manner. Once the different implementations are configured in a similar manner, the training of the model is completed and the resulting weights are compared.
+
+% ============================================
+%        Development
+% ============================================
 
 \chapter{Development}
 

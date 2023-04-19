@@ -1381,12 +1381,17 @@
 		draw=Cerulean,
 		fill=Cerulean!20
 		},
-	node 3/.style={
+	node 4/.style={
 		node,BrickRed,
 		draw=OrangeRed,
 		fill=OrangeRed!20
 		},
+	node 3/.style={
+		node,RoyalPurple,
+		draw=Cerulean,
+		fill=Cerulean!20
+		},
 }
 
-% map layer number onto 1, 2, or 3
-\def\nstyle{int(\lay<\Nnodlen?min(2,\lay):3)}
+% map layer number onto 1, 2, 3, or 4
+\def\nstyle{int(\lay<\Nnodlen?min(2,\lay):4)}
