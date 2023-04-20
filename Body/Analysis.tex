@@ -1,6 +1,6 @@
 \part{Analysis}
 
-A hand digit recognition neural network (HDR-NN) model is implementated in \verb!C!, \verb!C++!, Eigen, Python Numpy and Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. The results of these measurements are presented in the following chapters along with discussions on the obstacles encountered in developing the NN model and compiling it to operate on the target hardware.
+A hand digit recognition neural network (HDR-NN) model is implementated in \texttt{C}, \texttt{C++}, Eigen, Python Numpy and Pytorch. The performance of HDR-NN training implementations was evaluated on the iMX6SDB evaluation board, which was programmed with an Embedded Linux built using The Yocto Project. To gauge the effectiveness of the models, we compared model accuracy, execution time, and peak memory usage while altering the number of layers and neurons in each layer. The results of these measurements are presented in the following chapters along with discussions on the obstacles encountered in developing the NN model and compiling it to operate on the target hardware.
 
 % ============================================
 %        Measurement
@@ -20,10 +20,10 @@ The priliminary measurements for the different executions completed with differe
 
 \chapter{Results}
 
-A hand digit recognition application is implemented in different paradigms, specifically \verb!C!, \verb!C++!,, Python, and Pytorch, which are the benchmark applications. Each this application is a fully connected feedforward neural network composed of multiple layers of neurons connected in a directed graph. The model has a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
+A hand digit recognition application is implemented in different paradigms, specifically \texttt{C}, \texttt{C++},, Python, and Pytorch, which are the benchmark applications. Each this application is a fully connected feedforward neural network composed of multiple layers of neurons connected in a directed graph. The model has a constant input size of 784 and output size of 10. The hidden layer sizes vary depending on the implementation:
 
 \begin{itemize}
-	\item \verb!C! and \verb!C++!, Eigen: 2, 4, 8, 32, 128, (32,16), and (128,16)
+	\item \texttt{C} and \texttt{C++}, Eigen: 2, 4, 8, 32, 128, (32,16), and (128,16)
 	\item Python-Numpy: 2, 8, 32, (32,16)
 	\item Pytorch:
 \end{itemize}
@@ -38,7 +38,7 @@ The accuracy of the model is evaluated after each training epoch on the MNIST te
 
 The GNU time program is a great tool for monitoring the performance of applications. It allows us to measure the execution time and peak memory usage, which is used to compare the effectiveness of training the neural network model on the custom hardware implemented with different paradigms.
 
-A python script was developed to run the experiment, executing each of the benchmark applications (\verb!C!, \verb!C++!,, Python, Pytorch) one after the other. Every benchmark application is designed to be repeated 10 times, and all the measurements for each of the hidden layer configurations are saved for each of these iterations. The average values of the model accuracy, execution time and peak memory usage across all iterations are utilized for the analysis.
+A python script was developed to run the experiment, executing each of the benchmark applications (\texttt{C}, \texttt{C++},, Python, Pytorch) one after the other. Every benchmark application is designed to be repeated 10 times, and all the measurements for each of the hidden layer configurations are saved for each of these iterations. The average values of the model accuracy, execution time and peak memory usage across all iterations are utilized for the analysis.
 
 % \section{Coefficient of variation}
 % A total of 10 iterations were conducted to ensure that the results remained consistent. To assess the degree of variability among the various trials, the mean and standard deviation were calculated across all runs, and their ratio was determined. This ratio indicates the level of variation between the different tests.
@@ -51,11 +51,11 @@ As the benchmark applications are developed to be identical by keeping the same 
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[scale=0.37]{accuracy}
+	\includegraphics[scale=0.32]{accuracy}
 	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations.}
 \end{figure}
 
-Further, an abnormal behaviour can be observed when the number of parameters exceeds 101770. The accuracy of the \verb!C! implementation decreases due to (an unknown bug).
+Further, an abnormal behaviour can be observed when the number of parameters exceeds 101770. The accuracy of the \texttt{C} implementation decreases due to (an unknown bug).
 %To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required. (separate plot for this behaviour)
 
 (TODO: evaluate the mean squared error in accuray between the benchmark applications)
@@ -77,7 +77,7 @@ The training time of the neural network applications increases exponentially as 
 \end{figure}
 
 \subsection{Peak Memory Usage}
-Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the NN application across all implementations. The \verb!C++!, Eigen implementation has the lowest run time memory footprint, while Python Numpy is the least efficient.
+Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the NN application across all implementations. The \texttt{C++}, Eigen implementation has the lowest run time memory footprint, while Python Numpy is the least efficient.
 
 \begin{figure}[!ht]
 	\centering
@@ -87,7 +87,7 @@ Regardless of the hidden layer sizes, the peak memory utilisation remains consta
 
 % TODO: here we evaluate the percentage/ratio/cov between the applications.
 
-Note that the device RAM is 1024 MB however the peak memory utilisation for both \verb!C! and Numpy are higher than this value. This can be explained by over allocation of memory by the operating system utilising the swap space. The peak memory utilisation measure is using the Maximum resident set size measure, which is roughly the total amount of physical memory assigned to a process at a given point in time. It does not count pages that have been swapped out, or that are mapped from a file but not currently loaded into physical memory.
+Note that the device RAM is 1024 MB however the peak memory utilisation for both \texttt{C} and Numpy are higher than this value. This can be explained by over allocation of memory by the operating system utilising the swap space. The peak memory utilisation measure is using the Maximum resident set size measure, which is roughly the total amount of physical memory assigned to a process at a given point in time. It does not count pages that have been swapped out, or that are mapped from a file but not currently loaded into physical memory.
 
 \section{Comparing the implementations}
 
@@ -106,16 +106,16 @@ Note that the device RAM is 1024 MB however the peak memory utilisation for both
 The tables in (figure 6.4 and figure 6.5) shows the comparison between C-Eigen, Eigen-Numpy and C-Numpy. It is calculated as the percentage of 1 - (x/y) where x is performance value of the application which has lower value and y is performance value of the application that has higher number.
 
 \subsection{C vs Eigen}
-For smaller models, it can be observed that \verb!C! is faster than Eigen (for the network size of 1600, \verb!C! is 38 percent faster than Eigen). But as model becomes complex, Eigen perform better and the difference is execution time is less than 15 percent. Again the abnormal behaviour can be observed in case of network size 101770 where \verb!C! is 26 percent faster than Eigen. More test on the \verb!C! implementation needs to conducted to identify the bug causing this behaviour.
+For smaller models, it can be observed that \texttt{C} is faster than Eigen (for the network size of 1600, \texttt{C} is 38 percent faster than Eigen). But as model becomes complex, Eigen perform better and the difference is execution time is less than 15 percent. Again the abnormal behaviour can be observed in case of network size 101770 where \texttt{C} is 26 percent faster than Eigen. More test on the \texttt{C} implementation needs to conducted to identify the bug causing this behaviour.
 
-With regards to memory utilisation Eigen perform better than \verb!C! by 30\%.
+With regards to memory utilisation Eigen perform better than \texttt{C} by 30\%.
 
 \subsection{C vs Numpy}
-\verb!C! constantly performs much better than Numpy. For the network size 101770, \verb!C! is 62\% faster.
+\texttt{C} constantly performs much better than Numpy. For the network size 101770, \texttt{C} is 62\% faster.
 Numpy utilises 17\% more runtime memory than C.
 
 \subsection{Eigen vs Numpy}
-Similar to \verb!C!, irrespective of network size, Eigen is faster than Numpy by similar margins.
+Similar to \texttt{C}, irrespective of network size, Eigen is faster than Numpy by similar margins.
 
 Eigen is efficient in memory utilisation and 42\% better than Numpy.
 

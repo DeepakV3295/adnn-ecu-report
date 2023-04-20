@@ -2,7 +2,7 @@
 
 The traditional model for deploying neural network applications on embedded devices has over time developed the neural network inference step. The popular frameworks for machine learning such as PyTorch and Tensorflow provide approaches for porting neural network models written using those frameworks with a focus on allowing for model inference. Targetting even smaller devices with Tensorflow based neural network models is possible for inference only applications via Tensorflow Lite Micro \cite{tflm}. Efforts to allow training as well in these frameworks require more effort due to the compute and memory intensive nature of the training process.
 
-This section contains the description of applications that train a neural network model to benchmark the training step on an embedded device. The neural network structure, the learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in \verb!C!, \verb!C++!, and Python. The design and development of these application and an overview of the target hardware to perform the benchmarking are covered in the following chapters.
+This section contains the description of applications that train a neural network model to benchmark the training step on an embedded device. The neural network structure, the learning algorithm, and the dataset remain the same but the implementations are completed in traditional general purpose neural network frameworks as well as straightforward implementations in \texttt{C}, \texttt{C++}, and Python. The design and development of these application and an overview of the target hardware to perform the benchmarking are covered in the following chapters.
 
 % ============================================
 %        Design
@@ -20,7 +20,7 @@ The target environment necessitates the use of cross compilers and as part of th
 
 The \textit{meta-freescale} Yocto BSP layer by NXP supports the target processor and in combination with the Poky reference distribution provides an eSDK that was primarily used to test and develop the benchmark applications.
 
-GCC based cross compilers and debuggers were usefull for the \verb!C!, \verb!C++!  programs. The \textit{meta-python} layer provided by Open Embedded was also useful in allowing for applications using Python and Numpy. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well. For further optimisations that relies on hardware specific features such as ARM\textquotesingle s CMSIS-NN cannot be so easily ported however
+GCC based cross compilers and debuggers were usefull for the \texttt{C}, \texttt{C++}  programs. The \textit{meta-python} layer provided by Open Embedded was also useful in allowing for applications using Python and Numpy. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well. For further optimisations that relies on hardware specific features such as ARM\textquotesingle s CMSIS-NN cannot be so easily ported however
 
 \section[Handwritten Digit Recognition (HDR)]{HDR-NN Benchmark Programs}
 
@@ -121,10 +121,10 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 
 \subsection[HDR-NN Training]{The Learning Algorithm}
 
-The HDR-NN benchmark applications will all share the same standard training algorithm, namely Backpropagation with Stochastic Gradient Descent. Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists in the wild, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm in through out the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations
+The HDR-NN benchmark applications will all share the same standard training algorithm listed below \ref{alg:cap}. Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm in through out the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations.
 
 \begin{algorithm}
-	\caption{Batched stochastic gradient descent with the learning rate $\gamma$ and the Mean Squared Error (\texttt{MSE}) cost function}\label{alg:cap}
+	\caption{Mini Batch Gradient Descent with learning rate $\gamma$ and the Mean Squared Error (\texttt{MSE}) cost function}\label{alg:cap}
 	\begin{algorithmic}
 	\Require initial weights $w^{(0)}$, number of epochs $E$, batch size $B$, training data with $T$ entries
 	\Ensure final weights $w^{(E*T)}$
@@ -139,7 +139,7 @@ The HDR-NN benchmark applications will all share the same standard training algo
 	\EndFor
 	\State return $w^{(T)}$
 	\end{algorithmic}
-	\end{algorithm}
+\end{algorithm}
 
 \subsection[Verifying Correctness]{Verifying Correctness}
 
@@ -177,7 +177,7 @@ Developing ANNs on tensorflow using Keras is straightforward with good support a
 
 \subsection[C]{C based HDR-NN}
 
-The \verb!C! implementation had the least amount of external dependencies and contained the network in float arrays within structs.
+The \texttt{C} implementation had the least amount of external dependencies and contained the network in float arrays within structs.
 
 \subsection[CPP - Eigen]{CPP based HDR-NN}
 

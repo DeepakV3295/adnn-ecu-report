@@ -51,37 +51,61 @@ The next section looks at developing such an embedded linux environment and the 
 
 \section{Development Process for Embedded Linux}
 
-Building and maintaining embedded linux distributions with the linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \verb!C! run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used embedded linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries. The Yocto project was chosen as the primary build system and used to generate the embedded linux and application programs used within this project.
+Building and maintaining embedded linux distributions with the linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used embedded linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries. The Yocto project was chosen as the primary build system and used to generate the embedded linux and application programs used within this project.
+
+% TODO : Discuss and possibly add reference to https://aaltodoc.aalto.fi/handle/123456789/115155
 
 \subsection{SDKs and Compiler Toolchains}
 
-Creating applications for embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \verb!C!  or \verb!C++!, into executables that can be run on the target embedded device.
+Creating applications for embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on the target embedded device.
 
-Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \verb!C! compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the linux operating system APIs, the toolchain also contains necessary header files called linux kernel header files. The last important piece of a toolchain will be the \verb!C! runtime, with the most popular choice being GNU's glibc.
+Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the linux operating system APIs, the toolchain also contains necessary header files called linux kernel header files. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
 
-\subsection{Application Development and Testing}
+\subsection{Cross Compiling and Application Development}
 
-The software development toolchain described previously can be used on a development machine with different characteristics as the . This form of creating executables for a different platform from some hardware platform is known as cross compiling. For most embedded devices the software that are run on them are created on different computing hardware usually termed host devices.
+The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a cross compiling toolchain. A compiler toolchain that creates executables for the sample platform is termed a native compiler toolchain. Cross compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, and ultimately is unavoidable as someone somewhere has to do some amount of cross compiling in order to create programs for a new hardware platform. Most software that are run on embedded devices are created on different computing hardware devices usually termed development hosts.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[fill opacity=0.7]
+		\fill[green!20] (0.5,0.5) rectangle (8.5, 4.5);
+		\fill[orange!20] (1,3) rectangle (4, 4);
+		\draw (2.5, 3.5) node {Binutils};
+		\fill[orange!20] (5,3) rectangle (8, 4);
+		\draw (6.5, 3.5) node {Kernel headers};
+		\fill[orange!20] (1,1) rectangle (4, 2);
+		\draw (2.5, 1.5) node {\texttt{C/C++} libraries};
+		\fill[orange!20] (5,1) rectangle (8, 2);
+		\draw (6.5, 1.5) node {GCC compiler};
+	\end{tikzpicture}
+	\caption[toolchains]{Primary components of a \texttt{GCC} based cross compiling toolchain for embedded linux.}
+\end{figure}
+
+Another common alternative to cross compiling in this manner is by using native compilers via emulation. Emulation is some technique that allows a computer system usually termed host to simulate the behaviour of some other computer system usually termed guest. There are several software projects that allow for emulation in this manner with QEMU being by far the most commonly used emulator targetting several different hardware platforms. QEMU can also be used to test the applications created via this process before being deployed on the target hardware. Application development for embedded devices usually employs cross compiling toolchains and emulation software to create, test, and maintain the software.
 
 \subsection{Target Device}
 
-Building an embedded linux kernel suited for a mainboard of an embedded device requires several configuration parameters describing the kernel configuration, enabled feature, and more. To port linux onto a process on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory. This process will also need to be supported by the build system configurations. The majority of the details as to how the boot loader has to be configured will be based on the pariticular hardware that it will be configured for.
+Building an embedded linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the embedded linux that is to be managing the hardware platform. To port linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory. This process will also need software and configurations that need to be supported by the build configurations that the embedded linux build system will use. The majority of the details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
-Supporting embedded hardware requires a software stack that includes several components such as the bootloader, the root file system, and the operating system. The initial target machine was an ECU filling the role of a communicator on the truck. Certain support components for this board are unavailable, such as the Yocto meta layer used for the existing software on board, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
+The initial target machine was an ECU filling the role of a communicator on the truck. Certain support components for this board are unavailable, such as the Yocto meta layer used for the existing software on board, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
 
 \section{Neural Network Application Development}
 
-In general, neural network applications are written using machine learning frameworks or software libraries meant for scientific computing. The machine learning frameworks themselves are build on top of multiple software libraries meant for specific aspects of machine learning calculations. Several libraries exist that target specific subproblems in such computations and provide optimised implementations of several different processor architectures.
+The most popular ways to write neural network models are by using machine learning frameworks such as Tensorflow, MXNet, PyTorch, Caffe, etc. These machine learning frameworks themselves are build on top of multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute platform its running on, Tensorflow may use other software libraries such as XNNPACK, or Intel oneAPI Math Kernel Library to perform the calculations. Several libraries exist that target specific subproblems in such computations and provide optimised implementations of several different processor architectures.
 
 \subsection{Choice of Software Stacks and Programming Languages}
 
-As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Machine learning based companies and their service offerings such as cloud machine learning platforms almost invariably targets these platforms and provide several software tools for developers to utilize. Developers in these platforms enjoy several resources such as productivity tools that allows for continuous integration and development, maintainance and other resources with features for performance profiling, debugging, orchestration, etc. ML and neural network service provides always target for these frameworks in their produces.
+As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Most neural network models are trained in a rich compute environments with either dedicated machine leanring computer systems or general purpose computer systems with plentiful operational capacities. Machine learning based companies and their service offerings such as cloud machine learning platforms almost invariably targets these platforms and provide several software tools for developers to utilize. Developers in these platforms enjoy several resources such as productivity tools that allows for continuous integration and development, maintainance and other resources with features for performance profiling, debugging, orchestration, etc.
 
-Another aspect to consider is the programming language in which the neural network will be written up in. Most machine learning models at present are written in Python and frameworks like PyTorch and Tensorflow have richer interfaces for Python compared to other programming languages. This is unfavourable to embedded devices where a Python application may take up higher memory and have longer latencies. The programming language of choice for embedded applications however is \verb!C! and \verb!C++! which are supported by the ML frameworks but not to the same extent as their Python interfaces.
+% TODO : Consider examples from https://github.com/EthicalML/awesome-production-machine-learning
+
+The programming environment for embedded devices however are not as featureful or supported as those mentioned previously. Developer resources such as productivity tools for neural network application development and maintainance are lacking and the software stacks that are traditionally used are either too large or unsupported on the broader embedded hardware platforms.
+
+Another aspect to consider is the programming language and software stack used to describe a neural network application. Most machine learning models at present are written in Python and frameworks like PyTorch and Tensorflow have richer interfaces for Python compared to other programming languages. This may be unfavourable to embedded devices where a Python application may take up higher memory and have longer latencies. The programming language of choice for embedded applications is \texttt{C} and \texttt{C++} which are supported by the ML frameworks but not to the same extent as their Python interfaces.
 
 \subsection{Embedded Software Stacks for Neural Networks}
 
-One complication caused by relying on software stack of the manner discribed before is software bloat. This causes a bigger problem in the context of embedded devices where resources are limited. There has been significant efforts made to clear this concern for the world of embedded devices, especially motivated by interests in getting neural network applications ready for mobile devices
+One complication caused by relying on software stack of the manner discribed before is software bloat. This causes a bigger problem in the context of embedded devices where resources are limited. There has been significant efforts made to clear this concern for the world of embedded devices \cite{tinyml}, especially motivated by interests in getting neural network applications ready for mobile devices \cite{tfl} \cite{pytorch-mobile}
 
 \section{Training on Device}
 
@@ -100,18 +124,31 @@ This thesis focuses on repurposing existing hardwared (ECU) to ML edge devices t
 
 \chapter{Theory}
 
-In the following section an overview of the nature of computations involved in neural network applications is presented. Afterwards introductions are made to some terminology associated with software development for embedded devices, contextualised in embedded linux and its application development. The final section gives a short overview of conducting application performance evaluation.
+The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualised in embedded linux and its application development. The final section gives a short overview of conducting application performance evaluation.
 
-\section{Neural Networks}
+\section{Neural Network Training}
 
-Training a machine learning model is fundamentally computing several floating point multiply and accumulate operations.
+In terms of the calculations performed by a computer system, training a neural network model reduces to performing several multiplication and addition operations on floating point values. To motivate this point of view, consider the following account of neural network models and their training process.
 
 \section{Embedded Linux Environment}
 
-As described in the previous chapter, embedded linux and user mode applications are using embedded build systems such as Buildroot or Yocto.
+As presented in the preivous chapter, the development, deployment, and maintainance of embedded linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as boot sequence, file system interfaces, boot loaders, root filesystems, cross compiling toolchains (introduced in the preceding chapter), etc.
 
 \subsection{A Simplified Embedded Boot Sequence}
 
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[fill, rounded corners, opacity=0.7]
+		\fill [orange!20] (0,0) rectangle (2.5, 1);
+		\draw [opacity=0.9] (1.25, 0.5) node {Power ON};
+		\draw [->, very thick, opacity=1] (2.75, 0.5) -- (3.75, 0.5);
+	\end{tikzpicture}
+	\caption[boot-sequence]{A simplified embedded linux boot sequence.}
+\end{figure}
+
 \section{Performance Evaluation}
+
+
 
 Roofline model for a simple matrix multiply application on Cortex-A9

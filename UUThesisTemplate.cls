@@ -1357,9 +1357,7 @@
 \usepackage{graphicx}
 
 \usepackage{tikz}
-\usepackage{listofitems} % for \readlist to create arrays
-
-\tikzset{>=latex} % for LaTeX arrow head
+\usepackage{listofitems} % for \readlist
 
 \tikzstyle{node}=[
 	very thick,circle,
@@ -1368,6 +1366,7 @@
 	inner sep=0.5,
 	outer sep=0.6
 ]
+
 \tikzstyle{connect}=[->,thick,RoyalPurple,shorten >=1]
 
 \tikzset{ % node styles, numbered for easy mapping with \nstyle
