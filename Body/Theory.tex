@@ -45,13 +45,13 @@ The scope of the thesis is to repurpose the existing Scania ECU and explore the 
 
 Developing and maintaining applications that rely on neural network models and run on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
 
-The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have application processor cores that are capable of running rich operating systems such as linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{linux-guest-os}. Linux is the prefered choice for such a guest operating system due to its configurability and rich support for application development.
+The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. Linux is the prefered choice for such a guest operating system due to its configurability and rich support for application development.
 
-The next section looks at developing such an embedded linux environment and the process of developing neural network applications for that operating system.
+The next section looks at developing such an Embedded Linux environment and the process of developing neural network applications for that operating system.
 
 \section{Development Process for Embedded Linux}
 
-Building and maintaining embedded linux distributions with the linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used embedded linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries. The Yocto project was chosen as the primary build system and used to generate the embedded linux and application programs used within this project.
+Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}. The Yocto project was chosen as the primary build system and used to generate the Embedded Linux and application programs used within this project.
 
 % TODO : Discuss and possibly add reference to https://aaltodoc.aalto.fi/handle/123456789/115155
 
@@ -59,7 +59,7 @@ Building and maintaining embedded linux distributions with the linux kernel and 
 
 Creating applications for embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on the target embedded device.
 
-Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the linux operating system APIs, the toolchain also contains necessary header files called linux kernel header files. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
+Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called Linux kernel header files. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
 
 \subsection{Cross Compiling and Application Development}
 
@@ -78,20 +78,20 @@ The software development toolchains for embedded devices are generally run on a 
 		\fill[orange!20] (5,1) rectangle (8, 2);
 		\draw (6.5, 1.5) node {GCC compiler};
 	\end{tikzpicture}
-	\caption[toolchains]{Primary components of a \texttt{GCC} based cross compiling toolchain for embedded linux.}
+	\caption[toolchains]{Primary components of a \texttt{GCC} based cross compiling toolchain for Embedded Linux.}
 \end{figure}
 
 Another common alternative to cross compiling in this manner is by using native compilers via emulation. Emulation is some technique that allows a computer system usually termed host to simulate the behaviour of some other computer system usually termed guest. There are several software projects that allow for emulation in this manner with QEMU being by far the most commonly used emulator targetting several different hardware platforms. QEMU can also be used to test the applications created via this process before being deployed on the target hardware. Application development for embedded devices usually employs cross compiling toolchains and emulation software to create, test, and maintain the software.
 
 \subsection{Target Device}
 
-Building an embedded linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the embedded linux that is to be managing the hardware platform. To port linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory. This process will also need software and configurations that need to be supported by the build configurations that the embedded linux build system will use. The majority of the details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
+Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. To port Linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory. This process will also need software and configurations that need to be supported by the build configurations that the Embedded Linux build system will use. The majority of the details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
 The initial target machine was an ECU filling the role of a communicator on the truck. Certain support components for this board are unavailable, such as the Yocto meta layer used for the existing software on board, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
 
 \section{Neural Network Application Development}
 
-The most popular ways to write neural network models are by using machine learning frameworks such as Tensorflow, MXNet, PyTorch, Caffe, etc. These machine learning frameworks themselves are build on top of multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute platform its running on, Tensorflow may use other software libraries such as XNNPACK, or Intel oneAPI Math Kernel Library to perform the calculations. Several libraries exist that target specific subproblems in such computations and provide optimised implementations of several different processor architectures.
+The most popular ways to write neural network models are by using machine learning frameworks such as Tensorflow, MXNet, PyTorch, Caffe, etc. These machine learning frameworks themselves are build on top of multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute platform its running on, Tensorflow may use other software libraries such as XNNPACK, or Intel oneAPI Math Kernel Library to perform the calculations. Several libraries exist that target specific subproblems in machine learning computations and provide optimised implementations for several different processor architectures such as XNNPACK or Intel oneAPI Math Kernel Libray.
 
 \subsection{Choice of Software Stacks and Programming Languages}
 
@@ -107,11 +107,11 @@ Another aspect to consider is the programming language and software stack used t
 
 One complication caused by relying on software stack of the manner discribed before is software bloat. This causes a bigger problem in the context of embedded devices where resources are limited. There has been significant efforts made to clear this concern for the world of embedded devices \cite{tinyml}, especially motivated by interests in getting neural network applications ready for mobile devices \cite{tfl} \cite{pytorch-mobile}
 
-\section{Training on Device}
+\subsection{}
+
+\section{Federated Learning}
 
 The traditional model for developing machine learning applications on embedded devices has several discrete steps such as collecting sensor data from the embedded devices
-
-\subsection{Federated Learning}
 
 Federated learning is a technique of training ML models in a distributed way, where each client or device uses its own data set to train a local model. A client application on a truck generates sensor data created by the operation of the vehicle. Each vehicle then trains on-board a local model which is then centrally collected and aggregated to build a global model. This global model can then be used for inference in each client. In the LOBSTR \cite{lobstr} and FAMOUS \cite{famous} projects Scania has developed statistical models and NN models for anomaly detection. The statistical models are lightweight and can easily be trained with limited computational resources. These neural network models are computationally heavy and hard to train with limited resources. The existing ECUs are not tailored for ML and general purpose ML frameworks often are hard to use in this embedded systems, specially for training purposes.
 
@@ -124,31 +124,44 @@ This thesis focuses on repurposing existing hardwared (ECU) to ML edge devices t
 
 \chapter{Theory}
 
-The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualised in embedded linux and its application development. The final section gives a short overview of conducting application performance evaluation.
+The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualised in Embedded Linux and its application development. The final section gives a short overview of conducting application performance evaluation.
 
 \section{Neural Network Training}
 
 In terms of the calculations performed by a computer system, training a neural network model reduces to performing several multiplication and addition operations on floating point values. To motivate this point of view, consider the following account of neural network models and their training process.
 
-\section{Embedded Linux Environment}
+\section{Embedded Linux}
 
-As presented in the preivous chapter, the development, deployment, and maintainance of embedded linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as boot sequence, file system interfaces, boot loaders, root filesystems, cross compiling toolchains (introduced in the preceding chapter), etc.
+As presented in the preivous chapter, the development, deployment, and maintainance of Embedded Linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as boot loaders, device tree layouts, flash memory, cross compiling toolchains (introduced in the preceding chapter), etc.
 
-\subsection{A Simplified Embedded Boot Sequence}
+Porting an Embedded Linux distribution on some embedded hardware completes successfully when the processor on the board is able to run the Linux operating system. Depending on hardware several paths may be taken by the processor to reach this stage after powering on. This process of starting the computer is called booting and the sequence of stages the board goes through is called boot sequence. Embedded devices are greatly varied and hence there is great variance in how boot sequence take place.
 
+\subsection{A Simplified Boot Sequence}
+
+After power up, the processor requires initialisation which for the kind of processors usually found in ECUs is performed by firmware placed in a special purpose memory called Boot ROM. This code is responsible for initialising peripheral devices, hardware busses, CPU registers, etc. and after hardware initialisation locates and loads a bootloader program. Bootloader programs are responsible for continuing the boot process and may have multiple stages with one loading another. The most commonly used open source boot loader for embedded devices is U-Boot. U-Boot will normally be stored in some storage medium that will be accessible by the Boot ROM code, usually some flash memory. Flash memory is a kind of non-volatile memory that can be electrically erased and reprogrammed and is commonly used for storing data and firmware. Flash memory comes in two kinds, NOR flash and NAND flash which have different performance characteristics and usage scenarios.
 
 \begin{figure}[h]
 	\centering
 	\begin{tikzpicture}[fill, rounded corners, opacity=0.7]
+		\tikzset{next/.style={blue, ->, very thick, opacity=0.8}}
 		\fill [orange!20] (0,0) rectangle (2.5, 1);
-		\draw [opacity=0.9] (1.25, 0.5) node {Power ON};
-		\draw [->, very thick, opacity=1] (2.75, 0.5) -- (3.75, 0.5);
+		\draw [opacity=0.9] (1.25, 0.5) node {Boot ROM};
+		\draw [next] (2.75, 0.5) -- (3.75, 0.5);
+		\fill [orange!20] (4,0) rectangle (6.5, 1);
+		\draw [opacity=0.9] (5.25, 0.5) node {U-boot};
+		\draw [next] (6.75, 0.5) -- (7.75, 0.5);
+		\fill [orange!20] (8,0) rectangle (10.5, 1);
+		\draw [opacity=0.9] (9.25, 0.5) node {Kernel};
+		\draw [next] (10.75, 0.5) -- (11.75, 0.5);
+		\fill [orange!20] (12,0) rectangle (14.5, 1);
+		\draw [opacity=0.9] (13.25, 0.5) node {rootfs};
 	\end{tikzpicture}
-	\caption[boot-sequence]{A simplified embedded linux boot sequence.}
 \end{figure}
 
+After getting control of the processor, U-Boot then has to take care of initialising the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. One of the configuration data that U-Boot has to pass to the kernel is the device tree, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to disuade the creation of U-Boot and Linux forks to target marginally different boards.
+
+Once U-Boot completes and gives up control over the processor, the kernel then starts with more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices.
+
 \section{Performance Evaluation}
-
-
 
 Roofline model for a simple matrix multiply application on Cortex-A9
