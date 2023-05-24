@@ -68,34 +68,37 @@ The software development toolchains for embedded devices are generally run on a 
 \begin{figure}[h]
 	\centering
 	\begin{tikzpicture}[fill opacity=0.7]
-		\fill[green!20] (0.5,0.5) rectangle (8.5, 4.5);
-		\fill[orange!20] (1,3) rectangle (4, 4);
-		\draw (2.5, 3.5) node {Binutils};
-		\fill[orange!20] (5,3) rectangle (8, 4);
-		\draw (6.5, 3.5) node {Kernel headers};
-		\fill[orange!20] (1,1) rectangle (4, 2);
-		\draw (2.5, 1.5) node {\texttt{C/C++} libraries};
-		\fill[orange!20] (5,1) rectangle (8, 2);
-		\draw (6.5, 1.5) node {GCC compiler};
+		\fill[green!20] (0.25,0.25) rectangle (7.75, 3.75);
+
+		\fill[orange!20, rounded corners] (0.75,2.25) rectangle (3.75, 3.25);
+		\draw (2.25, 2.75) node {Binutils};
+
+		\fill[orange!20, rounded corners] (4.5,2.25) rectangle (7.25, 3.25);
+		\draw (5.95, 2.75) node {Kernel headers};
+
+		\fill[orange!20, rounded corners] (0.75,0.75) rectangle (3.75, 1.75);
+		\draw (2.25, 1.25) node {\texttt{C/C++} libraries};
+
+		\fill[orange!20, rounded corners] (4.5,0.75) rectangle (7.25, 1.75);
+		\draw (5.95, 1.25) node {GCC compiler};
 	\end{tikzpicture}
-	\caption[toolchains]{Primary components of a \texttt{GCC} based cross compiling toolchain for Embedded Linux.}
 \end{figure}
 
 Another common alternative to cross compiling in this manner is by using native compilers via emulation. Emulation is some technique that allows a computer system usually termed host to simulate the behaviour of some other computer system usually termed guest. There are several software projects that allow for emulation in this manner with QEMU being by far the most commonly used emulator targetting several different hardware platforms. QEMU can also be used to test the applications created via this process before being deployed on the target hardware. Application development for embedded devices usually employs cross compiling toolchains and emulation software to create, test, and maintain the software.
 
 \subsection{Target Device}
 
-Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. To port Linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory. This process will also need software and configurations that need to be supported by the build configurations that the Embedded Linux build system will use. The majority of the details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
+Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is refered to as a Board Support Package (BSP). To port Linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory. This process will also need software and configurations that need to be supported by the build configurations that the Embedded Linux build system will use. The majority of the details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
-The initial target machine was an ECU filling the role of a communicator on the truck. Certain support components for this board are unavailable, such as the Yocto meta layer used for the existing software on board, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
+The initial target machine was an ECU filling the role of a communicator on the truck. The BSP for the board however was unavailable and as well as certain critical support components for the board, such as the vendor's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
 
 \section{Neural Network Application Development}
 
 The most popular ways to write neural network models are by using machine learning frameworks such as Tensorflow, MXNet, PyTorch, Caffe, etc. These machine learning frameworks themselves are build on top of multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute platform its running on, Tensorflow may use other software libraries such as XNNPACK, or Intel oneAPI Math Kernel Library to perform the calculations. Several libraries exist that target specific subproblems in machine learning computations and provide optimised implementations for several different processor architectures such as XNNPACK or Intel oneAPI Math Kernel Libray.
 
-\subsection{Choice of Software Stacks and Programming Languages}
+\subsection{Choice of Programming Language and Machine Learning Framework}
 
-As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Most neural network models are trained in a rich compute environments with either dedicated machine leanring computer systems or general purpose computer systems with plentiful operational capacities. Machine learning based companies and their service offerings such as cloud machine learning platforms almost invariably targets these platforms and provide several software tools for developers to utilize. Developers in these platforms enjoy several resources such as productivity tools that allows for continuous integration and development, maintainance and other resources with features for performance profiling, debugging, orchestration, etc.
+As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Most neural network models are trained in a rich compute environments with either dedicated machine learning computer systems or general purpose computer systems with plentiful operational capacities. Machine learning based companies and their service offerings such as cloud machine learning platforms almost invariably targets these platforms and provide several software tools for developers to utilize. Developers in these platforms enjoy several resources such as productivity tools that allows for continuous integration and development, maintainance and other resources with features for performance profiling, debugging, orchestration, etc.
 
 % TODO : Consider examples from https://github.com/EthicalML/awesome-production-machine-learning
 
@@ -103,17 +106,58 @@ The programming environment for embedded devices however are not as featureful o
 
 Another aspect to consider is the programming language and software stack used to describe a neural network application. Most machine learning models at present are written in Python and frameworks like PyTorch and Tensorflow have richer interfaces for Python compared to other programming languages. This may be unfavourable to embedded devices where a Python application may take up higher memory and have longer latencies. The programming language of choice for embedded applications is \texttt{C} and \texttt{C++} which are supported by the ML frameworks but not to the same extent as their Python interfaces.
 
-\subsection{Embedded Software Stacks for Neural Networks}
+% TODO: Add content about Compiler Toolchains for Deep Learning Workloads on Embedded Platforms
 
-One complication caused by relying on software stack of the manner discribed before is software bloat. This causes a bigger problem in the context of embedded devices where resources are limited. There has been significant efforts made to clear this concern for the world of embedded devices \cite{tinyml}, especially motivated by interests in getting neural network applications ready for mobile devices \cite{tfl} \cite{pytorch-mobile}
+\subsection{Neural Network Inference on Embedded Devices}
 
-\subsection{}
+The typical deployment of neural network models on embedded devices following a pattern of gathering sensor data from the embedded device onto an external data lake, training a neural network model using this data on workstations or cloud platforms, then implementing the neural network model inference on the embedded device. Preferably the implementation utilise math kernel libraries that are made specifically for the embedded platform.
+
+There are several considerations to the choice of software used to implement the neural network model such as the software bloat in a machine learning framework, the difficulty in making use of its full feature set, lack of integrations with optmised kernel libraries, etc. Machine learning frameworks typically provide inconsistent support for embedded platforms in general which exarcerbates these difficulties. However due to the importance of these platforms there has been significant efforts made to clear this concern in these frameworks for the world of embedded devices in projects like TinyML\cite{tinyml}, especially motivated by interests in getting neural network applications ready for mobile devices such as Tensorflow Lite\cite{tfl} and PyTorch Mobile \cite{pytorch-mobile}
 
 \section{Federated Learning}
 
-The traditional model for developing machine learning applications on embedded devices has several discrete steps such as collecting sensor data from the embedded devices
+A significant problem in the traditional model for neural network application development in embedded devices is the significant consumption of network bandwith associated with sending sensor data to the data lake and downloading a trained model on to the embedded device. The behavioural data of the vehicle is also exposed via this method causing privacy concerns. One way to address this problem is to rely on alternative mechanisms to perform the continual training of the model in a decentralised manner such as that in Federated Learning.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[scale=0.7, opacity=0.87]
+
+		\foreach \x in {0, 0.25, 0.5, 0.75}
+			\filldraw[fill=green!35, draw=green!50!black] (1 + \x, 3 + \x) rectangle (3 + \x, 5 + \x);
+
+		\draw (0, 4.5) node {ECUs};
+
+		\node[cloud, draw=gray,
+				fill = gray!20,
+				aspect=2]
+			(c) at (7, 6.5) {Data Lake};
+
+		\foreach \x in {0, 0.25, 0.5}
+			\node[rectangle split, draw, minimum width=1cm, rectangle split part fill={orange!50, gray!50, orange!50, gray!50}] at (10.5 + \x,4 + \x) {};
+
+		\draw (13.5, 4.25) node {ML Compute};
+
+
+	\end{tikzpicture}
+\end{figure}
 
 Federated learning is a technique of training ML models in a distributed way, where each client or device uses its own data set to train a local model. A client application on a truck generates sensor data created by the operation of the vehicle. Each vehicle then trains on-board a local model which is then centrally collected and aggregated to build a global model. This global model can then be used for inference in each client. In the LOBSTR \cite{lobstr} and FAMOUS \cite{famous} projects Scania has developed statistical models and NN models for anomaly detection. The statistical models are lightweight and can easily be trained with limited computational resources. These neural network models are computationally heavy and hard to train with limited resources. The existing ECUs are not tailored for ML and general purpose ML frameworks often are hard to use in this embedded systems, specially for training purposes.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[rounded corners, opacity=0.87]
+
+		\foreach \x in {0, 2.5, 5.0, 7.5}
+		{
+			\filldraw[fill=green!30, draw=green!50!black] (\x, 0) rectangle (2 + \x, 2);
+			\draw (1 + \x, 1) node {ECU};
+		}
+
+		\filldraw[fill=orange!20,draw=red!50!black] (2.75, 2.75) rectangle (6.75, 4.75);\
+		\draw (4.75, 3.75) node {Central Server};
+
+	\end{tikzpicture}
+\end{figure}
 
 This thesis focuses on repurposing existing hardwared (ECU) to ML edge devices that are tailored to train NN in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the commuicator to benchamark and experiment different NN implementations and evauluate the optimal ones.
 
@@ -124,15 +168,58 @@ This thesis focuses on repurposing existing hardwared (ECU) to ML edge devices t
 
 \chapter{Theory}
 
-The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualised in Embedded Linux and its application development. The final section gives a short overview of conducting application performance evaluation.
+The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualised in Embedded Linux. The final section gives a short overview of conducting application performance evaluation.
 
-\section{Neural Network Training}
+\section{Neural Networks}
 
-In terms of the calculations performed by a computer system, training a neural network model reduces to performing several multiplication and addition operations on floating point values. To motivate this point of view, consider the following account of neural network models and their training process.
+A neural network consists of a collection nodes called neurons that are arranged into several layers with connecting edges that go between the layers. A connecting edge between two neurons describe a data transfer as the first neuron producing an output data that is then consumed as input data by the second neuron. The first layer and final layer are special and are called input layer and output layer respectively. There maybe zero or more layers that lie between them called hidden layers.
+
+\begin{center}
+	\begin{tikzpicture}[x=2.4cm,y=1.2cm]
+		\readlist\Nnod{4,3,2} % array of number of nodes per layer
+		\readlist\Nstr{1,2,3} % array of string number of nodes per layer
+		\readlist\Cstr{x,h^{(\prev)},y} % array of coefficient symbol per layer
+		\def\yshift{0.45} % shift last node for dots
+
+		\foreachitem \N \in \Nnod{ % loop over layers
+			\def\lay{\Ncnt} % alias of index of current layer
+			\pgfmathsetmacro\prev{int(\Ncnt-1)} % number of previous layer
+			\message{\lay,}
+			\foreach \i [evaluate={\c=int(\i==\N); \y=\N/2-\i-\c*\yshift;
+						\x=\lay; \n=\nstyle;}] in {1,...,\N}{ % loop over nodes
+			% NODES
+			\node[node \n] (N\lay-\i) at (\x,\y) {$\Cstr[\lay]$};
+
+			% CONNECTIONS
+			\ifnum\lay>1 % connect to previous layer
+				\foreach \j in {1,...,\Nnod[\prev]}{ % loop over nodes in previous layer
+				\draw[connect,white,line width=1.2] (N\prev-\j) -- (N\lay-\i);
+				\draw[connect] (N\prev-\j) -- (N\lay-\i);
+				}
+			\fi % else: nothing to connect first layer
+			}
+			\path (N\lay-\N) --++ (0,1+\yshift) node[midway,scale=1.5] {$\vdots$};
+		}
+	\end{tikzpicture}
+\end{center}
+
+The connecting edges between the neurons are weighted and additionally a neuron may carry a weight of its own called a bias. The neurons may have several incoming edges, except for the neurons in the input layer, and several outgoing edges, except for the neurons in the output layer. Each neuron in the network describes a computation in at least two steps, (1) multiply input data with corresponding edge weight and take their sum along with the bias value, (2) transform the value calculated earlier using an activation function.
+
+An activation function $\sigma$ is said to determine the activation of the neuron which can be thought of as the output data that the neuron generates. There are several kinds of activation functions that are used in neural networks such as the sigmoid, ReLU, tanh, and more
+
+Combining these operations the neuron could output
+
+\begin{equation}
+	y_k = \sigma \left( \sum_{j=0}^m w_{kj} x_j \right)
+\end{equation}
+
+% For a given artificial neuron k, let there be m + 1 inputs with signals x0 through xm and weights wk0 through wkm. Usually, the x0 input is assigned the value +1, which makes it a bias input with wk0 = bk. This leaves only m actual inputs to the neuron: from x1 to xm.
+
+This formulation of a neural network can be trained by processing examples from to perform a classification for example. Neural networks are capable of
 
 \section{Embedded Linux}
 
-As presented in the preivous chapter, the development, deployment, and maintainance of Embedded Linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as boot loaders, device tree layouts, flash memory, cross compiling toolchains (introduced in the preceding chapter), etc.
+As presented in the preivous chapter, the development, deployment, and maintainance of Embedded Linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as boot loaders, device tree layouts, flash memory, cross compiling toolchains, board suport package, etc. with the later two having already been introduced in the preceding chapter.
 
 Porting an Embedded Linux distribution on some embedded hardware completes successfully when the processor on the board is able to run the Linux operating system. Depending on hardware several paths may be taken by the processor to reach this stage after powering on. This process of starting the computer is called booting and the sequence of stages the board goes through is called boot sequence. Embedded devices are greatly varied and hence there is great variance in how boot sequence take place.
 
@@ -152,16 +239,15 @@ After power up, the processor requires initialisation which for the kind of proc
 		\draw [next] (6.75, 0.5) -- (7.75, 0.5);
 		\fill [orange!20] (8,0) rectangle (10.5, 1);
 		\draw [opacity=0.9] (9.25, 0.5) node {Kernel};
-		\draw [next] (10.75, 0.5) -- (11.75, 0.5);
-		\fill [orange!20] (12,0) rectangle (14.5, 1);
-		\draw [opacity=0.9] (13.25, 0.5) node {rootfs};
+		% \draw [next] (10.75, 0.5) -- (11.75, 0.5);
+		% \fill [orange!20] (12,0) rectangle (14.5, 1);
+		% \draw [opacity=0.9] (13.25, 0.5) node {rootfs};
 	\end{tikzpicture}
 \end{figure}
 
-After getting control of the processor, U-Boot then has to take care of initialising the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. One of the configuration data that U-Boot has to pass to the kernel is the device tree, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to disuade the creation of U-Boot and Linux forks to target marginally different boards.
+After getting control of the processor, U-Boot then has to take care of initialising the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the device tree, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to disuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
 
-Once U-Boot completes and gives up control over the processor, the kernel then starts with more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices.
+Once U-Boot completes and gives up control over the processor, the kernel then starts with more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices. The kernel then proceeds to complete its start up by setting up Stacks, initialising the Scheduler, setting up and allocating Pages, etc. and completes the start up after having spawned the \texttt{init} process, which is the first process to that starts after booting completes.
 
 \section{Performance Evaluation}
 
-Roofline model for a simple matrix multiply application on Cortex-A9

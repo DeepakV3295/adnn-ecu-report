@@ -1359,6 +1359,16 @@
 \usepackage{tikz}
 \usepackage{listofitems} % for \readlist
 
+\usetikzlibrary{
+		shapes.symbols,
+		shapes.multipart,
+		graphs,
+		arrows,
+		arrows.meta
+}
+
+\tikzstyle{connect}=[->,thick,RoyalPurple,shorten >=1]
+
 \tikzstyle{node}=[
 	very thick,circle,
 	draw=Cerulean,
@@ -1366,8 +1376,6 @@
 	inner sep=0.5,
 	outer sep=0.6
 ]
-
-\tikzstyle{connect}=[->,thick,RoyalPurple,shorten >=1]
 
 \tikzset{ % node styles, numbered for easy mapping with \nstyle
 	node 1/.style={
