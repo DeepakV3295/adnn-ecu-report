@@ -1359,46 +1359,33 @@
 \usepackage{tikz}
 \usepackage{listofitems} % for \readlist
 
-\usetikzlibrary{
-		shapes.symbols,
-		shapes.multipart,
-		graphs,
-		arrows,
-		arrows.meta
-}
+\usetikzlibrary{arrows.meta}
+
+% Neural Network Diagrams
 
 \tikzstyle{connect}=[->,thick,RoyalPurple,shorten >=1]
 
 \tikzstyle{node}=[
 	very thick,circle,
-	draw=Cerulean,
-	minimum size=22,
+	minimum size=21,
 	inner sep=0.5,
 	outer sep=0.6
 ]
 
-\tikzset{ % node styles, numbered for easy mapping with \nstyle
-	node 1/.style={
+\tikzset{ % node styles
+	node 1/.style={ % input layer neuron
 		node,OliveGreen,
 		draw=JungleGreen,
 		fill=JungleGreen!25
 		},
-	node 2/.style={
+	node 2/.style={ % hidden layer neuron
 		node,RoyalPurple,
 		draw=Cerulean,
 		fill=Cerulean!20
 		},
-	node 4/.style={
+	node 3/.style={ % output layer neuron
 		node,BrickRed,
 		draw=OrangeRed,
 		fill=OrangeRed!20
 		},
-	node 3/.style={
-		node,RoyalPurple,
-		draw=Cerulean,
-		fill=Cerulean!20
-		},
 }
-
-% map layer number onto 1, 2, 3, or 4
-\def\nstyle{int(\lay<\Nnodlen?min(2,\lay):4)}
