@@ -12,16 +12,6 @@ This section contains the description of applications that train a neural networ
 
 The benchmark applications test the training phase of a Handwritten Digit Recognition Neural Network (HDR-NN) on the MNIST \cite{mnist} dataset. MNIST is a popular dataset of handwritten digits commonly used for training image processing systems. It is a popular starting point for neural network implementations and has been used as the primary dataset in the benchmark experiments. The target embedded device is an Electronic Control Unit (ECU) with a Cortex-A9 processor.
 
-\section{Neural Network Development Process}
-
-The target environment necessitates the use of cross compilers and as part of the development process multiple build environments and systems were examined. Ultimately, the primary platform that ended up being used was the Yocto Project extensible SDK (eSDK) based application development process running on a standard linux based build environment. The QEMU emulator was also employed at various staged to check the build, and further test the application before moving onto tests on the actual hardware.
-
-\subsection{Compiler Toolchains, Python pakcages, \& Yocto Recipes}
-
-The \textit{meta-freescale} Yocto BSP layer by NXP supports the target processor and in combination with the Poky reference distribution provides an eSDK that was primarily used to test and develop the benchmark applications.
-
-GCC based cross compilers and debuggers were usefull for the \texttt{C}, \texttt{C++}  programs. The \textit{meta-python} layer provided by Open Embedded was also useful in allowing for applications using Python and Numpy. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well. For further optimisations that relies on hardware specific features such as ARM\textquotesingle s CMSIS-NN cannot be so easily ported however
-
 \section[Handwritten Digit Recognition (HDR)]{HDR-NN Benchmark Programs}
 
 The handwritten digit recognition neural network is a fully connected neural network and derives from the popular neural network textbook \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}
@@ -92,9 +82,9 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 
 \subsection[HDR-NN Training]{The Learning Algorithm}
 
-The HDR-NN benchmark applications will all share the same standard training algorithm listed below \ref{alg:cap}. Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm in through out the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations.
+The HDR-NN benchmark applications all share the same standard training algorithm listed below (\ref{alg:cap}). Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm through out the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations.
 
-\begin{algorithm}
+\begin{algorithm}[h]
 	\caption{Mini Batch Gradient Descent with learning rate $\gamma$ and the Mean Squared Error (\texttt{MSE}) cost function}\label{alg:cap}
 	\begin{algorithmic}
 	\Require initial weights $w^{(0)}$, number of epochs $E$, batch size $B$, training data with $T$ entries
@@ -112,9 +102,9 @@ The HDR-NN benchmark applications will all share the same standard training algo
 	\end{algorithmic}
 \end{algorithm}
 
-\subsection{Training Configurations}
+% \subsection{Training Configurations}
 
-The model structure can be configured in the same manner across the implementations, as well as the learning algorithm configuration. This means that the shape of the model, the input parameters, the connections between the neuron can be configured in the same manner across the implementations. Furthermore, the learning rate, the number of epochs, and the batch size are also configurable in the same manner. Once the different implementations are configured in a similar manner, the training of the model is completed and the resulting weights are compared.
+% The model structure can be configured in the same manner across the implementations, as well as the learning algorithm configuration. This means that the shape of the model, the input parameters, the connections between the neuron can be configured in the same manner across the implementations. Furthermore, the learning rate, the number of epochs, and the batch size are also configurable in the same manner. Once the different implementations are configured in a similar manner, the training of the model is completed and the network accuracies are compared.
 
 % ============================================
 %        Development
@@ -122,13 +112,21 @@ The model structure can be configured in the same manner across the implementati
 
 \chapter{Development}
 
-The HDR-NN benchmark application was completed in different programming languages and in neural network frameworks like PyTorch. Details about the target environment and the benchmark implementations are layed out in this chapter
+The HDR-NN benchmark applications were completed in different programming languages and in PyTorch. Details about the target environment and the benchmark implementations are layed out in this chapter
 
-\section[iMX6 Custom Board Target]{Target Hardware}
+\section[iMX6 Custom Board Target]{Targeting iMX6SDB}
 
-Exploring the target ECU board involved several examinations of a known state of the board. The linux kernel binaries were made via the Yocto project however there was no access to source code such as the recipes or the meta-layers themselves
+The target environment necessitates the use of cross compilers and as part of the development process multiple build environments and systems were examined. Ultimately, the primary platform that ended up being used was the Yocto Project extensible SDK (eSDK) based application development process running on a standard linux based build environment. The QEMU emulator was also employed at various staged to check the build, and further test the application before moving onto tests on the actual hardware.
 
-The i.MX SoCs have a special boot mode named Serial Download Mode (SDM) typically accessible through boot switches. When configured into this mode, the ROM code will poll for a connection on a USB OTG port
+\subsection{Compiler Toolchains \& Yocto Recipes}
+
+The \textit{meta-freescale} Yocto BSP layer by NXP supports the target processor and in combination with the Poky reference distribution provides an eSDK that was primarily used to test and develop the benchmark applications.
+
+GCC based cross compilers and debuggers were usefull for the \texttt{C}, \texttt{C++}  programs. The \textit{meta-python} layer provided by Open Embedded was also useful in allowing for applications using Python and Numpy. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well.
+
+\subsection{Building PyTorch for iMX6SDB}
+
+PyTorch project provides LibTorch as a binary distribution of all the headers, libraries, CMake configurations required to use PyTorch. However the PyTorch project does not provide these binaries for iMX6SDB. The source code could however, with some effort, be used to generate these binaries and for this project a QEMU based user-mode emulation was used for native compilation of the libtorch binaries.
 
 \subsection[ECU / iMX6 Evaluation Board Overview]{i.MX6 Overview}
 
@@ -138,18 +136,105 @@ The iMX6 series is designed for high performance low power applications and targ
 
 With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms and the correctness verification routines and execution statistics measurement runs were seperated. The benchmark executions did not produce disk I/O after the dataset was read, unlike the correctness verification runs which produced the final weights from the execution runs that were subsequently compared with the other benchmark program execution output weights
 
-\subsection[Python - Numpy]{The Reference HDR-NN in Python}
+\subsection{The Reference HDR-NN in Python}
 
-This is the baseline implementation and follows close to the implementation exhibitied on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library Numpy
+This is the baseline implementation and follows close to the implementation exhibitied on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library Numpy.
 
-\subsection[Tensorflow Lite]{Tensorflow Lite based HDR-NN}
+% \subsection[Tensorflow Lite]{Tensorflow Lite based HDR-NN}
 
-Developing ANNs on tensorflow using Keras is straightforward with good support and well documented APIs. Building the same model for a Tensorflow Lite (TFLite) was more involved however still straightforward
+% Developing ANNs on tensorflow using Keras is straightforward with good support and well documented APIs. Building the same model for a Tensorflow Lite (TFLite) was more involved however still straightforward
 
-\subsection[C]{C based HDR-NN}
+\subsection{PyTorch based HDR-NN}
 
-The \texttt{C} implementation had the least amount of external dependencies and contained the network in float arrays within structs.
+Developing ANNs using PyTorch is straightforward with good support and well documented APIs. There were two primary choices for programming language to write the neural network in PyTorch, namely Python and C++. PyTorch project does not provide binaries for either language choice for iMX6SDB however with the source code of the project being available, the libtorch binaries were generated as mention in the previous section.
 
-\subsection[CPP - Eigen]{CPP based HDR-NN}
+The implementation used the MNIST made available by Torchvision library which is mainted under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the Numpy based Python implementation. The following listing shows the function that performs feedforward pass in the Network.
 
-The CPP implementation used the n-dimensional array data structure feature of Eigen
+\begin{lstlisting}[language=Python]
+class Network(object):
+
+def __init__(self, sizes):
+	"""Initialise neural network"""
+	self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+	self.weights = [np.random.randn(y, x)
+	for x, y in zip(sizes[:-1], sizes[1:])]
+
+def feedforward(self, a):
+	for b, w in zip(self.biases, self.weights):
+		a = sigmoid(np.dot(w, a)+b)
+	return a
+\end{lstlisting}
+
+
+\subsection{C based HDR-NN}
+
+The \texttt{C} implementation had the least amount of external dependencies and contained the data structures of the neural network in float arrays within structs shown in the listing below. The learning algorithm was implemented to remain identical with those used in the other implementations.
+
+\begin{lstlisting}[language=C]
+/* HDR Neural Network */
+typedef struct
+{
+	float bias;
+	float *weights;
+	float *nabla_w;
+} Neuron;
+
+typedef struct LayerT
+{
+	int size;
+	int incidents;
+	Neuron *neurons;
+	float *activations;
+	float *z_values;
+	float *nabla_b;
+	struct LayerT *next;
+	struct LayerT *previous;
+} Layer; // Network layers except for input
+
+typedef struct
+{
+	Layer *layers;
+	int depth;
+} Network; // HDRNN
+\end{lstlisting}
+
+\subsection{CPP based HDR-NN}
+
+The CPP implementation used the n-dimensional array data structure feature of Eigen. It shares the same structure as the Numpy based Python implementation with the same learning algorithm show below.
+
+\begin{lstlisting}[language=C]
+/* Mini Batched Stochastic Gradient Descend Algorithm
+*
+* Reference implementation from
+* http://neuralnetworksanddeeplearning.com
+*/
+void mini_batch_sgd()
+{
+	// Initialize Nabla matrixes
+	std::vector<nabla> nablas;
+	for (std::size_t i = 0; i < network.size(); i++)
+		nablas.push_back(
+					nabla(network[i].weights.rows(),
+						network[i].weights.cols())
+					);
+
+	// Go through the training data by batches
+	for (std::size_t i = 0; i < mnist_loader::train.size()
+				; i += BATCH_SIZE)
+	{
+		// Perform Backpropagation on the batch
+		for (std::size_t j = 0; j < BATCH_SIZE; j++)
+			back_propogate(nablas,
+						mnist_loader::train[i+j].data,
+						mnist_loader::train[i+j].label);
+
+		// Update the weights and biases of the network
+		for (std::size_t j = 0; j < network.size(); j++)
+			network[j].update(nablas[j]);
+
+		// Zero out the nabla matrixes
+		for (std::size_t j = 0; j < nablas.size(); j++)
+			nablas[j].zero_out();
+	}
+}
+\end{lstlisting}

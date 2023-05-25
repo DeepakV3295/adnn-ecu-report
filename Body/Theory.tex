@@ -221,7 +221,7 @@ Combining these operations the neuron $y_k$ has the output
 	y_k = \sigma \left( \sum_{j=0}^m w_{kj} x_j \right)
 \end{equation}
 
-Where $y_k$ is the $k^{th}$ neuron in a layer with input values $x_0$ through $x_m$ with corresponding weights $w_{k0}$ through $w_{km}$. The first input $x_0$ is usually set to $0$ and hence the corresponding weight $w_k0$ stands in for the bias $b_k$ of the neuron.
+Where $y_k$ is the $k^{th}$ neuron in a layer with input values $x_0$ through $x_m$ with corresponding weights $w_{k0}$ through $w_{km}$. The first input $x_0$ is usually set to $0$ and hence the corresponding weight $w_k0$ stands in for the bias $b_k$ of the neuron. The complete neural network matrix multiplication pass from input to output is called the feedforward.
 
 Neural networks can be constructed in a variety of ways with the choice for how many layers to use, the number of neurons in the layers, the connections between the layers, all of which can generate several different topologies. The neural network model can approximate a real world system by modelling that system as function that takes in some input and then generating an output. The neural network can approximate this function better by changing the connections between neurons, dropping and or adding neurons, varying the weights encoded in the connections, or by varying the biases within the neurons.
 
@@ -262,3 +262,22 @@ Once U-Boot completes and gives up control over the processor, the kernel then s
 
 \section{Performance Evaluation}
 
+Performance engineering is the act of employing a variety of techniques to understand and improve some performance aspect of a computer program or software system. Embedded systems are generally resource constrained with limited memory and processing power and once an application can meet its functional specifications, there is a natural pressure to ensure improved resource utilisation and performance efficiency.
+
+The first step to improve these metrics is to measure them and there are several tools that are used by the engineers conducting performance engineering. These tools are generally termed profling of software systems use that rely on the underlying hardware, the operating system environment, etc.
+
+The primary metrics in this mode of evaluation are the execution time, memory utilisation, energy consumption, and system responsiveness. Embedded linux has several interfaces that allow for the measurement of these features for both the kernel and user-level program performance.
+
+% Profiling tools and techniques are employed to measure the software's resource usage, identify hotspots, and pinpoint areas that need optimization.
+
+% Optimization techniques employed in performance engineering include:
+
+% Algorithmic optimization: Analyzing and modifying algorithms to improve efficiency, reduce computational complexity, and enhance overall performance.
+% Data structure optimization: Choosing and designing data structures that minimize memory usage, improve access patterns, and optimize data manipulation operations.
+
+% Code optimization: Fine-tuning code implementation, using optimized libraries, employing compiler optimizations, and utilizing platform-specific features to improve execution speed and reduce resource usage.
+
+% System-level optimization: Analyzing and optimizing the interaction between software components, optimizing task scheduling, memory management, and communication protocols to maximize system efficiency.
+% Performance engineering is an iterative process that involves implementing optimizations, measuring their impact, and iteratively refining the software until the desired performance objectives are achieved. It requires a deep understanding of the embedded system's hardware, software architecture, and performance trade-offs.
+
+% By focusing on performance engineering, developers can ensure that embedded software meets real-time requirements, delivers efficient execution, minimizes resource utilization, and maximizes the overall performance of the embedded system, resulting in improved user experience, reduced energy consumption, and enhanced system reliability.
