@@ -1391,8 +1391,6 @@
 }
 
 
-
-
 % ============================================
 %        Code Listings
 % ============================================
@@ -1402,7 +1400,7 @@
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
 
 %Code listing style named "mystyle"
 \lstdefinestyle{mystyle}{

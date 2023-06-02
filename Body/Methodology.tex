@@ -138,7 +138,22 @@ With the primary focus on training, MNIST dataset was primarily loaded in an eas
 
 \subsection{The Reference HDR-NN in Python}
 
-This is the baseline implementation and follows close to the implementation exhibitied on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library Numpy.
+This is the baseline implementation and follows close to the implementation exhibitied on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library Numpy. The following listing shows the function that performs feedforward pass in the Network.
+
+\begin{lstlisting}[language=Python]
+	class Network(object):
+
+	def __init__(self, sizes):
+		"""Initialise neural network"""
+		self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+		self.weights = [np.random.randn(y, x)
+		for x, y in zip(sizes[:-1], sizes[1:])]
+
+	def feedforward(self, a):
+		for b, w in zip(self.biases, self.weights):
+			a = sigmoid(np.dot(w, a)+b)
+		return a
+	\end{lstlisting}
 
 % \subsection[Tensorflow Lite]{Tensorflow Lite based HDR-NN}
 
@@ -148,21 +163,27 @@ This is the baseline implementation and follows close to the implementation exhi
 
 Developing ANNs using PyTorch is straightforward with good support and well documented APIs. There were two primary choices for programming language to write the neural network in PyTorch, namely Python and C++. PyTorch project does not provide binaries for either language choice for iMX6SDB however with the source code of the project being available, the libtorch binaries were generated as mention in the previous section.
 
-The implementation used the MNIST made available by Torchvision library which is mainted under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the Numpy based Python implementation. The following listing shows the function that performs feedforward pass in the Network.
+The implementation used the MNIST made available by Torchvision library which is mainted under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the Numpy based Python implementation.
 
-\begin{lstlisting}[language=Python]
-class Network(object):
+\begin{lstlisting}[language=C++]
+struct Net : torch::nn::Module {
+	Net() {
+		// Construct and register two Linear submodules.
+		fc1 = register_module("fc1", torch::nn::Linear(784, 30));
+		fc2 = register_module("fc2", torch::nn::Linear(30, 10));
+	}
 
-def __init__(self, sizes):
-	"""Initialise neural network"""
-	self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-	self.weights = [np.random.randn(y, x)
-	for x, y in zip(sizes[:-1], sizes[1:])]
+	// Implement the Net's algorithm.
+	torch::Tensor forward(torch::Tensor x) {
+		// Use one of many tensor manipulation functions.
+		x = torch::sigmoid(fc1->forward(x.reshape({x.size(0), 784})));
+		x = torch::sigmoid(fc2->forward(x));
+		return x;
+	}
 
-def feedforward(self, a):
-	for b, w in zip(self.biases, self.weights):
-		a = sigmoid(np.dot(w, a)+b)
-	return a
+	// Use one of many "standard library" modules.
+	torch::nn::Linear fc1{nullptr}, fc2{nullptr};
+};
 \end{lstlisting}
 
 
@@ -202,12 +223,7 @@ typedef struct
 
 The CPP implementation used the n-dimensional array data structure feature of Eigen. It shares the same structure as the Numpy based Python implementation with the same learning algorithm show below.
 
-\begin{lstlisting}[language=C]
-/* Mini Batched Stochastic Gradient Descend Algorithm
-*
-* Reference implementation from
-* http://neuralnetworksanddeeplearning.com
-*/
+\begin{lstlisting}[language=C++]
 void mini_batch_sgd()
 {
 	// Initialize Nabla matrixes
