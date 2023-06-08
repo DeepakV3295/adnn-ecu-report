@@ -51,12 +51,13 @@ This chapter presents the results of the project. The first section contains a b
 
 % \subsection{Accuracy}
 
-As the benchmark applications are developed to be identical by keeping the same structure and configurations, the model accuracy is expected to be similar. The (figure 6.1) showcases that the different implementations perform similarly irrespective of the number of parameters.
+As the benchmark applications are developed to be identical by keeping the same structure and configurations, the model accuracy is expected to be similar. Figure \ref{hdrnn-accuracy} showcases that the different implementations perform similarly irrespective of the number of parameters.
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[scale=0.32]{accuracy}
 	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations.}
+	\label{hdrnn-accuracy}
 \end{figure}
 
 Further, an abnormal behaviour can be observed when the number of parameters exceeds 101770. The accuracy of the \texttt{C} implementation decreases due to (an unknown bug).

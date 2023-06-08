@@ -1396,6 +1396,7 @@
 % ============================================
 
 \usepackage{listings}
+\usepackage{float}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -1413,8 +1414,6 @@
 	breaklines=true,
 	captionpos=b,
 	keepspaces=true,
-	numbers=left,
-	numbersep=5pt,
 	showspaces=false,
 	showstringspaces=false,
 	showtabs=false,
@@ -1423,3 +1422,7 @@
 
 %"mystyle" code listing set
 \lstset{style=mystyle}
+
+\newfloat{lstfloat}{htbp}{lop}
+\floatname{lstfloat}{Listing}
+\def\lstfloatautorefname{Listing}

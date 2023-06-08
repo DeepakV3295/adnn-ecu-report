@@ -85,7 +85,8 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 The HDR-NN benchmark applications all share the same standard training algorithm listed below (\ref{alg:cap}). Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm through out the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations.
 
 \begin{algorithm}[h]
-	\caption{Mini Batch Gradient Descent with learning rate $\gamma$ and the Mean Squared Error (\texttt{MSE}) cost function}\label{alg:cap}
+	\caption{Mini Batch Gradient Descent with learning rate $\gamma$ and the Mean Squared Error (\texttt{MSE}) cost function}
+	\label{alg:cap}
 	\begin{algorithmic}
 	\Require initial weights $w^{(0)}$, number of epochs $E$, batch size $B$, training data with $T$ entries
 	\Ensure final weights $w^{(E*T)}$
@@ -153,7 +154,7 @@ This is the baseline implementation and follows close to the implementation exhi
 		for b, w in zip(self.biases, self.weights):
 			a = sigmoid(np.dot(w, a)+b)
 		return a
-	\end{lstlisting}
+\end{lstlisting}
 
 % \subsection[Tensorflow Lite]{Tensorflow Lite based HDR-NN}
 

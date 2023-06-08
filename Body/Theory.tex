@@ -55,6 +55,16 @@ Building and maintaining Embedded Linux distributions with the Linux kernel and 
 
 % TODO : Discuss and possibly add reference to https://aaltodoc.aalto.fi/handle/123456789/115155
 
+\subsubsection{An excursion through Yocto Project's Embedded Linux build system}
+
+Embedded linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, number and nature of sofware engineers using the tool for development, build and deploy infrastructure, and the list of supported target platforms. Consider a simple development scenario targetting a popular and open source target platform such as the beaglebone black
+
+Git is the primary Source Control Manager system used within the Yocto Project
+
+\begin{lstlisting}[language=Bash]
+	git clone https://git.yoctoproject.org/git/poky
+\end{lstlisting}
+
 \subsection{SDKs and Compiler Toolchains}
 
 Creating applications for embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on the target embedded device.
@@ -86,9 +96,49 @@ The software development toolchains for embedded devices are generally run on a 
 
 Another common alternative to cross compiling in this manner is by using native compilers via emulation. Emulation is some technique that allows a (host) computer system to simulate the behaviour of some other (guest) computer system. There are several software projects that allow for emulation in this manner with QEMU being by far the most commonly used emulator targetting several different hardware platforms. QEMU can also be used to create and test embedded applications before being deployed on the target hardware. Application development for embedded devices usually employs a combination of cross compiling toolchains and emulation software to create, test, and maintain the software.
 
+\subsubsection{An example Embedded Development Environment on Linux using QEMU}
+
+The Linux kernel has a powerful feature called \texttt{binfmt\_misc} which stands for \textit{Miscellaneous Binary Format} which allows for interpreter programs to be associated and invoked upon using certain binary format files.
+
+The interpreter programs are usually user space applications such as emulators and virtual machines. For this section the intepreter program will be a qemu user-mode emulation program. The \texttt{binfmt\_misc} recognises the associated binary files by matching some bytes at the begining of a file with a magic byte sequence that had been supplied. The usage of magic bytes at the begining of files is a UNIX tradition adopted as a means of incorporating file type metadata within the file.
+
+As with most linux features, \texttt{binfmt\_misc} must first be mounted at specific location after which it can be configured.
+
+\begin{lstlisting}[language=Bash]
+	mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
+\end{lstlisting}
+
 \subsection{Target Device}
 
 Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is referred to as a Board Support Package (BSP).
+
+\begin{lstfloat}
+\begin{lstlisting}[language=C]
+{
+	model = "Freescale i.MX28 Evaluation Kit";
+	compatible = "fsl,imx28-evk", "fsl,imx28";
+
+	memory {
+		reg = <0x40000000 0x08000000>;
+	};
+
+	apb@80000000 {
+		apbh@80000000 { ... };
+		apbx@80040000 { ... };
+	};
+
+	ahb@80080000 { ... };
+
+	sound { ... };
+	leds { ... };
+	backlight { ... };
+};
+\end{lstlisting}
+\caption{A simplified device tree layout}
+\label{listing:device-tree}
+\end{lstfloat}
+
+Listing \ref{listing:device-tree} shows a heavily simplified example device tree layout of an i.MX28 evaluation kit.
 
 To port Linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
@@ -231,6 +281,12 @@ One of the most interesting characteristics of a neural network is its capacity 
 
 The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence a computing platform that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have optimised hardware features that allow for parallel executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks.
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.28]{google-tpu.jpeg}
+	\caption{Google's TPU Chip}
+\end{figure}
+
 \section{Embedded Linux}
 
 As presented in the preivous chapter, the development, deployment, and maintainance of Embedded Linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as boot loaders, device tree layouts, flash memory, cross compiling toolchains, board suport package, etc. with the later two having already been introduced in the preceding chapter.
@@ -256,7 +312,7 @@ After power up, the processor requires initialisation which for the kind of proc
 	\end{tikzpicture}
 \end{figure}
 
-After getting control of the processor, U-Boot then has to take care of initialising the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the device tree, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to disuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
+After getting control of the processor, U-Boot then has to take care of initialising the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the device tree \ref{listing:device-tree}, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to disuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
 
 Once U-Boot completes and gives up control over the processor, the kernel then starts with more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices. The kernel then proceeds to complete its start up by setting up Stacks, initialising the Scheduler, setting up and allocating Pages, etc. and completes the start up after having spawned the \texttt{init} process, which is the first process to that starts after booting completes.
 
