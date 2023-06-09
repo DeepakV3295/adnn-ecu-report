@@ -2,7 +2,7 @@
 
 An embedded system is a combination of hardware and software components put together to achieve a specific task. Often, embedded systems are built into a larger device or system and are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour. Embedded devices are a category of tiny devices with physical, computational and memory constraints that are programmable to perform dedicated tasks.
 
-Like most of the automotive industry, Scania employs embedded systems called Electronic Control Units (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems has one or more ECUs to gather system data and transmit it to a central communicator where the data is processed and the systems operations are monitored.
+Like most of the automotive industry, Scania employs embedded systems called \textit{Electronic Control Units} (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems has one or more ECUs to gather system data and transmit it to a central communicator where the data is processed and the systems operations are monitored.
 
 Scania currently runs a massive fleet of around 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually \cite{scania-report}. This large fleet of rolling vehicles that are connected though the communicators opens up new possibilities. These connected devices continuously monitor the state of the vehicle and this data can be used to accurately
 and efficiently schedule vehicle maintainance. For example, if a tire change is predicted to be required in 100 kms then the driver can plan the route smartly to reach the workshop before the vehicle breaks down. This opportunity can be realised by running smart algorithms on the hardware that is currently available.
@@ -51,33 +51,25 @@ The next section looks at developing such an Embedded Linux environment and the 
 
 \section{Development Process for Embedded Linux}
 
-Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}. The Yocto project was chosen as the primary build system and used to generate the Embedded Linux and application programs used within this project.
+Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}. The Yocto project was chosen as the primary build system and used to generate the Embedded Linux and application programs used within this project. The next chapter contains a \hyperref[yocto-demo]{section} takes a look at a development environment that uses the Yocto project.
 
 % TODO : Discuss and possibly add reference to https://aaltodoc.aalto.fi/handle/123456789/115155
 
-\subsubsection{An excursion through Yocto Project's Embedded Linux build system}
-
-Embedded linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, number and nature of sofware engineers using the tool for development, build and deploy infrastructure, and the list of supported target platforms. Consider a simple development scenario targetting a popular and open source target platform such as the beaglebone black
-
-Git is the primary Source Control Manager system used within the Yocto Project
-
-\begin{lstlisting}[language=Bash]
-	git clone https://git.yoctoproject.org/git/poky
-\end{lstlisting}
-
 \subsection{SDKs and Compiler Toolchains}
 
-Creating applications for embedded devices requires a set of software components that are usually collectively referred to as Software Development Kits (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on the target embedded device.
+Creating applications for embedded devices requires a set of software components that are usually collectively referred to as \textit{Software Development Kits} (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on the target embedded device.
 
-Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called Linux kernel header files. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
+Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called \textit{Linux kernel header files}. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
+
+% TODO : Add information on ARM processors, and other terminology such as armv7l
 
 \subsection{Cross Compiling and Application Development}
 
-The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a cross compiling toolchain. A compiler toolchain that creates executables for the sample platform is termed a native compiler toolchain. Cross compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, etc. and they are ultimately an unavoidable part of creating programs for a new hardware platform. Most software that are run on embedded devices are created on a different computing platform. Such a computing platform in the context of cross compilation is referred to as a development host and the embedded device that the software ultimately runs on is the target.
+The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a cross compiling toolchain. A compiler toolchain that creates executables for the sample platform is termed a native compiler toolchain. Cross compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, etc. and they are ultimately an unavoidable part of creating programs for a new hardware platform. Most software that are run on embedded devices are created on a different computing platform. Such a computing platform in the context of cross compilation is referred to as a \textit{development host} and the embedded device that the software ultimately runs on is the \textit{target}.
 
 \begin{figure}[h]
 	\centering
-	\begin{tikzpicture}[fill opacity=0.7]
+	\begin{tikzpicture}[fill opacity=0.9]
 		\fill[green!20] (0.25,0.25) rectangle (7.75, 3.75);
 
 		\fill[orange!20, rounded corners] (0.75,2.25) rectangle (3.75, 3.25);
@@ -98,19 +90,80 @@ Another common alternative to cross compiling in this manner is by using native 
 
 \subsubsection{An example Embedded Development Environment on Linux using QEMU}
 
-The Linux kernel has a powerful feature called \texttt{binfmt\_misc} which stands for \textit{Miscellaneous Binary Format} which allows for interpreter programs to be associated and invoked upon using certain binary format files.
+In this section let's consider a simple development environment on a personal computer running linux capable of compiling and executing \texttt{C} programs for the \texttt{armv7l} ARM processor. This setup leverages features of the Linux operating system running on the development host and the capabilities of the QEMU machine emulation system.
 
-The interpreter programs are usually user space applications such as emulators and virtual machines. For this section the intepreter program will be a qemu user-mode emulation program. The \texttt{binfmt\_misc} recognises the associated binary files by matching some bytes at the begining of a file with a magic byte sequence that had been supplied. The usage of magic bytes at the begining of files is a UNIX tradition adopted as a means of incorporating file type metadata within the file.
+The Linux kernel has a powerful feature called \texttt{binfmt\_misc} which stands for \textit{Miscellaneous Binary Format} which allows for interpreter programs to be associated and invoked upon using certain binary format files. This feature can be leveraged to setup an environment that can use a QEMU emulator program to test and develop for a different architecture than that of the development host
 
-As with most linux features, \texttt{binfmt\_misc} must first be mounted at specific location after which it can be configured.
+The interpreter programs are usually user space applications such as emulators and virtual machines. For this section the intepreter program will be a QEMU user space emulator program, namely \texttt{qemu-arm}. QEMU has multiple operating modes apart from a full system emulation, one of which is user-mode emulation. In user-mode emulation QEMU can perform system call translation and POSIX signal handling in linux, effectively allowing for programs compiled for a different instruction set to be executed. Cross compiling and cross debugging are common use cases for this user-mode emulation in QEMU. \texttt{qemu-arm} is a QEMU User space emulator program for executing programs compiled for ARM.
+
+After an interpreter and binary file format pair are registerd, \texttt{binfmt\_misc} recognises the associated binary files by matching some bytes at the begining of a file with a magic byte sequence that had been supplied. The usage of magic bytes at the begining of files is a UNIX tradition adopted as a means of incorporating file type metadata within the file.
+
+As with some linux features, \texttt{binfmt\_misc} must first be mounted at specific location after which it can be configured.
 
 \begin{lstlisting}[language=Bash]
 	mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
 \end{lstlisting}
 
+To register the binary format and interpreter pair for the present use case a string of the form \texttt{:name:type:offset:magic:mask:interpreter:flags} needs to be send (\texttt{echo}ed) to the \texttt{register} file at the path mentioned previously. Assuming that \texttt{qemu-arm} is present at the path \texttt{/usr/bin}, running the following command will register \texttt{qemu-arm}
+
+\begin{lstlisting}[language=Bash]
+	echo ":qemu-arm:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-arm-static:F" > /proc/sys/fs/binfmt_misc
+\end{lstlisting}
+
+Another linux feature is \texttt{chroot} which allows for changing the apparent root directory of a running process and its children. \texttt{chroot} system call interface started with UNIX and is useful for testing and developing software systems in a modified test environment.
+
+Prior to running \texttt{chroot}, a root directory for the target environment must be prepared. A root directory is simply the top most directory in a hierarchy and can be prepared by sourcing programs and packages necessary for developing \texttt{C} programs for \texttt{armv7l}. Sourcing these programs can be a matter of approaching maintainers of the packages who may provide the appropriate binaries or building them from source using a cross compiler.
+
+For example, versions of the fedora linux distribution provides these packages via its packages manager and the following command can source the necessary programs for that distribution.
+
+\begin{lstlisting}[language=Bash]
+	dnf install --releasever=35 --installroot=/tmp/f35arm --forcearch=armv7hl --repo=fedora --repo=updates systemd passwd dnf fedora-release vim-minimal m4 cmake gcc-c++ tar gcc git make tmux -y
+\end{lstlisting}
+
+The target directory \texttt{/tmp/f35arm/} will then contain a simple root directory for the simple development environment for \texttt{armv7l}.
+
+\begin{lstlisting}[language=Bash]
+	ls /tmp/f35arm
+
+	bin etc lib media proc sbin sys var boot home mnt root tmp dev opt usr
+\end{lstlisting}
+
+After configuring the environment in this manner, simply test changing root and running a simple \texttt{C} program.
+
+\begin{lstlisting}[language=Bash]
+	chroot /tmp/f35arm /usr/bin/bash
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash]
+	cd /root
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash]
+	cat hello.c
+
+	#include <stdio.h>
+
+	int main()
+	{
+		puts("Hello, World!\n");
+		return 0;
+	}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash]
+	gcc hello.c -o hello
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash]
+	./hello
+
+	Hello, World!
+\end{lstlisting}
+
+
 \subsection{Target Device}
 
-Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is referred to as a Board Support Package (BSP).
+Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
 
 \begin{lstfloat}
 \begin{lstlisting}[language=C]
@@ -226,7 +279,7 @@ The first section in this chapter lays out an overview of the training process o
 
 \section{Neural Networks}
 
-A neural network consists of a collection nodes called neurons that are arranged into several layers with connecting edges that go between the layers. A connecting edge between two neurons describe an operation with the first neuron producing an output that is then consumed as input by the second neuron. The first layer and final layer are special and are called input layer and output layer respectively. There maybe zero or more layers that lie between them called hidden layers.
+A neural network consists of a collection nodes called \textit{neurons} that are arranged into several layers with connecting edges that go between the layers. A connecting edge between two neurons describe an operation with the first neuron producing an output that is then consumed as input by the second neuron. The first layer and final layer are special and are called \textit{input layer} and \textit{output layer} respectively. There maybe zero or more layers that lie between them called \textit{hidden layers}.
 
 \begin{center}
 	\begin{tikzpicture}[x=2.4cm,y=1.2cm]
@@ -261,7 +314,7 @@ A neural network consists of a collection nodes called neurons that are arranged
 	\end{tikzpicture}
 \end{center}
 
-The connecting edges between the neurons are weighted and additionally a neuron may carry a weight of its own called a bias. The neurons may have several incoming edges, except for the neurons in the input layer, and several outgoing edges, except for the neurons in the output layer. Each neuron in the network describes a computation in at least two steps, (1) multiply input data with corresponding edge weight and take their sum along with the bias value, (2) transform the value calculated earlier using an activation function.
+The connecting edges between the neurons are weighted and additionally a neuron may carry a weight of its own called \textit{bias}. The neurons may have several incoming edges, except for the neurons in the input layer, and several outgoing edges, except for the neurons in the output layer. Each neuron in the network describes a computation in at least two steps, (1) multiply input data with corresponding edge weight and take their sum along with the bias value, (2) transform the value calculated earlier using an activation function.
 
 An activation function $\sigma$ is said to determine the activation of the neuron which can be thought of as the output that the neuron generates. There are several kinds of activation functions that are used in neural networks such as the sigmoid, ReLU, tanh, etc.
 
@@ -271,13 +324,13 @@ Combining these operations the neuron $y_k$ has the output
 	y_k = \sigma \left( \sum_{j=0}^m w_{kj} x_j \right)
 \end{equation}
 
-Where $y_k$ is the $k^{th}$ neuron in a layer with input values $x_0$ through $x_m$ with corresponding weights $w_{k0}$ through $w_{km}$. The first input $x_0$ is usually set to $0$ and hence the corresponding weight $w_k0$ stands in for the bias $b_k$ of the neuron. The complete neural network matrix multiplication pass from input to output is called the feedforward.
+Where $y_k$ is the $k^{th}$ neuron in a layer with input values $x_0$ through $x_m$ with corresponding weights $w_{k0}$ through $w_{km}$. The first input $x_0$ is usually set to $0$ and hence the corresponding weight $w_k0$ stands in for the bias $b_k$ of the neuron. The complete neural network matrix multiplication pass from input to output is called the \textit{feedforward}.
 
 Neural networks can be constructed in a variety of ways with the choice for how many layers to use, the number of neurons in the layers, the connections between the layers, all of which can generate several different topologies. The neural network model can approximate a real world system by modelling that system as function that takes in some input and then generating an output. The neural network can approximate this function better by changing the connections between neurons, dropping and or adding neurons, varying the weights encoded in the connections, or by varying the biases within the neurons.
 
 \subsection{Training a Neural Network}
 
-One of the most interesting characteristics of a neural network is its capacity to form probability weighted associations between a set of inputs and their correponding outputs. The process of forming this association is called training the neural network, the set of input patterns used for this purpose is called a training set, and the algorithm by which the network is trained is called the learning algorithm. After sufficient training, the network can also produce correct outputs to unseen inputs of the same kind.
+One of the most interesting characteristics of a neural network is its capacity to form probability weighted associations between a set of inputs and their correponding outputs. The process of forming this association is called \textit{training} the neural network, the set of input patterns used for this purpose is called a \textit{training set}, and the algorithm by which the network is trained is called the \textit{learning algorithm}. After sufficient training, the network can also produce correct outputs to unseen inputs of the same kind.
 
 The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence a computing platform that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have optimised hardware features that allow for parallel executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks.
 
@@ -291,11 +344,11 @@ The bulk of the mathematical operations involved in training a neural network ar
 
 As presented in the preivous chapter, the development, deployment, and maintainance of Embedded Linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as boot loaders, device tree layouts, flash memory, cross compiling toolchains, board suport package, etc. with the later two having already been introduced in the preceding chapter.
 
-Porting an Embedded Linux distribution on some embedded hardware completes successfully when the processor on the board is able to run the Linux operating system. Depending on hardware several paths may be taken by the processor to reach this stage after powering on. This process of starting the computer is called booting and the sequence of stages the board goes through is called boot sequence. Embedded devices are greatly varied and hence there is great variance in how boot sequence take place.
+Porting an Embedded Linux distribution on some embedded hardware completes successfully when the processor on the board is able to run the Linux operating system. Depending on hardware several paths may be taken by the processor to reach this stage after powering on. This process of starting the computer is called \textit{booting} and the sequence of stages the board goes through is called \textit{boot sequence}. Embedded devices are greatly varied and hence there is great variance in how boot sequence take place.
 
 \subsection{A Simplified Boot Sequence}
 
-After power up, the processor requires initialisation which for the kind of processors usually found in ECUs is performed by firmware placed in a special purpose memory called Boot ROM. This code is responsible for initialising peripheral devices, hardware busses, CPU registers, etc. and after hardware initialisation locates and loads a bootloader program. Bootloader programs are responsible for continuing the boot process and may have multiple stages with one loading another. The most commonly used open source boot loader for embedded devices is U-Boot. U-Boot will normally be stored in some storage medium that will be accessible by the Boot ROM code, usually some flash memory. Flash memory is a kind of non-volatile memory that can be electrically erased and reprogrammed and is commonly used for storing data and firmware. Flash memory comes in two kinds, NOR flash and NAND flash which have different performance characteristics and usage scenarios.
+After power up, the processor requires initialisation which for the kind of processors usually found in ECUs is performed by firmware placed in a special purpose memory called \textit{Boot ROM}. This code is responsible for initialising peripheral devices, hardware busses, CPU registers, etc. and after hardware initialisation locates and loads a bootloader program. Bootloader programs are responsible for continuing the boot process and may have multiple stages with one loading another. The most commonly used open source boot loader for embedded devices is U-Boot. U-Boot will normally be stored in some storage medium that will be accessible by the Boot ROM code, usually some flash memory. Flash memory is a kind of non-volatile memory that can be electrically erased and reprogrammed and is commonly used for storing data and firmware. Flash memory comes in two kinds, NOR flash and NAND flash which have different performance characteristics and usage scenarios.
 
 \begin{figure}[h]
 	\centering
@@ -315,6 +368,114 @@ After power up, the processor requires initialisation which for the kind of proc
 After getting control of the processor, U-Boot then has to take care of initialising the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the device tree \ref{listing:device-tree}, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to disuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
 
 Once U-Boot completes and gives up control over the processor, the kernel then starts with more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices. The kernel then proceeds to complete its start up by setting up Stacks, initialising the Scheduler, setting up and allocating Pages, etc. and completes the start up after having spawned the \texttt{init} process, which is the first process to that starts after booting completes.
+
+\subsubsection{An excursion through Yocto Project's Embedded Linux build system}
+\label{yocto-demo}
+
+Embedded linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, number and nature of the software engineers using the tool, the build and deploy infrastructure, and the list of supported target platforms. Consider a simple development scenario targetting the popular and open source embedded target platform BeagleBone Black. The aim is to build and run an embedded linux distribution for the BeagleBone Black using a personal computer running linux.
+
+The Yocto Project is arranged into several components out of which the core 3 components are BitBake, OpenEmbedded-Core, and Poky. BitBake is a build engine that interprets configuration files to schedule and then perform tasks. These configuration files are called \textit{recipes} and they describe how to build a particular package such as a shared library or application program. Recipes contain information as to where to obtain the source code for a package, instructions for compiling the source code, and installing or removing that package from a distribution. OpenEmbedded-Core is a set of platform and distribution independent recipes and other metadata while Poky is a reference system containing a collection of projects and tools that can be used to bootstrap a new distribution.
+
+The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded.
+
+The big picture of the Yocto project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto project to have a steep learning curve. A simplified illustration of the Yocto project is presented in Figure \ref{fig:yocto-overview} below.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[fill opacity=0.9]
+		\fill[fill=red!30] (0, 0) rectangle (5, 9);
+		\draw (2.5, 8.5) node {OpenEmbedded Project};
+
+		\draw[fill=red!30, draw=red] (5.5, 0) rectangle (14, 9);
+		\draw (7, 8.5) node {Yocto Project};
+
+		\fill[orange!35, rounded corners] (6, 0.5) rectangle (11.85, 8);
+		\draw (7, 7.5) node {Poky};
+
+		\fill[yellow!20, rounded corners] (0.75, 1) rectangle (8.5, 7);
+		\draw (4, 6.5) node {OpenEmbedded-Core};
+
+		\fill[cyan!30] (1.5, 1.5) rectangle (5.5, 6);
+		\draw (2.15, 5.65) node {meta};
+
+		\fill[teal!50] (1.9, 4.1) rectangle (4.2, 5);
+		\draw (3, 4.5) node {recipes-core};
+
+		\fill[teal!50] (1.9, 3.1) rectangle (4.1, 4);
+		\draw (2.925, 3.5) node {recipes-bsp};
+
+		\fill[teal!50] (1.9, 2.1) rectangle (4.4, 3);
+		\draw (3.125, 2.5) node {recipes-kernel};
+
+		\fill[teal!50] (4.5, 3.15) rectangle (5.35, 3.95);
+		\draw (4.95, 3.5) node[text=teal] {$\cdots$};
+
+		\fill[cyan!30] (5.75, 4.75) rectangle (8.25, 6);
+		\draw (7, 5.45) node {meta-skeleton};
+
+		\fill[white!40] (5.75, 3.25) rectangle (8.25, 4.5);
+		\draw (7, 3.9) node {scripts};
+
+		\fill[cyan!30] (9, 5.25) rectangle (11, 6.75);
+		\draw (10, 6) node {meta-poky};
+
+		\fill[cyan!30] (9, 3.25) rectangle (11.65, 4.75);
+		\draw (10.3, 4) node {meta-poky-bsp};
+
+		\fill[white!40] (10.75, 1.25) rectangle (12.75, 2.5);
+		\draw (11.75, 2) node {BitBake};
+
+		\fill[white!40] (12.1, 7) rectangle (13.8, 8);
+		\draw (12.95, 7.5) node {Pseudo};
+
+		\fill[white!40] (12.1, 5.5) rectangle (13.8, 6.5);
+		\draw (13, 6) node {$\cdots$};
+
+		\fill[cyan!30] (1, -4) rectangle (11, -0.5);
+		\draw (2.25, -1) node {meta-ti-bsp};
+
+		\fill[teal!50] (2, -2.35) rectangle (4, -1.25);
+		\draw (3, -1.75) node {recipes-bsp};
+
+		\fill[teal!50] (4.2, -2.35) rectangle (6.1, -1.25);
+		\draw (5.15, -1.75) node {recipes-ti};
+
+		\fill[teal!50] (6.3, -2.35) rectangle (9.2, -1.25);
+		\draw (7.75, -1.75) node {recipes-graphics};
+
+		\fill[teal!50] (2, -3.6) rectangle (4, -2.5);
+		\draw (3, -3) node {recipes-core};
+
+		\fill[teal!50] (4.2, -3.6) rectangle (6.7, -2.5);
+		\draw (5.4, -3) node {recipes-kernel};
+
+		\fill[teal!50] (6.9, -3.6) rectangle (10.35, -2.5);
+		\draw (8.65, -3) node {recipes-connectivity};
+
+		\fill[red!30] (11.5, -1.25) rectangle (13.5, -0.5);
+		\draw (12.5, -0.9) node {Entity};
+
+		\fill[cyan!30] (11.5, -2.25) rectangle (13.5, -1.5);
+		\draw (12.5, -1.9) node[text=cyan] {Layer};
+
+		\fill[teal!50] (11.5, -3.25) rectangle (13.5, -2.5);
+		\draw (12.5, -2.9) node[text=teal] {Recipes};
+	\end{tikzpicture}
+	\caption{The Yocto Project Overview}
+	\label{fig:yocto-overview}
+\end{figure}
+
+The primary version control system used within the Yocto project is git. The Yocto project has even more packages that it relies on layed out in its documentation (see \href{https://docs.yoctoproject.org/}{docs.yoctoproject.org})
+
+Based on the linux distribution of the development host the following command will vary. Furthermore there are minimum version for the required packages for a corresponding version of the Yocto project (see \href{https://wiki.yoctoproject.org/wiki/Releases}{wiki.yoctoproject.org/wiki/Releases}).
+
+\begin{lstlisting}[language=Bash]
+	PACKAGE_MANAGER install bc make automake gcc gcc-c++ chrpath cpio diffstat gawk git python texinfo wget
+\end{lstlisting}
+
+The above list is not complete and relies on non standard package names. Consulting the documentation above will provide more accurate instructions as to the packages that are necessary to start with the Yocto project.
+
+For this section consider the \texttt{kirkstone} release of the Yocto project.
 
 \section{Performance Evaluation}
 
