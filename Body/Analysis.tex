@@ -138,11 +138,6 @@ Eigen is efficient in memory utilisation and 42\% better than Numpy.
 % \subsection{Failure/Fault testing}
 % (TODO: perform the failure tests such as increases the network size until the application fails or system hangs.)
 
-\section{Repurposing Scania ECU}
-Scania ECU is like a black box with no information. A custom encased hardware that supports ethernet over modem and an UART interface along with hardware circuit schematic document was the only information available regarding the ECU. There is no information regarding the processor,  memory support, bootloader. As the ECU is a production unit, there is no development tools on device and no support to port packages and application to the ECU. Many features on the bootloader, kernel were disabled making it futile to execute the common commands that provide system information.
-
-The task of repurposing the Scania ECU comprised of reverse engineering and obtaining the required hardware/software information and flashing a custom operating system to benchmark the neural network applications. The first task was partially successfully as hardware information such as processor, architecture, I/O interfaces, device tree and software information such as kernel, compiler, glic and versions was obtained. But information regarding the memory layout and boot flow could not be concretely reverse engineered. The second task was not achieved as flashing custom embedded linux always resulted in the ECU being bricked. Experiments conducted from booting the normal operation and from serial download mode had different issues and failed. While flashing from the normal boot, only the bootloader is replaced in the mtd partition. This could have failed because of incorrect u-boot image with wrong device trees or loading kernel failed as version mismatch between bootloader and kernel or checksum failure or size of the file is big overwriting a different region with crucial data. Serial download mode flashing required some crucial information regarding the memory load address and entry point for bootloader, kernel, root file system which is configured in the custom device tree. This information could be obtained from reverse engineering.
-
 % ============================================
 %        Discussion
 % ============================================
@@ -153,11 +148,17 @@ This chapter contains discussions on the experience while working on the project
 
 \section{Developer Experience}
 
-Embedded environments are greatly varied and working on these platforms are different compared to the more general platforms with comparably reduced support. The greatest challenge in writing the benchmark applications were in sourcing the binaries for the general purpose neural network frameworks. Both Tensorflow and PyTorch do not target the ARMv7 environment that was the primary target for this project. Finally the PyTorch source code was successfully compiled for our target environment using QEMU user-mode emulation.
+Embedded environments are greatly varied and working on these platforms are different compared to the more general platforms with comparably reduced support. The greatest challenge in writing the benchmark applications were in sourcing the binaries for the general purpose neural network frameworks. Both Tensorflow and PyTorch do not target the ARMv7 environment that was the primary target for this project. There were are older community tensorflow binaries that are available for the platform that are currently unmaintained, at the time of writing this report. Finally the PyTorch source code was successfully compiled for our target environment using QEMU user-mode emulation.
+
+The embedded hardware and software ecosystems are greatly varied and fragmented leading to less support from the machine learning software ecosystem. The embedded machine learning communities largely contain sprawling technologies that have several different components that have varying degrees of maintanance and create complicated inter relationships over time that are difficult or unwieldy to maintain.
 
 \subsection{Reverse Engineering Scania C300}
 
 \hyperref[rtc-c300]{Appendix II} contains a summary of the efforts involved in reverse engineering the C300 hardware. The project focus shifted to the iMX6SDB board after having spend considerable time on the C300.
+
+Scania ECU is like a black box with no information. A custom encased hardware that supports ethernet over modem and an UART interface along with hardware circuit schematic document was the only information available regarding the ECU. There is no information regarding the processor,  memory support, bootloader. As the ECU is a production unit, there is no development tools on device and no support to port packages and application to the ECU. Many features on the bootloader, kernel were disabled making it futile to execute the common commands that provide system information.
+
+The task of repurposing the Scania ECU comprised of reverse engineering and obtaining the required hardware/software information and flashing a custom operating system to benchmark the neural network applications. The first task was partially successfully as hardware information such as processor, architecture, I/O interfaces, device tree and software information such as kernel, compiler, glic and versions was obtained. But information regarding the memory layout and boot flow could not be concretely reverse engineered. The second task was not achieved as flashing custom embedded linux always resulted in the ECU being bricked. Experiments conducted from booting the normal operation and from serial download mode had different issues and failed. While flashing from the normal boot, only the bootloader is replaced in the mtd partition. This could have failed because of incorrect u-boot image with wrong device trees or loading kernel failed as version mismatch between bootloader and kernel or checksum failure or size of the file is big overwriting a different region with crucial data. Serial download mode flashing required some crucial information regarding the memory load address and entry point for bootloader, kernel, root file system which is configured in the custom device tree. This information could be obtained from reverse engineering.
 
 \section{General Distribution of Work}
 
@@ -165,7 +166,9 @@ The reverse engineering efforts were done in unision between the authors by sugg
 
 \chapter{Conclusion and Future Work}
 
-Developing neural network implementations for the embedded environment remains a challenging task. There are several challenges in the way for developing a machine learning framework for embedded devices that supports the fragmented embedded ecosystem. PyTorch had considerably higher performance than expected.
+Developing of neural network implementations for the embedded environment remains a challenging task. There are several challenges in the way for developing a machine learning framework for embedded devices that supports the fragmented embedded platform ecosystem.
+
+The performance of the benchmark applications showed that PyTorch had considerably higher performance than expected.
 
 
 \section{Future Work}
