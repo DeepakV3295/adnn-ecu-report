@@ -1,11 +1,10 @@
 \part{Introduction}
 
-An embedded system is a combination of hardware and software components put together to achieve a specific task. Often, embedded systems are built into a larger device or system and are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour. Embedded devices are a category of tiny devices with physical, computational and memory constraints that are programmable to perform dedicated tasks.
+An embedded system is a combination of hardware and software components put together to achieve a specific task. Often, embedded systems are built into a larger device or system and are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour. Embedded devices are a category of tiny devices with physical, computational, and memory constraints that are programmed to perform dedicated tasks.
 
-Like most of the automotive industry, Scania employs embedded systems called \textit{Electronic Control Units} (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems has one or more ECUs to gather system data and transmit it to a central communicator where the data is processed and the systems operations are monitored.
+Like most of the automotive industry, Scania employs embedded systems called \textit{Electronic Control Units} (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems contain several ECUs to gather system data and transmit it to a central communicator where the sensor data is processed and the system operations are monitored.
 
-Scania currently runs a massive fleet of around 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually \cite{scania-report}. This large fleet of rolling vehicles that are connected though the communicators opens up new possibilities. These connected devices continuously monitor the state of the vehicle and this data can be used to accurately
-and efficiently schedule vehicle maintainance. For example, if a tire change is predicted to be required in 100 kms then the driver can plan the route smartly to reach the workshop before the vehicle breaks down. This opportunity can be realised by running smart algorithms on the hardware that is currently available.
+Scania currently runs a massive fleet of around 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually \cite{scania-report}. This large fleet of rolling vehicles that are connected though the communicators opens up new possibilities. These connected devices continuously monitor the state of the vehicle and this data can be used to accurately and efficiently schedule vehicle maintainance. For example, if a tire change is predicted to be required in 100 kms then the driver can plan the route smartly to reach the workshop before the vehicle breaks down. This opportunity can be realised by running smart algorithms on the hardware that is currently available.
 
 Machine learning (ML) on embedded devices is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. This technology can be used to automate tasks, improve efficiency, and make better decisions. But this technology presents a unique set of challenges due to the limited resources available on these devices. Embedded devices are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded devices are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded devices has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles.
 
@@ -15,27 +14,27 @@ One such ML application Scania has been developing in their \textsc{LOBSTR} \cit
 
 \begin{itemize}
 	\item Scania is committed to promote a shift towards autonomous and eco-friendly transport systems. The latest addition of Scania's connected trucks and buses will be embedded with upgraded ECUs and communication devices. However, this upgrade will make the stock of older hardware devices to become obsolete and regarded as e-waste, which could be prevented. Exploring the possibility of repurposing existing ECUs to run ML models aligns with Scania's vision of leading the way towards a sustainable future.
-	\item Neural networks (NNs) are a type of machine learning that can detect intricate patterns not only across multiple data signals but also over time. \textit{include benefits to NN approach to Anomaly Detection}
-	%Achieving this level of performance is computationally demanding, and training NNs on embedded devices requires careful resource management. However, being able to efficiently train NNs on embedded devices with high accuracy could unlock significant potential for future advancements. (could include benefits of NN for anomaly detection)
-	\item Federated learning methods facilitate the training of pre-trained anomaly detection models on the ECUs installed in Scania's distributed fleet of connected trucks. Each ECU individually trains the model with its data and transmits the updated model parameters to a central server. This distributed learning approach enables early detection of faults or failures and ensures that critical data remains on the device. Also dependency on network bandwidth is reduced as only the aggregated model updates are communicated over the network, instead of transmitting the entire data sample.
+	\item Neural networks are a type of machine learning technique that can learn intricate patterns across multiple data signals and time. Neural networks can learn from unstructured data and apply this understanding to unseen data points. Anomaly detection using neural network has the advantage of requiring less manual work in labelling data and can provide paradigms allowing for automation of discovering new and important data points.
+	\item Federated learning techniques allow for the ECUs installed in Scania's distributed fleet of connected trucks to perform distributed training leveragin their computational capabilities. Each ECU individually trains the model with its own data and transmits the updated model parameters to a central server. This distributed learning approach enables early detection of faults or failures, reduces the network bandwith consumption by reducing the sensor data transmission, and ensures that critical data remains on the device.
 \end{itemize}
 
-\subsection*{Challenges to implementing Federated Models}
+\subsection*{Challenges to implementing Federated Learning}
 
 \begin{itemize}
-	\item To reap the best benefits of these approaches, training of the model needs to be performed on board. However much of the potential of running machine learning applications on these devices remains unattained due to the difficulties in creating these applications and running training on-board. Approaches such as TensorFlow Lite (TFLite), Edge Impulse, and STM Cube AI implemented along the TinyML frameworks, enable running ML models targeted for small resource devices. However these approaches are largely limited to inference capabilities and there is no adequate open source support in the existing infrastructure for training ML models.
+	\item The potential of running machine learning applications on embedded platforms remains unattained due to the difficulties in creating these applications and running training of the model on-board. Approaches such as TensorFlow Lite (TFLite), Edge Impulse, and STM Cube AI implemented along with other TinyML frameworks, enable running ML models targeted for small resource devices. However these approaches are largely limited to inference capabilities and there is no adequate open source support in the existing infrastructure for training ML models.
+	\item Neural network training is computationally demanding and achieving good performance on embedded devices require careful resource management.
 	\item An Original Equipment Manufacturer (OEM) is responsible for the development and upkeep of the Scania ECU. However, the amount of information made available regarding the hardware design, memory layout, and operating system (OS) is restricted. To construct an embedded OS for a customized hardware, critical details such as the device tree, memory organisation, and boot flow are necessary. Obtaining this information from a functional board can be an enormous task requiring reverse engineering expertise.
 \end{itemize}
 
-% Gap in the market: No support for training ML models on embedded devices ❓
-
-% TODO: Attach a reference for the following claim (Ask Niklas)
-
-% Among the ML approaches to take, Artifical Neural Networks are especially interesting for anomaly detection due to several factors such as minimal data preprocessing \dots To get the best out of this approache, training of the model needs to be performed on-board. However much of the potential of running machine learning applications on these devices remain unattained due to the difficulties in creating these applications and running training on-board.
+% Gap in the market: No support for training ML models on embedded devices❓
 
 \subsubsection{Problem Description}
 
-The scope of the thesis is to repurpose the existing Scania ECU and explore the challenges of building targeted NN models and training them on repurposed ECU using different approaches and evaluating their performances.
+The scope of the thesis is to repurpose the existing Scania ECU and explore the challenges of building targeted neural network models and training them on repurposed ECUs using different approaches and evaluating their performances.
+
+\subsubsection{Report Structure}
+
+This report is divided into three parts with multiple chapters containing several sections. The first part describes the background and introduces important information motivating the challenges in performing machine learning on embedded platforms. The second part details the bechmark applications that were implemented to evaluate the processes of training neural networks on a specific target platform. Lastly, the final part presents an analysis and discussion on the training of the neural network.
 
 % ============================================
 %        Background
@@ -163,7 +162,7 @@ After configuring the environment in this manner, simply test changing root and 
 
 \subsection{Target Device}
 
-Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
+Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. Listing \ref{listing:device-tree} shows a heavily simplified example device tree layout of an i.MX28 evaluation kit. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
 
 \begin{lstfloat}
 \begin{lstlisting}[language=C]
@@ -190,8 +189,6 @@ Building an Embedded Linux kernel suited for a mainboard of an embedded device r
 \caption{A simplified device tree layout}
 \label{listing:device-tree}
 \end{lstfloat}
-
-Listing \ref{listing:device-tree} shows a heavily simplified example device tree layout of an i.MX28 evaluation kit.
 
 To port Linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
@@ -382,7 +379,7 @@ The big picture of the Yocto project can be fairly complex and the amount of ter
 
 \begin{figure}[h]
 	\centering
-	\begin{tikzpicture}[fill opacity=0.9]
+	\begin{tikzpicture}
 		\fill[fill=red!30] (0, 0) rectangle (5, 9);
 		\draw (2.5, 8.5) node {OpenEmbedded Project};
 
@@ -443,13 +440,13 @@ The big picture of the Yocto project can be fairly complex and the amount of ter
 		\fill[teal!50] (6.3, -2.35) rectangle (9.2, -1.25);
 		\draw (7.75, -1.75) node {recipes-graphics};
 
-		\fill[teal!50] (2, -3.6) rectangle (4, -2.5);
+		\fill[teal!50] (1.95, -3.6) rectangle (4.05, -2.5);
 		\draw (3, -3) node {recipes-core};
 
-		\fill[teal!50] (4.2, -3.6) rectangle (6.7, -2.5);
+		\fill[teal!50] (4.25, -3.6) rectangle (6.75, -2.5);
 		\draw (5.4, -3) node {recipes-kernel};
 
-		\fill[teal!50] (6.9, -3.6) rectangle (10.35, -2.5);
+		\fill[teal!50] (6.95, -3.6) rectangle (10.4, -2.5);
 		\draw (8.65, -3) node {recipes-connectivity};
 
 		\fill[red!30] (11.5, -1.25) rectangle (13.5, -0.5);
@@ -475,7 +472,25 @@ Based on the linux distribution of the development host the following command wi
 
 The above list is not complete and relies on non standard package names. Consulting the documentation above will provide more accurate instructions as to the packages that are necessary to start with the Yocto project.
 
-For this section consider the \texttt{kirkstone} release of the Yocto project.
+For this section consider the \texttt{kirkstone} release of the Yocto project. For
+
+\begin{lstlisting}[language=Bash]
+	git clone https://git.yoctoproject.org/git/poky
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash]
+	git clone https://git.yoctoproject.org/git/meta-arm
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash]
+	git clone https://git.yoctoproject.org/git/meta-ti
+\end{lstlisting}
+
+Checkout the kirkstone version of all the different components by checking out the corresponding branches.
+
+\begin{lstlisting}[language=Bash]
+	git checkout kirkstone-4.0.10
+\end{lstlisting}
 
 \section{Performance Evaluation}
 
