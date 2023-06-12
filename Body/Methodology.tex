@@ -82,7 +82,7 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 
 The benchmark programs would also compute charactersitics of the neural network such as accuracy and are also capable of producing a dump of the network values such as the hidden layer structure, weight and bias values, etc. into a \texttt{.nn} binary file format. The \texttt{.nn} binary format can then be consumed by any of the implementations to perform an image inference. For instance, the \texttt{C} based benchmark application could produce a \texttt{.nn} file after training the network and then the Python based benchmark application can then take that file as input to complete a feedforward pass for an MNIST 28 x 28 image in PGM format. The feedforward pass between different implementations of the benchmark applications can be compared in this manner as well.
 
-\subsection[HDR-NN Training]{The Learning Algorithm}
+\subsection{The Learning Algorithm}
 
 The HDR-NN benchmark applications all share the same standard training algorithm listed below (\ref{alg:cap}). Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm through out the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations.
 
@@ -121,21 +121,21 @@ All benchmark applications upon invocation without any arguments presents a help
 
 	Commands:
 		infer [-i, --image IMAGE_PATH] [-n, --net hdr.nn]
-		train [-s, --shape 30] [-e, --epochs 30]
+		train [-s, --shape 32] [-e, --epochs 30]
 				[-q, --quiet] [-bs, --batch_size=10]
 				[-lr, --learning_rate 3.0] [-n, --net hdr.nn]
 \end{lstlisting}
 
-A training pass of the network can be as simple as
+Running a training pass of the network can be as simple as
 
 \begin{lstlisting}[language=Bash]
 	./hdr train
 \end{lstlisting}
 
-This execution will run for 30 epochs with a learning rate of 3.0 and batch size of 10 on a neural network with shape [784, 30, 10]. After the training completes, the program will then output a network description file \texttt{hdr.nn} with the shape, weights and biases of the network. This file can then be later used to perform an inference only run by running the following command.
+This execution will run for 30 epochs with a learning rate of 3.0 and batch size of 10 on a neural network with shape [784, 32, 10]. After the training completes, the program will then output a network description file \texttt{hdr.nn} with the shape, weights and biases of the network. This file can then be later used to perform an inference only run by running the following command.
 
 \begin{lstlisting}[language=Bash]
-	./hdr infer -i 7.pgm -n hdr.nn
+	./hdr infer --image 7.pgm --net hdr.nn
 \end{lstlisting}
 
 The \texttt{C} version of the benchmark application can also produce sketch of the image on to stdout, the shell for example, along with the prediction that the network makes and would produce the following output
@@ -179,7 +179,7 @@ Network predicts 0
 To change the network shape and epoch parameters, for example, run:
 
 \begin{lstlisting}[language=Bash]
-	./hdr train -s 16,16 --epoch 4 -q
+	./hdr train --shape 16,16 --epoch 4 -q
 \end{lstlisting}
 
 The program will then train a new network of shape [784, 16, 16, 10] for 4 epochs and silently exit without producing the \texttt{hdr.nn} file as the -q quiet flag was present. The complete list of program parameters are given below.
@@ -191,7 +191,7 @@ Use silent invocation using the \texttt{--quiet} or \texttt{-q} flag
 When used with the `train` command, the final weights and biases files won't be generated
 
 \begin{lstlisting}[language=Bash]
-	./hdr train -q
+	./hdr train --quiet
 \end{lstlisting}
 
 \textbf{Epochs}
@@ -199,7 +199,7 @@ When used with the `train` command, the final weights and biases files won't be 
 The number of epochs to train the network, specified by \texttt{--epochs} or \texttt{-e} followed by a natural number
 
 \begin{lstlisting}[language=Bash]
-	./hdr train -e 21
+	./hdr train --epochs 21
 \end{lstlisting}
 
 \textbf{Network Shape}
@@ -215,7 +215,7 @@ The size and shape of the HDR-NN network as comma seperated numbers after the \t
 The learning rate for the Stochastic Gradient Descent as a floating point value after the \texttt{-lr} or \texttt{--learning\_rate} flag
 
 \begin{lstlisting}[language=Bash]
-	./hdr train -lr 0.3
+	./hdr train --learning_rate 3.1
 \end{lstlisting}
 
 \textbf{Batch Size}
@@ -223,7 +223,7 @@ The learning rate for the Stochastic Gradient Descent as a floating point value 
 The batch size while performing mSGD as an integer after the \texttt{--batch\_size} or \texttt{-bs} flag
 
 \begin{lstlisting}[language=Bash]
-	./hdr train -bs 64
+	./hdr train --batch_size 64
 \end{lstlisting}
 
 
@@ -235,7 +235,7 @@ The batch size while performing mSGD as an integer after the \texttt{--batch\_si
 
 The HDR-NN benchmark applications were completed in different programming languages and in PyTorch. Details about the target environment and the benchmark implementations are layed out in this chapter
 
-\section[iMX6 Custom Board Target]{Targeting iMX6SDB}
+\section{Targeting iMX6SDB}
 
 The target environment necessitates the use of cross compilers and as part of the development process multiple build environments and systems were examined. Ultimately, the primary platform that ended up being used was the Yocto Project extensible SDK (eSDK) based application development process running on a standard linux based build environment. The QEMU emulator was also employed at various staged to check the build, and further test the application before moving onto tests on the actual hardware.
 
@@ -247,13 +247,13 @@ GCC based cross compilers and debuggers were usefull for the \texttt{C}, \texttt
 
 \subsection{Building PyTorch for iMX6SDB}
 
-PyTorch project provides LibTorch as a binary distribution of all the headers, libraries, CMake configurations required to use PyTorch. However the PyTorch project does not provide these binaries for iMX6SDB. The source code could however, with some effort, be used to generate these binaries and for this project a QEMU based user-mode emulation was used for native compilation of the libtorch binaries.
+PyTorch project provides LibTorch as a binary distribution of all the headers, libraries, CMake configurations required to use PyTorch. However the PyTorch project does not provide these binaries for iMX6SDB. The source code could however, with some effort, be used to generate these binaries and for this project a QEMU based user-mode emulation environment was used for native compilation of the libtorch binaries.
 
-\subsection[ECU / iMX6 Evaluation Board Overview]{i.MX6 Overview}
+\subsection{i.MX6 Overview}
 
 The iMX6 series is designed for high performance low power applications and target boards are configured with a single Cortex A9 core with the ARMv7 ISA. The processor supports NEON single-instruction multiple-data (SIMD) instructions, allowing for SIMD vector operations within the training program
 
-\section{HDR-NN Implementation}
+\section{HDR-NN Implementations}
 
 With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms and the correctness verification routines and execution statistics measurement runs were seperated. The benchmark executions did not produce disk I/O after the dataset was read, unlike the correctness verification runs which produced the final weights from the execution runs that were subsequently compared with the other benchmark program execution output weights
 
@@ -287,30 +287,54 @@ Developing ANNs using PyTorch is straightforward with good support and well docu
 The implementation used the MNIST made available by Torchvision library which is mainted under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the Numpy based Python implementation.
 
 \begin{lstlisting}[language=C++]
-struct Net : torch::nn::Module {
-	Net() {
-		// Construct and register two Linear submodules.
-		fc1 = register_module("fc1", torch::nn::Linear(784, 30));
-		fc2 = register_module("fc2", torch::nn::Linear(30, 10));
+struct Net : torch::nn::Module
+{
+	Net(std::vector<unsigned int> shape)
+	{
+		// size of image in row vector form
+		unsigned int previous_dim = IMAGE_SIZE;
+		unsigned int index = 1;
+		torch::nn::Linear fc{nullptr};
+
+		// iterate over the dimensions required in the hidden layer
+		for (auto c_dim : shape)
+		{
+			// Construct and register Linear submodules.
+			fc = register_module(
+				"fc" + std::to_string(index),
+				torch::nn::Linear(previous_dim, c_dim));
+			previous_dim = c_dim;
+			index++;
+			fc_list.push_back(fc);
+		}
+
+		// finally, add the last layer
+		fc = register_module(
+			"fc" + std::to_string(index),
+			torch::nn::Linear(previous_dim, DIGITS));
+		fc_list.push_back(fc);
 	}
 
 	// Implement the Net's algorithm.
-	torch::Tensor forward(torch::Tensor x) {
+	torch::Tensor forward(torch::Tensor x)
+	{
 		// Use one of many tensor manipulation functions.
-		x = torch::sigmoid(fc1->forward(x.reshape({x.size(0), 784})));
-		x = torch::sigmoid(fc2->forward(x));
+		x = x.reshape({x.size(0), 784});
+		for (auto fc : fc_list)
+			x = torch::sigmoid(fc->forward(x));
+
 		return x;
 	}
 
 	// Use one of many "standard library" modules.
-	torch::nn::Linear fc1{nullptr}, fc2{nullptr};
+	std::vector<torch::nn::Linear> fc_list{};
 };
 \end{lstlisting}
 
 
 \subsection{C based HDR-NN}
 
-The \texttt{C} implementation had the least amount of external dependencies and contained the data structures of the neural network in float arrays within structs shown in the listing below. The learning algorithm was implemented to remain identical with those used in the other implementations.
+The \texttt{C} implementation had the least amount of external dependencies, other than the \texttt{C} standard library. The data structures of the neural network contain float arrays within structs as shown in the listing below. The learning algorithm was implemented to remain identical with those used in the other implementations.
 
 \begin{lstlisting}[language=C]
 /* HDR Neural Network */
@@ -340,9 +364,11 @@ typedef struct
 } Network; // HDRNN
 \end{lstlisting}
 
-\subsection{CPP based HDR-NN}
+\subsection{C++ based HDR-NN}
 
-The CPP implementation used the n-dimensional array data structure feature of Eigen. It shares the same structure as the Numpy based Python implementation with the same learning algorithm show below.
+The \texttt{C++} implementation used the n-dimensional arrays of popular \texttt{C++} linear algebra library, Eigen. It is a straight forward port of the same structure and learning algorithm as the Numpy based Python implementation. A portion of the learning algorithm is shown in the listing below.
+
+Compared to the \texttt{C} version, the \texttt{C++} version uses the richer language feature set of \texttt{C++} such as namespaces, classes, etc. The \texttt{C++} implementation uses the popular build automation tool \texttt{CMake} instead of the GNU autotools setup adopted by the \texttt{C} implementation.
 
 \begin{lstlisting}[language=C++]
 void mini_batch_sgd()

@@ -679,12 +679,12 @@
 	\endgroup
 }
 
-\def\@makecaption@table#1#2{%
-	\addvspace{\belowcaptionskip}%
-	%\sbox\@tempboxa{{\bf #1.} #2}%
-	\small{\bf #1.} {\it #2}\par%
-	\addvspace{\abovecaptionskip}%
-}
+% \def\@makecaption@table#1#2{%
+% 	\addvspace{\belowcaptionskip}%
+% 	%\sbox\@tempboxa{{\bf #1.} #2}%
+% 	\small{\bf #1.} {\it #2}\par%
+% 	\addvspace{\abovecaptionskip}%
+% }
 
 \def\@makecaption@default#1#2{%
 	\addvspace{\abovecaptionskip}%
@@ -714,9 +714,9 @@
 \AtBeginDocument{%
 %
 % Smaller font size in tables
-	\let\otable\table%
-	\def\table{\let\textnormalsize\normalsize\let\normalsize\small\par\otable}%
-	\g@addto@macro\endtable\normalsize%
+	% \let\otable\table%
+	% \def\table{\let\textnormalsize\normalsize\let\normalsize\small\par\otable}%
+	% \g@addto@macro\endtable\normalsize%
 %
 % Fixes for package caption
 	\@ifpackageloaded{caption}{%
@@ -1346,8 +1346,6 @@
 %\emergencystretch 4em
 %\selectlanguage{swedish}
 %\hyphenation{}
-
-
 
 
 % ============================================

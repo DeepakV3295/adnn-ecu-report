@@ -1,8 +1,8 @@
 \part{Introduction}
 
-An embedded system is a combination of hardware and software components put together to achieve a specific task. Often, embedded systems are built into a larger device or system and are used to collect, store, process, and analyse data, as well as to control the device\textquotesingle s behaviour. Embedded devices are a category of tiny devices with physical, computational, and memory constraints that are programmed to perform dedicated tasks.
+An embedded system is a combination of hardware and software components put together to achieve a specific task. Often, embedded systems are built into a larger device or system, and are used to collect, store, process, and analyse data, as well as to control the behaviour of the system. Embedded devices are a category of tiny devices with physical, computational, and memory constraints that are programmed to perform dedicated tasks.
 
-Like most of the automotive industry, Scania employs embedded systems called \textit{Electronic Control Units} (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems contain several ECUs to gather system data and transmit it to a central communicator where the sensor data is processed and the system operations are monitored.
+Like most of the automotive industry, Scania employs embedded devices called \textit{Electronic Control Units} (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems contain several ECUs to gather system data and transmit it to a central communicator where the sensor data is processed and the system operations are monitored.
 
 Scania currently runs a massive fleet of around 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually \cite{scania-report}. This large fleet of rolling vehicles that are connected though the communicators opens up new possibilities. These connected devices continuously monitor the state of the vehicle and this data can be used to accurately and efficiently schedule vehicle maintainance. For example, if a tire change is predicted to be required in 100 kms then the driver can plan the route smartly to reach the workshop before the vehicle breaks down. This opportunity can be realised by running smart algorithms on the hardware that is currently available.
 
@@ -18,7 +18,7 @@ One such ML application Scania has been developing in their \textsc{LOBSTR} \cit
 	\item Federated learning techniques allow for the ECUs installed in Scania's distributed fleet of connected trucks to perform distributed training leveragin their computational capabilities. Each ECU individually trains the model with its own data and transmits the updated model parameters to a central server. This distributed learning approach enables early detection of faults or failures, reduces the network bandwith consumption by reducing the sensor data transmission, and ensures that critical data remains on the device.
 \end{itemize}
 
-\subsection*{Challenges to implementing Federated Learning}
+\subsection*{Challenges to implementing Federated Learning on ECUs}
 
 \begin{itemize}
 	\item The potential of running machine learning applications on embedded platforms remains unattained due to the difficulties in creating these applications and running training of the model on-board. Approaches such as TensorFlow Lite (TFLite), Edge Impulse, and STM Cube AI implemented along with other TinyML frameworks, enable running ML models targeted for small resource devices. However these approaches are largely limited to inference capabilities and there is no adequate open source support in the existing infrastructure for training ML models.
@@ -34,7 +34,7 @@ The scope of the thesis is to repurpose the existing Scania ECU and explore the 
 
 \subsubsection{Report Structure}
 
-This report is divided into three parts with multiple chapters containing several sections. The first part describes the background and introduces important information motivating the challenges in performing machine learning on embedded platforms. The second part details the bechmark applications that were implemented to evaluate the processes of training neural networks on a specific target platform. Lastly, the final part presents an analysis and discussion on the training of the neural network.
+This report is divided into three parts with multiple chapters containing several sections. The first part describes the background and introduces important information motivating the challenges in performing machine learning on embedded platforms. The second part details the bechmark applications that were implemented to evaluate the processes of training neural networks on a specific target platform. Lastly, the final part presents an analysis and discussion on implementing the training of a neural network.
 
 % ============================================
 %        Background
@@ -44,27 +44,27 @@ This report is divided into three parts with multiple chapters containing severa
 
 Developing and maintaining applications that rely on neural network models and run on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
 
-The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. Linux is the preferred choice for such a guest operating system due to its configurability and rich support for application development.
+The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have ARM application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. Linux is the preferred choice for such a guest operating system due to its configurability and rich support for application development.
 
 The next section looks at developing such an Embedded Linux environment and the process of developing neural network applications for that operating system.
 
 \section{Development Process for Embedded Linux}
 
-Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}. The Yocto project was chosen as the primary build system and used to generate the Embedded Linux and application programs used within this project. The next chapter contains a \hyperref[yocto-demo]{section} takes a look at a development environment that uses the Yocto project.
+Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}. The Yocto project was chosen as the primary build system and used to generate the Embedded Linux and application programs used within this project. The next chapter contains a \hyperref[section:yocto-demo]{section} takes a look at a development environment that uses the Yocto project.
 
 % TODO : Discuss and possibly add reference to https://aaltodoc.aalto.fi/handle/123456789/115155
 
 \subsection{SDKs and Compiler Toolchains}
 
-Creating applications for embedded devices requires a set of software components that are usually collectively referred to as \textit{Software Development Kits} (SDK). This suite of programs usually contain a toolchain that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on the target embedded device.
+Creating applications for embedded devices requires a set of software components that are usually collectively referred to as \textit{Software Development Kits} (SDK). This suite of programs usually contain a \textit{toolchain} that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on the target embedded device.
 
-Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called \textit{Linux kernel header files}. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
+Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called \textit{linux kernel header files}. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
 
 % TODO : Add information on ARM processors, and other terminology such as armv7l
 
-\subsection{Cross Compiling and Application Development}
+\subsection{Cross Compilers}
 
-The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a cross compiling toolchain. A compiler toolchain that creates executables for the sample platform is termed a native compiler toolchain. Cross compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, etc. and they are ultimately an unavoidable part of creating programs for a new hardware platform. Most software that are run on embedded devices are created on a different computing platform. Such a computing platform in the context of cross compilation is referred to as a \textit{development host} and the embedded device that the software ultimately runs on is the \textit{target}.
+The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a \textit{cross compiling} toolchain. A compiler toolchain that creates executables for the sample platform is termed a native compiler toolchain. Cross compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, etc. and they are ultimately an unavoidable part of creating programs for a new hardware platform. Most software that are run on embedded devices are created on a different computing platform. Such a computing platform in the context of cross compilation is referred to as a \textit{development host} and the embedded device that the software ultimately runs on is the \textit{target}.
 
 \begin{figure}[h]
 	\centering
@@ -84,6 +84,28 @@ The software development toolchains for embedded devices are generally run on a 
 		\draw (5.95, 1.25) node {GCC compiler};
 	\end{tikzpicture}
 \end{figure}
+
+\subsubsection{A walk-through of ARM GNU toolchain}
+
+A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{libc/abi}. The general format for the toolchain name could be . This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autotools, target triple in LLVM\textquotesingle s Clang, etc.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ |p{9em}|p{14em}| }
+		\hline
+			\textbf{ARM Architecture} & \textbf{ARM Processor Core} \\
+		\hline
+			armv7l & Cortex A9 \\
+		\hline
+	\end{tabular}
+	\caption{A few ARM processor cores and their architectures}
+	\label{table:arm}
+\end{table}
+
+Consider the \texttt{arm-none-eabi} toolchain provided by ARM
+
+
+\subsection{Application development using QEMU}
 
 Another common alternative to cross compiling in this manner is by using native compilers via emulation. Emulation is some technique that allows a (host) computer system to simulate the behaviour of some other (guest) computer system. There are several software projects that allow for emulation in this manner with QEMU being by far the most commonly used emulator targetting several different hardware platforms. QEMU can also be used to create and test embedded applications before being deployed on the target hardware. Application development for embedded devices usually employs a combination of cross compiling toolchains and emulation software to create, test, and maintain the software.
 
@@ -133,9 +155,7 @@ After configuring the environment in this manner, simply test changing root and 
 	chroot /tmp/f35arm /usr/bin/bash
 \end{lstlisting}
 
-\begin{lstlisting}[language=Bash]
-	cd /root
-\end{lstlisting}
+Once a \texttt{C} compiler for \texttt{armv7l} has been acquired for this environment, \texttt{qemu-arm} will be able to run the compiler using QEMU\textquotesingle s user-mode emulation. A simple hello world program as shown in the listing below can then be compiled in this environment
 
 \begin{lstlisting}[language=Bash]
 	cat hello.c
@@ -149,6 +169,8 @@ After configuring the environment in this manner, simply test changing root and 
 	}
 \end{lstlisting}
 
+From the fedora based example shown above, the sourced compiler is the popular gcc from GNU. The compile command could then be used as shown below
+
 \begin{lstlisting}[language=Bash]
 	gcc hello.c -o hello
 \end{lstlisting}
@@ -160,7 +182,7 @@ After configuring the environment in this manner, simply test changing root and 
 \end{lstlisting}
 
 
-\subsection{Target Device}
+\subsection{Targeting Embedded Devices}
 
 Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. Listing \ref{listing:device-tree} shows a heavily simplified example device tree layout of an i.MX28 evaluation kit. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
 
@@ -218,7 +240,7 @@ The possibilities in making embedded platforms more involved in the neural netwo
 
 However the primary approach in these cases is with a focus on making the neural network model inference step faster on these embedded platforms.
 
-\section{Federated Learning}
+\section{Federated Learning of Neural Networks}
 
 A significant problem in the traditional model for neural network application development in embedded devices is the consumption of network bandwith associated with continual transmission of sensor data to the data lake. The data from different devices are then combined together to form the dataset that will be used to further train the model. However this stream of data coming from the embedded platform exposes the device to computer security risks such as an attacker gaining access to the behavioural data of the vehicle.
 
@@ -272,7 +294,7 @@ This thesis focuses on repurposing existing hardwared (ECU) to ML edge devices t
 
 \chapter{Theory}
 
-The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualised in Embedded Linux. The final section gives a short overview of conducting application performance evaluation.
+The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualised in Embedded Linux.
 
 \section{Neural Networks}
 
@@ -329,13 +351,18 @@ Neural networks can be constructed in a variety of ways with the choice for how 
 
 One of the most interesting characteristics of a neural network is its capacity to form probability weighted associations between a set of inputs and their correponding outputs. The process of forming this association is called \textit{training} the neural network, the set of input patterns used for this purpose is called a \textit{training set}, and the algorithm by which the network is trained is called the \textit{learning algorithm}. After sufficient training, the network can also produce correct outputs to unseen inputs of the same kind.
 
-The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence a computing platform that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have optimised hardware features that allow for parallel executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks.
+The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence a computing platform that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have optimised hardware features that allow for parallel executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. Google's TPU chip (Figure \ref{fig:google-tpu})
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.28]{google-tpu.jpeg}
 	\caption{Google's TPU Chip}
+	\label{fig:google-tpu}
 \end{figure}
+
+\subsection{Training vs Inference}
+
+Once a neural network completes a training on a training set, it can then be used to look at data points that it has not seen previously. The neural network can be made to perform the feedforward calculations to produce some prediciton or output and this step is said to be a neural network \textit{inference}.
 
 \section{Embedded Linux}
 
@@ -366,8 +393,12 @@ After getting control of the processor, U-Boot then has to take care of initiali
 
 Once U-Boot completes and gives up control over the processor, the kernel then starts with more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices. The kernel then proceeds to complete its start up by setting up Stacks, initialising the Scheduler, setting up and allocating Pages, etc. and completes the start up after having spawned the \texttt{init} process, which is the first process to that starts after booting completes.
 
+\subsection{Porting Embedded Linux}
+
+Creating the binaries for an embedded linux and managing configurations for a particular board requires a build system capable of the task. This section takes a look at one such system, namely the Yocto project.
+
 \subsubsection{An excursion through Yocto Project's Embedded Linux build system}
-\label{yocto-demo}
+\label{section:yocto-demo}
 
 Embedded linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, number and nature of the software engineers using the tool, the build and deploy infrastructure, and the list of supported target platforms. Consider a simple development scenario targetting the popular and open source embedded target platform BeagleBone Black. The aim is to build and run an embedded linux distribution for the BeagleBone Black using a personal computer running linux.
 
@@ -375,7 +406,7 @@ The Yocto Project is arranged into several components out of which the core 3 co
 
 The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded.
 
-The big picture of the Yocto project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto project to have a steep learning curve. A simplified illustration of the Yocto project is presented in Figure \ref{fig:yocto-overview} below.
+The big picture of the Yocto project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto project to have a steep learning curve. A simplified illustration of the Yocto project is presented in Figure \ref{fig:yocto-overview} below. A set of recipes sharing a common purpose is arranged into \textit{layers} represented by a cyan color variant \ref{fig:yocto-overview}. Multiple layers can be used in the same distribution.
 
 \begin{figure}[h]
 	\centering
@@ -419,7 +450,7 @@ The big picture of the Yocto project can be fairly complex and the amount of ter
 		\fill[cyan!30] (9, 3.25) rectangle (11.65, 4.75);
 		\draw (10.3, 4) node {meta-poky-bsp};
 
-		\fill[white!40] (10.75, 1.25) rectangle (12.75, 2.5);
+		\fill[white!40, rounded corners] (10.75, 1.25) rectangle (12.75, 2.5);
 		\draw (11.75, 2) node {BitBake};
 
 		\fill[white!40] (12.1, 7) rectangle (13.8, 8);
@@ -458,7 +489,7 @@ The big picture of the Yocto project can be fairly complex and the amount of ter
 		\fill[teal!50] (11.5, -3.25) rectangle (13.5, -2.5);
 		\draw (12.5, -2.9) node[text=teal] {Recipes};
 	\end{tikzpicture}
-	\caption{The Yocto Project Overview}
+	\caption{Overview of The Yocto Project Components}
 	\label{fig:yocto-overview}
 \end{figure}
 
@@ -492,24 +523,15 @@ Checkout the kirkstone version of all the different components by checking out t
 	git checkout kirkstone-4.0.10
 \end{lstlisting}
 
-\section{Performance Evaluation}
+Once the correct branches has been checked out, the next step is to bring the BitBake tool into the shell environment. The poky repository contains scripts that facilitate this step. Create a directory to manage the build configuration and output files and run the setup script inside the poky repo.
 
-Performance engineering is the act of employing a variety of techniques to understand and improve some performance aspect of a computer program or software system. Embedded systems are generally resource constrained with limited memory and processing power and once an application can meet its functional specifications, there is a natural pressure to ensure improved resource utilisation and performance efficiency.
+\begin{lstlisting}{language=Bash}
+	source poky/oe-init-build-env $BUILDDIR
+\end{lstlisting}
 
-The first step to improve these metrics is to measure them and there are several tools that are used by the engineers conducting performance engineering. These tools are generally termed profling of software systems use that rely on the underlying hardware, the operating system environment, etc.
+The script will setup BitBake along with some additional tools and scripts in the current shell environment and also creates a few directories in \texttt{\$BUILDDIR} along with some configuration files. The first configuration file to edit will be the \texttt{\$BUILDDIR/conf/bblayers.conf} to configure the build system for the BeagleBone Black.
 
-The primary metrics in this mode of evaluation are the execution time, memory utilisation, energy consumption, and system responsiveness. Embedded linux has several interfaces that allow for the measurement of these features for both the kernel and user-level program performance.
+\begin{lstlisting}{language=Bash}
+	MACHINE = ""
+\end{lstlisting}
 
-% Profiling tools and techniques are employed to measure the software's resource usage, identify hotspots, and pinpoint areas that need optimization.
-
-% Optimization techniques employed in performance engineering include:
-
-% Algorithmic optimization: Analyzing and modifying algorithms to improve efficiency, reduce computational complexity, and enhance overall performance.
-% Data structure optimization: Choosing and designing data structures that minimize memory usage, improve access patterns, and optimize data manipulation operations.
-
-% Code optimization: Fine-tuning code implementation, using optimized libraries, employing compiler optimizations, and utilizing platform-specific features to improve execution speed and reduce resource usage.
-
-% System-level optimization: Analyzing and optimizing the interaction between software components, optimizing task scheduling, memory management, and communication protocols to maximize system efficiency.
-% Performance engineering is an iterative process that involves implementing optimizations, measuring their impact, and iteratively refining the software until the desired performance objectives are achieved. It requires a deep understanding of the embedded system's hardware, software architecture, and performance trade-offs.
-
-% By focusing on performance engineering, developers can ensure that embedded software meets real-time requirements, delivers efficient execution, minimizes resource utilization, and maximizes the overall performance of the embedded system, resulting in improved user experience, reduced energy consumption, and enhanced system reliability.
