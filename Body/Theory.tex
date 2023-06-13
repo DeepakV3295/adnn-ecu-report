@@ -1,6 +1,6 @@
 \part{Introduction}
 
-An embedded system is a combination of hardware and software components put together to achieve a specific task. Often, embedded systems are built into a larger device or system, and are used to collect, store, process, and analyse data, as well as to control the behaviour of the system. Embedded devices are a category of tiny devices with physical, computational, and memory constraints that are programmed to perform dedicated tasks.
+An embedded system is a combination of hardware and software components put together to achieve a specific task. Often, embedded systems are built into a larger device or system and are used to process data generated within the device and to control the behaviour of the system. Embedded devices are a category of tiny devices with physical, computational, and power constraints that are programmed to perform dedicated tasks.
 
 Like most of the automotive industry, Scania employs embedded devices called \textit{Electronic Control Units} (ECUs) in their trucks to supervise and regulate essential subsystems like the engine, transmission, braking, and electrical systems. Each of these subsystems contain several ECUs to gather system data and transmit it to a central communicator where the sensor data is processed and the system operations are monitored.
 
@@ -8,7 +8,7 @@ Scania currently runs a massive fleet of around 600,000 connected heavy vehicles
 
 Machine learning (ML) on embedded devices is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. This technology can be used to automate tasks, improve efficiency, and make better decisions. But this technology presents a unique set of challenges due to the limited resources available on these devices. Embedded devices are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded devices are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded devices has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles.
 
-One such ML application Scania has been developing in their \textsc{LOBSTR} \cite{lobstr} and \textsc{FAMOUS} \cite{famous} projects is anomaly and fault detection on the vehicles. Targeting to run the anomaly detection models on the existing ECUs with limited resources has many benefits and challenges.
+One such ML application Scania has been developing in their \textsc{LOBSTR} \cite{lobstr} and \textsc{FAMOUS} \cite{famous} projects is anomaly and fault detection on the vehicles. The preemptive Targeting to run the anomaly detection models on the existing ECUs with limited resources has many benefits and challenges.
 
 \subsection*{Benefits to performing Anomaly Detection on ECUs}
 
@@ -42,11 +42,13 @@ This report is divided into three parts with multiple chapters containing severa
 
 \chapter{Background}
 
-Developing and maintaining applications that rely on neural network models and run on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter process communication mechanisms, multitasking etc.
+Developing and maintaining applications that rely on neural network models and run on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter-process communication mechanisms, multitasking etc.
 
 The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have ARM application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. Linux is the preferred choice for such a guest operating system due to its configurability and rich support for application development.
 
-The next section looks at developing such an Embedded Linux environment and the process of developing neural network applications for that operating system.
+\section{Embedded Platforms}
+
+The embedded ecosystem consists of a varied mixture of applications from
 
 \section{Development Process for Embedded Linux}
 
@@ -87,7 +89,9 @@ The software development toolchains for embedded devices are generally run on a 
 
 \subsubsection{A walk-through of ARM GNU toolchain}
 
-A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{libc/abi}. The general format for the toolchain name could be . This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autotools, target triple in LLVM\textquotesingle s Clang, etc.
+A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{libc/abi}. The general format for the toolchain name could be . This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, target triple in LLVM\textquotesingle s Clang, etc.
+
+A CPU architecture is
 
 \begin{table}[h]
 	\centering
@@ -214,7 +218,7 @@ Building an Embedded Linux kernel suited for a mainboard of an embedded device r
 
 To port Linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
-The initial target machine for the project was an ECU filling the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the vendor's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the iMX6SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
+The initial target machine for the project was an ECU filling the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the vendor's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the MCIMX6Q-SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
 
 \section{Neural Network Application Development}
 
@@ -400,13 +404,18 @@ Creating the binaries for an embedded linux and managing configurations for a pa
 \subsubsection{An excursion through Yocto Project's Embedded Linux build system}
 \label{section:yocto-demo}
 
-Embedded linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, number and nature of the software engineers using the tool, the build and deploy infrastructure, and the list of supported target platforms. Consider a simple development scenario targetting the popular and open source embedded target platform BeagleBone Black. The aim is to build and run an embedded linux distribution for the BeagleBone Black using a personal computer running linux.
+Embedded linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, number and nature of the software engineers using the tool, the build and deploy infrastructure, and the list of supported target platforms. Consider a simple development scenario targetting the popular and open source embedded target platform MCIMX6Q-SDB. The aim is to build and run an embedded linux distribution for the MCIMX6Q-SDB using a personal computer running linux. Note that several components used in this discussion may break their interface so the emphasis will be on the essential concepts of the activites involved.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.32]{MCIMX6Q-SDB-BD.png}
+	\caption{MCIMX6Q-SDB-BD}
+	\label{fig:mcimx6q-sdb}
+\end{figure}
 
 The Yocto Project is arranged into several components out of which the core 3 components are BitBake, OpenEmbedded-Core, and Poky. BitBake is a build engine that interprets configuration files to schedule and then perform tasks. These configuration files are called \textit{recipes} and they describe how to build a particular package such as a shared library or application program. Recipes contain information as to where to obtain the source code for a package, instructions for compiling the source code, and installing or removing that package from a distribution. OpenEmbedded-Core is a set of platform and distribution independent recipes and other metadata while Poky is a reference system containing a collection of projects and tools that can be used to bootstrap a new distribution.
 
-The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded.
-
-The big picture of the Yocto project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto project to have a steep learning curve. A simplified illustration of the Yocto project is presented in Figure \ref{fig:yocto-overview} below. A set of recipes sharing a common purpose is arranged into \textit{layers} represented by a cyan color variant \ref{fig:yocto-overview}. Multiple layers can be used in the same distribution.
+The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded. The big picture of the Yocto project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto project to have a steep learning curve. A simplified illustration of the Yocto project is presented in Figure \ref{fig:yocto-overview} below. A set of recipes (teal) sharing a common purpose are arranged into a \textit{layer} (cyan) \ref{fig:yocto-overview}. Layers can depend on other layers, with multiple layers usually being used in an embedded linux distribution.
 
 \begin{figure}[h]
 	\centering
@@ -493,9 +502,9 @@ The big picture of the Yocto project can be fairly complex and the amount of ter
 	\label{fig:yocto-overview}
 \end{figure}
 
-The primary version control system used within the Yocto project is git. The Yocto project has even more packages that it relies on layed out in its documentation (see \href{https://docs.yoctoproject.org/}{docs.yoctoproject.org})
+The primary version control system used within the Yocto project is git. The Yocto project has even several software packages requirements for its build system layed out in its documentation (see \href{https://docs.yoctoproject.org/}{docs.yoctoproject.org}). Furthermore there are minimum version for the required packages for a corresponding version of the Yocto project (see \href{https://wiki.yoctoproject.org/wiki/Releases}{wiki.yoctoproject.org/wiki/Releases}).
 
-Based on the linux distribution of the development host the following command will vary. Furthermore there are minimum version for the required packages for a corresponding version of the Yocto project (see \href{https://wiki.yoctoproject.org/wiki/Releases}{wiki.yoctoproject.org/wiki/Releases}).
+The following listing presents the typical required packages however, based on the linux distribution of the development host the command will vary.
 
 \begin{lstlisting}[language=Bash]
 	PACKAGE_MANAGER install bc make automake gcc gcc-c++ chrpath cpio diffstat gawk git python texinfo wget
@@ -503,18 +512,16 @@ Based on the linux distribution of the development host the following command wi
 
 The above list is not complete and relies on non standard package names. Consulting the documentation above will provide more accurate instructions as to the packages that are necessary to start with the Yocto project.
 
-For this section consider the \texttt{kirkstone} release of the Yocto project. For
+For this section, consider the \texttt{kirkstone} Long Term Support (LTS) release of the Yocto project. To begin clone the Poky repository from \href{https://git.yoctoproject.com}{git.yoctoproject.com}
 
 \begin{lstlisting}[language=Bash]
 	git clone https://git.yoctoproject.org/git/poky
 \end{lstlisting}
 
-\begin{lstlisting}[language=Bash]
-	git clone https://git.yoctoproject.org/git/meta-arm
-\end{lstlisting}
+The Poky repository contains the OpenEmbedded-Core as well as the BitBake tool that is required for the build. NXP (previously freescale) is the system maker and system vendor for the MCIMX6Q-SDB and they provide a BSP layer in Yocto via the meta-freescale repository.
 
 \begin{lstlisting}[language=Bash]
-	git clone https://git.yoctoproject.org/git/meta-ti
+	git clone https://git.yoctoproject.org/git/meta-freescale
 \end{lstlisting}
 
 Checkout the kirkstone version of all the different components by checking out the corresponding branches.
@@ -523,15 +530,22 @@ Checkout the kirkstone version of all the different components by checking out t
 	git checkout kirkstone-4.0.10
 \end{lstlisting}
 
-Once the correct branches has been checked out, the next step is to bring the BitBake tool into the shell environment. The poky repository contains scripts that facilitate this step. Create a directory to manage the build configuration and output files and run the setup script inside the poky repo.
+Once the correct branches has been checked out, the next step is to bring the BitBake tool into the shell environment. The Poky repository contains scripts that facilitate this step. Create a directory to manage the build configuration and output files and run the setup script inside the Poky repo.
 
 \begin{lstlisting}{language=Bash}
 	source poky/oe-init-build-env $BUILDDIR
 \end{lstlisting}
 
-The script will setup BitBake along with some additional tools and scripts in the current shell environment and also creates a few directories in \texttt{\$BUILDDIR} along with some configuration files. The first configuration file to edit will be the \texttt{\$BUILDDIR/conf/bblayers.conf} to configure the build system for the BeagleBone Black.
+The script will setup BitBake along with some additional tools and scripts in the current shell environment and also creates a few directories in \texttt{\$BUILDDIR} along with some configuration files. The first configuration file to edit will be the \texttt{\$BUILDDIR/conf/bblayers.conf} to configure the build system for the MCIMX6Q-SDB.
 
 \begin{lstlisting}{language=Bash}
-	MACHINE = ""
+	MACHINE = "imx6qdlsabresd"
 \end{lstlisting}
 
+After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal image that can boot the MCIMX6Q-SDB building the packages for \texttt{core-image-minimal} recipe.
+
+\begin{lstlisting}{language=Bash}
+	bitbake core-image-minimal
+\end{lstlisting}
+
+The resulting images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. The MCIMX6Q-SDB can be configured to boot from an SD card in its SD-3 slot

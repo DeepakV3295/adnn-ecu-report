@@ -1,9 +1,11 @@
 \chapter{Scania C300 Communicator} \label{rtc-c300}
 % The communicator contains iMX6 series processors
 
-Scania ECU was set to be the target hardware to benchmark the training of a machine learning model. In order to be able to port the different implementation applications and it's dependencies on the Scania ECU and successfully execute the programs, certain information regarding the hardware, kernel, supported compilers and libraries is needed. Since the existing ECU is developed by an OEM, obtaining all the information and source files is not possible. It can be achieved by replacing the existing software with a custom developed embedded linux distribution, thus repurposing the custom hardware. The biggest challenge for repurposing an custom board with no information is reverse engineering to obtain the required information for flashing a custom linux kernel. The reverse engineering learnings are stated in this section.
+Scania ECU was set to be the target hardware to benchmark the training of a machine learning model. The ECU is developed by an external system maker Actia who designed the board in association with Scania and with an i.MX6 series processor and a number of on-board peripherals including CAN controllers. Much of the build system configuration files and Yocto BSP layers used for the board are not made available by the system maker, instead providing embedded linux binaries and SDKs to Scania. The initial mandate included creating such a BSP layer for the C300 which would facilitate the repurposing of the hardware on board. For this purpose, some examinations on the board were conducted and this part of the report will account the activites made in this effort.
 
-There were a lack of development tools from the vendor. Furthermore, there was no bootloader access from starting a vanilla board with the serial console being silent when the bootloader was functional. The documentation contained little information on the device tree and no memory layout information. The boot flow information of the processor was available from NXP but no information was available on any modifications made by the system vendor. The lack of these resources made it difficult to port or install any tool/package on the device to reveal certain basic information. The information that was available about the processor were the number of cores, the instruction set architecture, the supported memory units, and the basic kernel information from the name, version, and distribution. There was visibility into the file system however, and to the presence of the bootloader code as well
+\subsubsection{Development Tools}
+
+The U-Boot bootloader on a vanilla C300 is silent. The documentation contained little information on the device tree and no memory layout information. The boot flow information of the processor was available from NXP but no information was available on any modifications made by the system vendor. The lack of these resources made it difficult to port or install any tool/package on the device to reveal certain basic information. The information that was available about the processor were the number of cores, the instruction set architecture, the supported memory units, and the basic kernel information from the name, version, and distribution. There was visibility into the file system however, and to the presence of the bootloader code as well
 
 % Research and experiments conducted on the Scania ECU to reverse engineering and obtain the required hardware and software information . Further, repurposing the ECU by flashing a custom operating system to benchmark the neural network applications was also attempted.
 
@@ -19,7 +21,6 @@ The first naive approach taken was of flashing the MTD partitions that houses th
 % (TODO: results from mfgtools experiment)
 % (TODO: results of unbricking the board)
 % (TODO: reasoning not enough memory layout infomation)
-
 
 Exploring the target ECU board involved several examinations of a known state of the board. The linux kernel binaries were made via the Yocto project however there was no access to source code such as the recipes or the meta-layers themselves
 
