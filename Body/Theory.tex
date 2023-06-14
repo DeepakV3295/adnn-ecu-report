@@ -6,9 +6,9 @@ Like most of the automotive industry, Scania employs embedded devices called \te
 
 Scania currently runs a massive fleet of around 600,000 connected heavy vehicles. The company's truck sales make up 62\% of its global sales and Scania has been adding 60,000 trucks to it's fleet annually \cite{scania-report}. This large fleet of rolling vehicles that are connected though the communicators opens up new possibilities. These connected devices continuously monitor the state of the vehicle and this data can be used to accurately and efficiently schedule vehicle maintainance. For example, if a tire change is predicted to be required in 100 kms then the driver can plan the route smartly to reach the workshop before the vehicle breaks down. This opportunity can be realised by running smart algorithms on the hardware that is currently available.
 
-Machine learning (ML) on embedded devices is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. This technology can be used to automate tasks, improve efficiency, and make better decisions. But this technology presents a unique set of challenges due to the limited resources available on these devices. Embedded devices are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded devices are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded devices has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles.
+Machine learning on embedded devices is becoming increasingly popular due to its ability to provide real-time insight and intelligence to devices. This technology can be used to automate tasks, improve efficiency, and make better decisions. But this technology presents a unique set of challenges due to the limited resources available on these devices. Embedded devices are designed to be power efficient, have limited memory and processing power, and require closely tailored algorithms, making it difficult to use pre-existing machine learning models. Furthermore, embedded devices are often expected to produce real-time results, which further complicates the development process. Despite these challenges, machine learning on embedded devices has potential applications in a variety of areas, such as in the fields of robotics and autonomous vehicles.
 
-One such ML application Scania has been developing in their \textsc{LOBSTR} \cite{lobstr} and \textsc{FAMOUS} \cite{famous} projects is anomaly and fault detection on the vehicles. The preemptive Targeting to run the anomaly detection models on the existing ECUs with limited resources has many benefits and challenges.
+One such machine learning application that Scania has been developing in their \textsc{LOBSTR} \cite{lobstr} and \textsc{FAMOUS} \cite{famous} projects is \textit{anomaly and fault detection} on the vehicles. Anomalies in this context are patterns in the data that do not conform to the notion of normal behaviour. There are various machine learning techniques available for predicting anomalous behavior in trucks based on the sensor data readings. The running anomaly detection models for fault prediction on the existing ECUs with limited resources has many benefits and challenges.
 
 \subsection*{Benefits to performing Anomaly Detection on ECUs}
 
@@ -21,8 +21,8 @@ One such ML application Scania has been developing in their \textsc{LOBSTR} \cit
 \subsection*{Challenges to implementing Federated Learning on ECUs}
 
 \begin{itemize}
-	\item The potential of running machine learning applications on embedded platforms remains unattained due to the difficulties in creating these applications and running training of the model on-board. Approaches such as TensorFlow Lite (TFLite), Edge Impulse, and STM Cube AI implemented along with other TinyML frameworks, enable running ML models targeted for small resource devices. However these approaches are largely limited to inference capabilities and there is no adequate open source support in the existing infrastructure for training ML models.
 	\item Neural network training is computationally demanding and achieving good performance on embedded devices require careful resource management.
+	\item The potential of running machine learning applications on embedded platforms remains unattained due to the difficulties in creating these applications and running training of the model on-board. Approaches such as TensorFlow Lite (TFLite), Edge Impulse, and STM Cube AI implemented along with other TinyML frameworks, enable running ML models targeted for small resource devices. However these approaches are largely limited to inference capabilities and there is no adequate open source support in the existing infrastructure for training ML models.
 	\item An Original Equipment Manufacturer (OEM) is responsible for the development and upkeep of the Scania ECU. However, the amount of information made available regarding the hardware design, memory layout, and operating system (OS) is restricted. To construct an embedded OS for a customized hardware, critical details such as the device tree, memory organisation, and boot flow are necessary. Obtaining this information from a functional board can be an enormous task requiring reverse engineering expertise.
 \end{itemize}
 
@@ -48,7 +48,9 @@ The target embedded device to run these applications are the ECUs aboard a Scani
 
 \section{Embedded Platforms}
 
-The embedded ecosystem consists of a varied mixture of applications from
+Embedded systems perform a varied mixture of applications including industrial automation, consumer electronics, automotive, etc. and have capabilities ranging from ultra low power wireless data logging to thrust vector control on rocket ships. Embedded boards for an application domain are generally designed in concert with multiple entities, each responsible for a different component in the hardware-software stack.
+
+An example of such an arrangement could be as follows. The semiconductor and software design company ARM produces ARM processors that are used in a significant fraction of embedded devices due to their power efficiency and versatility. \textit{Silicon vendors} such as Atmel, Qualcomm, NXP, etc. buy CPU core designs from ARM and adds a suite of peripherals to offer application processors. Ultimately, a \textit{system maker} would select among these application processors, sensors, and other devices to design an embedded board for a particular application domain.There are several different practises that the industry adopts at creating embedded devices for different applications with the example presented here being one among several. The embedded device considered in this project derives from such a process.
 
 \section{Development Process for Embedded Linux}
 
@@ -87,27 +89,32 @@ The software development toolchains for embedded devices are generally run on a 
 	\end{tikzpicture}
 \end{figure}
 
-\subsubsection{A walk-through of ARM GNU toolchain}
+\subsubsection{A brief discussion on the ARM GNU toolchain}
 
-A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{libc/abi}. The general format for the toolchain name could be . This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, target triple in LLVM\textquotesingle s Clang, etc.
+A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{<libc/abi>}. This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, or the target triple in LLVM\textquotesingle s Clang.
 
-A CPU architecture is
+ARM GNU toolchain is a GNU toolchain for ARM architecture that is released and maintained by ARM and from open-source project GCC, Binutils, glibc, Newlib, and GDB. The toolchain supports \texttt{C} and \texttt{C++} languages and supports CPUs based on the 3 main flavours of processor cores namely the Cortex A, Cortex R, and Cortex M.
 
 \begin{table}[h]
 	\centering
-	\begin{tabular}{ |p{9em}|p{14em}| }
+	\begin{tabular}{ |p{7em}|p{9em}|p{12em}| }
 		\hline
-			\textbf{ARM Architecture} & \textbf{ARM Processor Core} \\
+			\textbf{Processor Core} & \textbf{ARM Architecture} & \textbf{ARM Processor Core} \\
 		\hline
-			armv7l & Cortex A9 \\
+			nRF51822 & ARM v6-M & ARM Cortex M0 \\
+		\hline
+			AM2732 & ARM v7-R & ARM Cortex R5 \\
+		\hline
+			AM3358 & ARM v7-A & ARM Cortex A8 \\
+		\hline
+			i.MX6S & ARM v7-A & ARM Cortex A9 \\
+		\hline
+			Kryo 240 & ARM v8-A & ARM Cortex-A73, A53 \\
 		\hline
 	\end{tabular}
-	\caption{A few ARM processor cores and their architectures}
+	\caption{A few ARM application processors with their processor cores and CPU architecture}
 	\label{table:arm}
 \end{table}
-
-Consider the \texttt{arm-none-eabi} toolchain provided by ARM
-
 
 \subsection{Application development using QEMU}
 
@@ -289,7 +296,7 @@ One way to address this problem is to rely on alternative mechanisms to perform 
 
 Federated learning has several different approaches differing in the manner in which distributed training can take place, the algorithm to combine different locally trained models, and other strategies used in completing the development loop. In the LOBSTR \cite{lobstr} and FAMOUS \cite{famous} projects Scania has developed statistical models and NN models for anomaly detection using a federated learning approach. The statistical models are lightweight and can easily be trained with limited computational resources.
 
-This thesis focuses on repurposing existing hardwared (ECU) to ML edge devices that are tailored to train NN in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the commuicator to benchamark and experiment different NN implementations and evauluate the optimal ones.
+This thesis focuses on repurposing existing hardwared (ECU) to ML edge devices that are tailored to train NN in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the commuicator to benchmark and experiment different NN implementations and evaluate.
 
 
 % ============================================
@@ -548,4 +555,6 @@ After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal i
 	bitbake core-image-minimal
 \end{lstlisting}
 
-The resulting images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. The MCIMX6Q-SDB can be configured to boot from an SD card in its SD-3 slot
+Build images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. To boot the MCIMX6Q-SDB with the build image simply flash an SD card with the rootfs image and configure the board to boot from the SD card slot. SD-3 slot may be configured in this manner by toggling the dip switches to D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF
+
+Connecting to the board via USB-UART via a serial console terminal emulator program should then be possible after power on the MCIMX6Q-SDB.
