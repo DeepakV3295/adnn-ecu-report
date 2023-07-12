@@ -1,5 +1,8 @@
 % ============================================
-%   Class definition Ver. 5.2.0 - 2012-08-08
+% Original taken from,
+% https://libguides-en.ub.uu.se/thesis/template_latex
+%
+% Later additions made primarily as appends
 % ============================================
 
 \ProvidesClass{UUThesisTemplate}

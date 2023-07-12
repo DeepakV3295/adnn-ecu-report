@@ -26,8 +26,6 @@ One such machine learning application that Scania has been developing in their \
 	\item An Original Equipment Manufacturer (OEM) is responsible for the development and upkeep of the Scania ECU. However, the amount of information made available regarding the hardware design, memory layout, and operating system (OS) is restricted. To construct an embedded OS for a customized hardware, critical details such as the device tree, memory organisation, and boot flow are necessary. Obtaining this information from a functional board can be an enormous task requiring reverse engineering expertise.
 \end{itemize}
 
-% Gap in the market: No support for training ML models on embedded devices❓
-
 \subsubsection{Problem Description}
 
 The scope of the thesis is to repurpose the existing Scania ECU and explore the challenges of building targeted neural network models and training them on repurposed ECUs using different approaches and evaluating their performances.
@@ -54,9 +52,7 @@ An example of such an arrangement could be as follows. The semiconductor and sof
 
 \section{Development Process for Embedded Linux}
 
-Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and presently the most widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}. The Yocto project was chosen as the primary build system and used to generate the Embedded Linux and application programs used within this project. The next chapter contains a \hyperref[section:yocto-demo]{section} takes a look at a development environment that uses the Yocto project.
-
-% TODO : Discuss and possibly add reference to https://aaltodoc.aalto.fi/handle/123456789/115155
+Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}. The Yocto project was chosen as the primary build system and used to generate the Embedded Linux and application programs used within this project. The next chapter contains a \hyperref[section:yocto-demo]{section} takes a look at a development environment that uses the Yocto project.
 
 \subsection{SDKs and Compiler Toolchains}
 
@@ -116,11 +112,15 @@ ARM GNU toolchain is a GNU toolchain for ARM architecture that is released and m
 	\label{table:arm}
 \end{table}
 
+% TODO : Add one more column on the application areas for the processor cores
+
 \subsection{Application development using QEMU}
 
 Another common alternative to cross compiling in this manner is by using native compilers via emulation. Emulation is some technique that allows a (host) computer system to simulate the behaviour of some other (guest) computer system. There are several software projects that allow for emulation in this manner with QEMU being by far the most commonly used emulator targetting several different hardware platforms. QEMU can also be used to create and test embedded applications before being deployed on the target hardware. Application development for embedded devices usually employs a combination of cross compiling toolchains and emulation software to create, test, and maintain the software.
 
 \subsubsection{An example Embedded Development Environment on Linux using QEMU}
+
+% TODO : Mention assumptions regarding the code listings (e,g, on their reliability) and state the environments in which the listings were tested in (e.g. fedora 36)
 
 In this section let's consider a simple development environment on a personal computer running linux capable of compiling and executing \texttt{C} programs for the \texttt{armv7l} ARM processor. This setup leverages features of the Linux operating system running on the development host and the capabilities of the QEMU machine emulation system.
 
@@ -223,6 +223,8 @@ Building an Embedded Linux kernel suited for a mainboard of an embedded device r
 \label{listing:device-tree}
 \end{lstfloat}
 
+% TODO : Improve the discussion on device tree layouts - possibly move the discussion to the Theory chapter, link to that discussion from here
+
 To port Linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
 The initial target machine for the project was an ECU filling the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the vendor's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the boot loader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similiar board, namely the MCIMX6Q-SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is layed out in \hyperref[rtc-c300]{Appendix II}.
@@ -241,7 +243,9 @@ The programming environment for embedded devices however are not as featureful. 
 
 Another aspect to consider is the programming language and software stack used to describe a neural network application. Most machine learning models at present are written in Python and frameworks like PyTorch and Tensorflow have richer interfaces for Python compared to other programming languages. This may be unfavourable to embedded devices where a Python application may take up higher memory and have longer latencies. The programming language of choice for embedded applications is \texttt{C} and \texttt{C++} which are supported by the ML frameworks but not to the same extent as their Python interfaces.
 
-Machine learning frameworks also utilise multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute platform its running on, Tensorflow determines the operations involved, execution order, etc. and execute the computation. At this stage Tensorflow may also use other software libraries such as Xneural networkPACK, or Intel oneAPI Math Kernel Library to perform the calculations.
+Machine learning frameworks also utilise multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute platform its running on, Tensorflow determines the operations involved, execution order, etc. and execute the computation. At this stage Tensorflow may also use other software libraries such as XNNPACK, or Intel oneAPI Math Kernel Library to perform the calculations.
+
+% TODO : Link to XNNPACK, oneAPI papers / resources
 
 \subsection{Neural Network Inference on Embedded Devices}
 
@@ -250,6 +254,8 @@ The typical deployment of neural network models on embedded devices follows a pa
 The possibilities in making embedded platforms more involved in the neural network development process has been explored in research avenues such as TinyML\cite{tinyml}, and other efforts motivated by interests in getting the neural network applications ready for mobile devices such as Tensorflow Lite\cite{tfl} and PyTorch Mobile \cite{pytorch-mobile}
 
 However the primary approach in these cases is with a focus on making the neural network model inference step faster on these embedded platforms.
+
+% TODO : Gap in the market: No support for training ML models on embedded devices❓
 
 \section{Federated Learning of Neural Networks}
 
@@ -362,6 +368,8 @@ Neural networks can be constructed in a variety of ways with the choice for how 
 
 One of the most interesting characteristics of a neural network is its capacity to form probability weighted associations between a set of inputs and their correponding outputs. The process of forming this association is called \textit{training} the neural network, the set of input patterns used for this purpose is called a \textit{training set}, and the algorithm by which the network is trained is called the \textit{learning algorithm}. After sufficient training, the network can also produce correct outputs to unseen inputs of the same kind.
 
+% TODO : Give more mathematical motivations on how neural networks learn patterns
+
 The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence a computing platform that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have optimised hardware features that allow for parallel executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. Google's TPU chip (Figure \ref{fig:google-tpu})
 
 \begin{figure}[h]
@@ -403,6 +411,8 @@ After power up, the processor requires initialisation which for the kind of proc
 After getting control of the processor, U-Boot then has to take care of initialising the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the device tree \ref{listing:device-tree}, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to disuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
 
 Once U-Boot completes and gives up control over the processor, the kernel then starts with more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices. The kernel then proceeds to complete its start up by setting up Stacks, initialising the Scheduler, setting up and allocating Pages, etc. and completes the start up after having spawned the \texttt{init} process, which is the first process to that starts after booting completes.
+
+% TODO : Include more discussion on device tree layouts (see previous TODO on device tree layouts)
 
 \subsection{Porting Embedded Linux}
 
@@ -512,6 +522,8 @@ The Yocto Project came out of the work associated with OpenEmbedded build automa
 The primary version control system used within the Yocto project is git. The Yocto project has even several software packages requirements for its build system layed out in its documentation (see \href{https://docs.yoctoproject.org/}{docs.yoctoproject.org}). Furthermore there are minimum version for the required packages for a corresponding version of the Yocto project (see \href{https://wiki.yoctoproject.org/wiki/Releases}{wiki.yoctoproject.org/wiki/Releases}).
 
 The following listing presents the typical required packages however, based on the linux distribution of the development host the command will vary.
+
+% TODO : Make the listings more specific to Fedora for e.g, create new listing type with slightly different background for the _general idea_ listing
 
 \begin{lstlisting}[language=Bash]
 	PACKAGE_MANAGER install bc make automake gcc gcc-c++ chrpath cpio diffstat gawk git python texinfo wget

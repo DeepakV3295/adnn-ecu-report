@@ -34,7 +34,7 @@ The benchmark applications all had the same configurable parameters for their le
 
 Initially, the network's single hidden layer shape was varied according to powers of two, with the \texttt{C} and \texttt{C++} variants tested with 2, 4, 8, 32, 128, 256, 512, 1024 and so on before adding another hidden layer. The additional hidden layer varied sizes from (16, 16), to (32, 16) and (16, 32), then (128, 16), etc. The final list of shapes and their corresponding shapes for which the measurements results are state in the next chapter are shown in the following table.
 
-\begin{table}[h]
+\begin{table}[ht]
 	\centering
 	\begin{tabular}{ |p{11em}|p{14em}| }
 		\hline
@@ -81,25 +81,25 @@ The general suite of compiler optimisations from GCC 11.3 are clever enough to u
 
 A \texttt{perf\_events} based record was conducted using the \texttt{perf} utility for all the programs. Flame graphs were generated for the same as shown attached below revealing the areas where the applications were spending the most time on.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.34]{c-math.h-fg.png}
 	\caption{c-math.h}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.34]{cpp-eigen-fg.png}
 	\caption{cpp-eigen}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.34]{cpp-libtorch-fg.png}
 	\caption{cpp-libtorch}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.34]{python-numpy-fg.png}
 	\caption{python-numpy}
@@ -109,13 +109,13 @@ A \texttt{perf\_events} based record was conducted using the \texttt{perf} utili
 
 Heaptrack is an alternative to the popular valgrind programming tool for memory profiling that comes under the KDE gear of applications by the KDE community. Heaptrack was used to profile the memory of the benchmark application programs under execution
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.15]{heaptrack-compare.png}
 	\caption{c-math.h with 2 different shapes}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.32]{c-math.h-allocations.png}
 	\caption{c-math.h allocations}
@@ -129,16 +129,13 @@ Heaptrack is an alternative to the popular valgrind programming tool for memory 
 
 This chapter presents the results of the benchmark application runs. The first section contains a brief look at the analysis on the neural network accuracies for the different implementations. The second section considers the performance of the benchmark applications followed by the third section that details their differences.
 
-% \section{Coefficient of variation}
-% A total of 10 iterations were conducted to ensure that the results remained consistent. To assess the degree of variability among the various trials, the mean and standard deviation were calculated across all runs, and their ratio was determined. This ratio indicates the level of variation between the different tests.
-
-% TODO: we also reason the impact of execution time in the decision to skip some network configurations and add a table of the experiments conducted
+% TODO : Include a paragraph regarding the reliability of the measurements (coefficient of variation of the multiple measurements, assess the degree of variability among the various trials, the mean and standard deviation were calculated across all runs, and their ratioes indicating the level of variation between different tests)
 
 \section{Evaluating Correctness}
 
-% \subsection{Accuracy}
-
 As the benchmark applications are developed to be identical by keeping the same structure and configurations, the model accuracy is expected to be similar. Figure \ref{hdrnn-accuracy} showcases that the different implementations perform similarly irrespective of the number of parameters.
+
+% TODO : Remove a few bars from the accuracy plot to make it more readable
 
 \begin{figure}[!ht]
 	\centering
@@ -149,27 +146,22 @@ As the benchmark applications are developed to be identical by keeping the same 
 
 Further, an abnormal behaviour can be observed when the number of parameters exceeds 101770. The accuracy of the \texttt{C} implementation decreases due to (an unknown bug).
 
-% To improve accuracy, adding another layer with 16 neurons is found to be beneficial without significantly increasing the time required for computation. In fact, for larger network sizes, it is observed to even reduce the computation time required. (separate plot for this behaviour)
-
-% TODO: evaluate the mean squared error in accuray between the benchmark applications
-
 % \subsection{Weights and Biases}
 
-% (TODO: evaluate the mean squared error in the generated weights and biases between the different implementation. Also, reason how the data structure in each of the implementation influence the error.)
+% TODO : Evaluate the mean squared error in the generated weights and biases between the different implementation.
 
 \section{Evaluating effectiveness}
-
-% TODO: Something should go here format wise
 
 The primary measures used to evaluate the program performance was execution time and memory utlisation while the applications completed their neural network training.
 
 \subsection{Execution Time}
-The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process. This behaviour can be observeed in (figure 6.2) where the execution time increases drastically as number of parameters increases.
+The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process. This behaviour can be observeed in Figure \ref{hdrnn-exectime} where the execution time increases drastically as number of parameters increases.
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[scale=0.52]{exec-time}
 	\caption[Execution Time vs Model Parameters]{Comparing total run time for training the different HDR-NN programs}
+	\label{hdrnn-exectime}
 \end{figure}
 
 \subsection{Peak Memory Usage}
@@ -180,8 +172,6 @@ Regardless of the hidden layer sizes, the peak memory utilisation remains consta
 	\includegraphics[scale=0.32]{memory-bar}
 	\caption[Peak Memory Utilisation]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
 \end{figure}
-
-% TODO: here we evaluate the percentage/ratio/cov between the applications.
 
 Note that the device RAM is 1024 MB however the peak memory utilisation for both \texttt{C} and Numpy are higher than this value. This can be explained by over allocation of memory by the operating system utilising the swap space. The peak memory utilisation measure is using the Maximum resident set size measure, which is roughly the total amount of physical memory assigned to a process at a given point in time. It does not count pages that have been swapped out, or that are mapped from a file but not currently loaded into physical memory.
 
@@ -218,12 +208,6 @@ Numpy utilises 17\% more runtime memory than C.
 Similar to \texttt{C}, irrespective of network size, Eigen is faster than Numpy by similar margins.
 
 Eigen is efficient in memory utilisation and 42\% better than Numpy.
-
-% \subsection{Profiling}
-% (TODO: perform profiling of the benchmark applications and note the results)
-
-% \subsection{Failure/Fault testing}
-% (TODO: perform the failure tests such as increases the network size until the application fails or system hangs.)
 
 % ============================================
 %        Discussion

@@ -105,6 +105,8 @@ The HDR-NN benchmark applications all share the same standard training algorithm
 	\end{algorithmic}
 \end{algorithm}
 
+% TODO : Add a good description for the mini batch gradient descent algorithm that is used here
+
 \subsection{Training Configurations}
 
 The model structure can be configured in the same manner across the implementations, as well as the learning algorithm configuration. This means that the shape of the model, the input parameters, the connections between the neuron can be configured in the same manner across the implementations. Furthermore, the learning rate, the number of epochs, and the batch size are also configurable in the same manner.
@@ -257,6 +259,8 @@ The iMX6 series is designed for high performance low power applications and targ
 \section{HDR-NN Implementations}
 
 With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms and the correctness verification routines and execution statistics measurement runs were seperated. The benchmark executions did not produce disk I/O after the dataset was read, unlike the correctness verification runs which produced the final weights from the execution runs that were subsequently compared with the other benchmark program execution output weights
+
+% TODO : Fill in greater detail on the different implementations
 
 \subsection{The Reference HDR-NN in Python}
 
