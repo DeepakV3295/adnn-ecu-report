@@ -11,6 +11,8 @@
 *.fdb_latexmk
 *.synctex.gz
 
+_minted-Thesis/
+
 # Proposal document
 proposal
 

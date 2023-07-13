@@ -122,108 +122,63 @@ Another common alternative to cross compiling in this manner is by using native 
 
 % TODO : Mention assumptions regarding the code listings (e,g, on their reliability) and state the environments in which the listings were tested in (e.g. fedora 36)
 
-In this section let's consider a simple development environment on a personal computer running linux capable of compiling and executing \texttt{C} programs for the \texttt{armv7l} ARM processor. This setup leverages features of the Linux operating system running on the development host and the capabilities of the QEMU machine emulation system.
+In this section let's consider a simple development environment capable of compiling and executing \texttt{C} programs for the \texttt{armv7l} ARM processor using a personal computer running linux. This setup leverages features of the Linux operating system running on the development host and the capabilities of the QEMU machine emulation system. The code listings in this section assumes a fedora workstation operating system and was tested using such a setup. The commands maybe specific to this environment, such as those for the fedora\textquotesingle s package manager utility \texttt{dnf}. However the general principles maybe used to create a similar setup on other linux distributions as well.
 
-The Linux kernel has a powerful feature called \texttt{binfmt\_misc} which stands for \textit{Miscellaneous Binary Format} which allows for interpreter programs to be associated and invoked upon using certain binary format files. This feature can be leveraged to setup an environment that can use a QEMU emulator program to test and develop for a different architecture than that of the development host
+The Linux kernel has a feature called \texttt{binfmt\_misc} which stands for \textit{Miscellaneous Binary Format}. This feature allows for interpreter programs to be associated and invoked upon using certain binary format files. Together with the \texttt{chroot} command, \texttt{binfmt\_misc} can be leveraged to setup an environment that can use a QEMU emulator program to test and develop for a different architecture than that of the development host.
 
-The interpreter programs are usually user space applications such as emulators and virtual machines. For this section the intepreter program will be a QEMU user space emulator program, namely \texttt{qemu-arm}. QEMU has multiple operating modes apart from a full system emulation, one of which is user-mode emulation. In user-mode emulation QEMU can perform system call translation and POSIX signal handling in linux, effectively allowing for programs compiled for a different instruction set to be executed. Cross compiling and cross debugging are common use cases for this user-mode emulation in QEMU. \texttt{qemu-arm} is a QEMU User space emulator program for executing programs compiled for ARM.
+The interpreter programs registered with \texttt{binfmt\_misc} are usually user space applications such as emulators and virtual machines. For this section the intepreter program will be a QEMU user space emulator program, namely \texttt{qemu-arm}. QEMU has multiple operating modes apart from a full system emulation such as its user-mode emulation mode. In user-mode emulation, QEMU can perform system call translation and POSIX signal handling in linux which effectively allows for programs compiled for a different instruction set to be executed using QEMU. Cross compiling and cross debugging are common use cases for this user-mode emulation in QEMU. \texttt{qemu-arm} is a QEMU User space emulator program for executing programs compiled for ARM.
 
 After an interpreter and binary file format pair are registerd, \texttt{binfmt\_misc} recognises the associated binary files by matching some bytes at the begining of a file with a magic byte sequence that had been supplied. The usage of magic bytes at the begining of files is a UNIX tradition adopted as a means of incorporating file type metadata within the file.
 
 As with some linux features, \texttt{binfmt\_misc} must first be mounted at specific location after which it can be configured.
 
-\begin{lstlisting}[language=Bash]
-	mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
-\end{lstlisting}
+\begin{minted}{bash}
+mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
+\end{minted}
 
-To register the binary format and interpreter pair for the present use case a string of the form \texttt{:name:type:offset:magic:mask:interpreter:flags} needs to be send (\texttt{echo}ed) to the \texttt{register} file at the path mentioned previously. Assuming that \texttt{qemu-arm} is present at the path \texttt{/usr/bin}, running the following command will register \texttt{qemu-arm}
+To register the binary format and interpreter pair to setup the development environment, a string of the form \texttt{:name:type:offset:magic:mask:interpreter:flags} needs to be send (\texttt{echo}ed) to the \texttt{register} file at the path mentioned previously. Assuming that \texttt{qemu-arm} is present at the path \texttt{/usr/bin}, running the following command will register \texttt{qemu-arm}
 
-\begin{lstlisting}[language=Bash]
-	echo ":qemu-arm:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-arm-static:F" > /proc/sys/fs/binfmt_misc
-\end{lstlisting}
+\begin{minted}{bash}
+echo ":qemu-arm:M::\x7fELF\x01\x01\x01\x00\x00\x00" "\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:" "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff" "\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:" "/usr/bin/qemu-arm-static:F" > /proc/sys/fs/binfmt_misc/register
+\end{minted}
+
+Note that the \texttt{echo} should produce a string without whitespaces. A new file named \texttt{qemu-arm} will show up in the path \texttt{/proc/sys/fs/binfmt\_misc/} upon successful completion of the \texttt{echo} command.
 
 Another linux feature is \texttt{chroot} which allows for changing the apparent root directory of a running process and its children. \texttt{chroot} system call interface started with UNIX and is useful for testing and developing software systems in a modified test environment.
 
 Prior to running \texttt{chroot}, a root directory for the target environment must be prepared. A root directory is simply the top most directory in a hierarchy and can be prepared by sourcing programs and packages necessary for developing \texttt{C} programs for \texttt{armv7l}. Sourcing these programs can be a matter of approaching maintainers of the packages who may provide the appropriate binaries or building them from source using a cross compiler.
 
-For example, versions of the fedora linux distribution provides these packages via its packages manager and the following command can source the necessary programs for that distribution.
+For example, versions of the fedora linux distribution provides these packages via its packages manager and the following command can source the necessary programs for that architecture.
 
-\begin{lstlisting}[language=Bash]
-	dnf install --releasever=35 --installroot=/tmp/f35arm --forcearch=armv7hl --repo=fedora --repo=updates systemd passwd dnf fedora-release vim-minimal m4 cmake gcc-c++ tar gcc git make tmux -y
-\end{lstlisting}
+\begin{minted}{bash}
+dnf install --releasever=36 --installroot=/tmp/f36arm --forcearch=armv7hl --repo=fedora --repo=updates systemd passwd dnf fedora-release vim-minimal m4 cmake gcc-c++ tar gcc git make tmux -y
+\end{minted}
 
-The target directory \texttt{/tmp/f35arm/} will then contain a simple root directory for the simple development environment for \texttt{armv7l}.
+The target directory \texttt{/tmp/f36arm/} will then contain a simple root directory for the required development environment for \texttt{armv7l}. After configuring the environment in this manner, simply test changing the root directory and running a simple \texttt{C} program.
 
-\begin{lstlisting}[language=Bash]
-	ls /tmp/f35arm
+\begin{minted}{bash}
+chroot /tmp/f36arm /usr/bin/bash
+\end{minted}
 
-	bin etc lib media proc sbin sys var boot home mnt root tmp dev opt usr
-\end{lstlisting}
+Since the \texttt{C} compiler for \texttt{armv7l} has been acquired for this environment using \texttt{dnf} command previously, \texttt{qemu-arm} will be able to run the compiler from the bash environment that is using QEMU\textquotesingle s user-mode emulation. A simple hello world program as shown in the listing below can then be compiled and then executed in this environment
 
-After configuring the environment in this manner, simply test changing root and running a simple \texttt{C} program.
+\begin{minted}{c}
+#include <stdio.h>
 
-\begin{lstlisting}[language=Bash]
-	chroot /tmp/f35arm /usr/bin/bash
-\end{lstlisting}
+int main()
+{
+	puts("Hello, World!\n");
+	return 0;
+}
+\end{minted}
 
-Once a \texttt{C} compiler for \texttt{armv7l} has been acquired for this environment, \texttt{qemu-arm} will be able to run the compiler using QEMU\textquotesingle s user-mode emulation. A simple hello world program as shown in the listing below can then be compiled in this environment
-
-\begin{lstlisting}[language=Bash]
-	cat hello.c
-
-	#include <stdio.h>
-
-	int main()
-	{
-		puts("Hello, World!\n");
-		return 0;
-	}
-\end{lstlisting}
-
-From the fedora based example shown above, the sourced compiler is the popular gcc from GNU. The compile command could then be used as shown below
-
-\begin{lstlisting}[language=Bash]
-	gcc hello.c -o hello
-\end{lstlisting}
-
-\begin{lstlisting}[language=Bash]
-	./hello
-
-	Hello, World!
-\end{lstlisting}
-
+Development environments such as these are easy to setup and can prove valuable for rapid prototyping. Another use case may be as part of a continuous integration and continuous delivery mechanism for embedded application development
 
 \subsection{Targeting Embedded Devices}
 
-Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. Listing \ref{listing:device-tree} shows a heavily simplified example device tree layout of an i.MX28 evaluation kit. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
+Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
 
-\begin{lstfloat}
-\begin{lstlisting}[language=C]
-{
-	model = "Freescale i.MX28 Evaluation Kit";
-	compatible = "fsl,imx28-evk", "fsl,imx28";
-
-	memory {
-		reg = <0x40000000 0x08000000>;
-	};
-
-	apb@80000000 {
-		apbh@80000000 { ... };
-		apbx@80040000 { ... };
-	};
-
-	ahb@80080000 { ... };
-
-	sound { ... };
-	leds { ... };
-	backlight { ... };
-};
-\end{lstlisting}
-\caption{A simplified device tree layout}
-\label{listing:device-tree}
-\end{lstfloat}
-
-% TODO : Improve the discussion on device tree layouts - possibly move the discussion to the Theory chapter, link to that discussion from here
+% TODO : Add discussion on device tree layouts - possibly move the discussion to the Theory chapter, link to that discussion from here
 
 To port Linux onto a processor on a particular board requires creating a boot loader capable of that task as well. A boot loader program is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the boot loader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
@@ -408,7 +363,7 @@ After power up, the processor requires initialisation which for the kind of proc
 	\end{tikzpicture}
 \end{figure}
 
-After getting control of the processor, U-Boot then has to take care of initialising the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the device tree \ref{listing:device-tree}, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to disuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
+After getting control of the processor, U-Boot then has to take care of initialising the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the device tree, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to disuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
 
 Once U-Boot completes and gives up control over the processor, the kernel then starts with more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices. The kernel then proceeds to complete its start up by setting up Stacks, initialising the Scheduler, setting up and allocating Pages, etc. and completes the start up after having spawned the \texttt{init} process, which is the first process to that starts after booting completes.
 
@@ -525,47 +480,47 @@ The following listing presents the typical required packages however, based on t
 
 % TODO : Make the listings more specific to Fedora for e.g, create new listing type with slightly different background for the _general idea_ listing
 
-\begin{lstlisting}[language=Bash]
-	PACKAGE_MANAGER install bc make automake gcc gcc-c++ chrpath cpio diffstat gawk git python texinfo wget
-\end{lstlisting}
+\begin{minted}{bash}
+PACKAGE_MANAGER install bc make automake gcc gcc-c++ chrpath cpio diffstat gawk git python texinfo wget zstd lz4
+\end{minted}
 
 The above list is not complete and relies on non standard package names. Consulting the documentation above will provide more accurate instructions as to the packages that are necessary to start with the Yocto project.
 
 For this section, consider the \texttt{kirkstone} Long Term Support (LTS) release of the Yocto project. To begin clone the Poky repository from \href{https://git.yoctoproject.com}{git.yoctoproject.com}
 
-\begin{lstlisting}[language=Bash]
-	git clone https://git.yoctoproject.org/git/poky
-\end{lstlisting}
+\begin{minted}{bash}
+git clone https://git.yoctoproject.org/git/poky
+\end{minted}
 
 The Poky repository contains the OpenEmbedded-Core as well as the BitBake tool that is required for the build. NXP (previously freescale) is the system maker and system vendor for the MCIMX6Q-SDB and they provide a BSP layer in Yocto via the meta-freescale repository.
 
-\begin{lstlisting}[language=Bash]
-	git clone https://git.yoctoproject.org/git/meta-freescale
-\end{lstlisting}
+\begin{minted}{bash}
+git clone https://git.yoctoproject.org/git/meta-freescale
+\end{minted}
 
 Checkout the kirkstone version of all the different components by checking out the corresponding branches.
 
-\begin{lstlisting}[language=Bash]
-	git checkout kirkstone-4.0.10
-\end{lstlisting}
+\begin{minted}{bash}
+git checkout kirkstone-4.0.10
+\end{minted}
 
 Once the correct branches has been checked out, the next step is to bring the BitBake tool into the shell environment. The Poky repository contains scripts that facilitate this step. Create a directory to manage the build configuration and output files and run the setup script inside the Poky repo.
 
-\begin{lstlisting}{language=Bash}
-	source poky/oe-init-build-env $BUILDDIR
-\end{lstlisting}
+\begin{minted}{bash}
+source poky/oe-init-build-env $BUILDDIR
+\end{minted}
 
 The script will setup BitBake along with some additional tools and scripts in the current shell environment and also creates a few directories in \texttt{\$BUILDDIR} along with some configuration files. The first configuration file to edit will be the \texttt{\$BUILDDIR/conf/bblayers.conf} to configure the build system for the MCIMX6Q-SDB.
 
-\begin{lstlisting}{language=Bash}
+\begin{minted}{bash}
 	MACHINE = "imx6qdlsabresd"
-\end{lstlisting}
+\end{minted}
 
 After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal image that can boot the MCIMX6Q-SDB building the packages for \texttt{core-image-minimal} recipe.
 
-\begin{lstlisting}{language=Bash}
-	bitbake core-image-minimal
-\end{lstlisting}
+\begin{minted}{bash}
+bitbake core-image-minimal
+\end{minted}
 
 Build images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. To boot the MCIMX6Q-SDB with the build image simply flash an SD card with the rootfs image and configure the board to boot from the SD card slot. SD-3 slot may be configured in this manner by toggling the dip switches to D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF
 

@@ -116,63 +116,60 @@ The model structure can be configured in the same manner across the implementati
 
 All benchmark applications upon invocation without any arguments presents a helpful usage string
 
-\begin{lstlisting}[language=Bash]
-	./hdrnn
+\begin{minted}{bash}
+./hdrnn
 
-	nothing to perform
-	Usage: ./hdrnn <command> [<args>]
+nothing to perform
+Usage: ./hdrnn <command> [<args>]
 
-	Commands:
-		infer [-i, --image IMAGE_PATH] [-n, --net hdr.nn]
-		train [-s, --shape 32] [-e, --epochs 30]
-				[-q, --quiet] [-bs, --batch_size=10]
-				[-lr, --learning_rate 3.0] [-n, --net hdr.nn]
-\end{lstlisting}
+Commands:
+	infer [-i, --image IMAGE_PATH] [-n, --net hdr.nn]
+	train [-s, --shape 32] [-e, --epochs 30]
+			[-q, --quiet] [-bs, --batch_size=10]
+			[-lr, --learning_rate 3.0] [-n, --net hdr.nn]
+\end{minted}
 
 Running a training pass of the network can be as simple as
 
-\begin{lstlisting}[language=Bash]
-	./hdr train
-\end{lstlisting}
+\begin{minted}{bash}
+./hdr train
+\end{minted}
 
 This execution will run for 30 epochs with a learning rate of 3.0 and batch size of 10 on a neural network with shape [784, 32, 10]. After the training completes, the program will then output a network description file \texttt{hdr.nn} with the shape, weights and biases of the network. This file can then be later used to perform an inference only run by running the following command.
 
-\begin{lstlisting}[language=Bash]
-	./hdr infer --image 7.pgm --net hdr.nn
-\end{lstlisting}
+\begin{minted}{bash}
+./hdr infer --image 7.pgm --net hdr.nn
+\end{minted}
 
 The \texttt{C} version of the benchmark application can also produce sketch of the image on to stdout, the shell for example, along with the prediction that the network makes and would produce the following output
 
-\begin{lstlisting}[language=Bash]
+\begin{minted}{bash}
 
-
-
-						x x x x x
-						x x x x x
-					x x x x x x
-					x x x x x x x x x
-					x x x x x x x x x x
-				x x x x x x x x x x x
-				x x x x x x x x x x x x x
-			x x x x x x x x     x x x x x x
-			x x x x x x           x x x x x
-			x x x x x             x x x x x
-			x x x                 x x x x x
-			x x x                 x x x x x
-			x x x             x x x x x x x
-			x x x             x x x x x x
-			x x x           x x x x x x
-			x x x x x x x x x x x x x
-			x x x x x x x x x x x x x
-			x x x x x x x x x x x x x
+					x x x x x
+					x x x x x
+				x x x x x x
 				x x x x x x x x x
-					x x x x x x x
-
+				x x x x x x x x x x
+			x x x x x x x x x x x
+			x x x x x x x x x x x x x
+		x x x x x x x x     x x x x x x
+		x x x x x x           x x x x x
+		x x x x x             x x x x x
+		x x x                 x x x x x
+		x x x                 x x x x x
+		x x x             x x x x x x x
+		x x x             x x x x x x
+		x x x           x x x x x x
+		x x x x x x x x x x x x x
+		x x x x x x x x x x x x x
+		x x x x x x x x x x x x x
+			x x x x x x x x x
+			x x x x x x x
 
 
 
 Network predicts 0
-\end{lstlisting}
+\end{minted}
 
 \begin{figure}[h]
 	\centering
@@ -181,9 +178,9 @@ Network predicts 0
 
 To change the network shape and epoch parameters, for example, run:
 
-\begin{lstlisting}[language=Bash]
-	./hdr train --shape 16,16 --epoch 4 -q
-\end{lstlisting}
+\begin{minted}{bash}
+./hdr train --shape 16,16 --epoch 4 -q
+\end{minted}
 
 The program will then train a new network of shape [784, 16, 16, 10] for 4 epochs and silently exit without producing the \texttt{hdr.nn} file as the -q quiet flag was present. The complete list of program parameters are given below.
 
@@ -193,41 +190,41 @@ Use silent invocation using the \texttt{--quiet} or \texttt{-q} flag
 
 When used with the `train` command, the final weights and biases files won't be generated
 
-\begin{lstlisting}[language=Bash]
-	./hdr train --quiet
-\end{lstlisting}
+\begin{minted}{bash}
+./hdr train --quiet
+\end{minted}
 
 \textbf{Epochs}
 
 The number of epochs to train the network, specified by \texttt{--epochs} or \texttt{-e} followed by a natural number
 
-\begin{lstlisting}[language=Bash]
-	./hdr train --epochs 21
-\end{lstlisting}
+\begin{minted}{bash}
+./hdr train --epochs 21
+\end{minted}
 
 \textbf{Network Shape}
 
 The size and shape of the HDR-NN network as comma seperated numbers after the \texttt{--shape} or \texttt{-s} flag
 
-\begin{lstlisting}[language=Bash]
-	./hdr train --shape 16,16
-\end{lstlisting}
+\begin{minted}{bash}
+./hdr train --shape 16,16
+\end{minted}
 
 \textbf{Learning Rate}
 
 The learning rate for the Stochastic Gradient Descent as a floating point value after the \texttt{-lr} or \texttt{--learning\_rate} flag
 
-\begin{lstlisting}[language=Bash]
-	./hdr train --learning_rate 3.1
-\end{lstlisting}
+\begin{minted}{bash}
+./hdr train --learning_rate 3.1
+\end{minted}
 
 \textbf{Batch Size}
 
 The batch size while performing mSGD as an integer after the \texttt{--batch\_size} or \texttt{-bs} flag
 
-\begin{lstlisting}[language=Bash]
-	./hdr train --batch_size 64
-\end{lstlisting}
+\begin{minted}{bash}
+./hdr train --batch_size 64
+\end{minted}
 
 
 % ============================================
@@ -266,20 +263,20 @@ With the primary focus on training, MNIST dataset was primarily loaded in an eas
 
 This is the baseline implementation and follows close to the implementation exhibitied on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library Numpy. The following listing shows the function that performs feedforward pass in the Network.
 
-\begin{lstlisting}[language=Python]
-	class Network(object):
+\begin{minted}{python}
+class Network(object):
 
-	def __init__(self, sizes):
-		"""Initialise neural network"""
-		self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-		self.weights = [np.random.randn(y, x)
-		for x, y in zip(sizes[:-1], sizes[1:])]
+def __init__(self, sizes):
+	"""Initialise neural network"""
+	self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+	self.weights = [np.random.randn(y, x)
+	for x, y in zip(sizes[:-1], sizes[1:])]
 
-	def feedforward(self, a):
-		for b, w in zip(self.biases, self.weights):
-			a = sigmoid(np.dot(w, a)+b)
-		return a
-\end{lstlisting}
+def feedforward(self, a):
+	for b, w in zip(self.biases, self.weights):
+		a = sigmoid(np.dot(w, a)+b)
+	return a
+\end{minted}
 
 % \subsection[Tensorflow Lite]{Tensorflow Lite based HDR-NN}
 
@@ -291,7 +288,7 @@ Developing ANNs using PyTorch is straightforward with good support and well docu
 
 The implementation used the MNIST made available by Torchvision library which is mainted under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the Numpy based Python implementation.
 
-\begin{lstlisting}[language=C++]
+\begin{minted}{cpp}
 struct Net : torch::nn::Module
 {
 	Net(std::vector<unsigned int> shape)
@@ -334,14 +331,14 @@ struct Net : torch::nn::Module
 	// Use one of many "standard library" modules.
 	std::vector<torch::nn::Linear> fc_list{};
 };
-\end{lstlisting}
+\end{minted}
 
 
 \subsection{C based HDR-NN}
 
 The \texttt{C} implementation had the least amount of external dependencies, other than the \texttt{C} standard library. The data structures of the neural network contain float arrays within structs as shown in the listing below. The learning algorithm was implemented to remain identical with those used in the other implementations.
 
-\begin{lstlisting}[language=C]
+\begin{minted}{c}
 /* HDR Neural Network */
 typedef struct
 {
@@ -367,7 +364,7 @@ typedef struct
 	Layer *layers;
 	int depth;
 } Network; // HDRNN
-\end{lstlisting}
+\end{minted}
 
 \subsection{C++ based HDR-NN}
 
@@ -375,7 +372,7 @@ The \texttt{C++} implementation used the n-dimensional arrays of popular \texttt
 
 Compared to the \texttt{C} version, the \texttt{C++} version uses the richer language feature set of \texttt{C++} such as namespaces, classes, etc. The \texttt{C++} implementation uses the popular build automation tool \texttt{CMake} instead of the GNU autotools setup adopted by the \texttt{C} implementation.
 
-\begin{lstlisting}[language=C++]
+\begin{minted}{cpp}
 void mini_batch_sgd()
 {
 	// Initialize Nabla matrixes
@@ -393,8 +390,8 @@ void mini_batch_sgd()
 		// Perform Backpropagation on the batch
 		for (std::size_t j = 0; j < BATCH_SIZE; j++)
 			back_propogate(nablas,
-						mnist_loader::train[i+j].data,
-						mnist_loader::train[i+j].label);
+					mnist_loader::train[i+j].data,
+					mnist_loader::train[i+j].label);
 
 		// Update the weights and biases of the network
 		for (std::size_t j = 0; j < network.size(); j++)
@@ -405,4 +402,4 @@ void mini_batch_sgd()
 			nablas[j].zero_out();
 	}
 }
-\end{lstlisting}
+\end{minted}

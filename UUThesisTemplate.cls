@@ -1355,8 +1355,6 @@
 %        Diagrams
 % ============================================
 
-\usepackage{graphicx}
-
 \usepackage{tikz}
 \usepackage{listofitems} % for \readlist
 
@@ -1396,33 +1394,14 @@
 %        Code Listings
 % ============================================
 
-\usepackage{listings}
-\usepackage{float}
+\usepackage{minted}
 
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+\definecolor{backcolour}{rgb}{0.898,0.894,0.886}
 
-%Code listing style named "mystyle"
-\lstdefinestyle{mystyle}{
-	backgroundcolor=\color{backcolour}, commentstyle=\color{codegreen},
-	keywordstyle=\color{magenta},
-	numberstyle=\tiny\color{codegray},
-	stringstyle=\color{codepurple},
-	basicstyle=\ttfamily\footnotesize,
-	breakatwhitespace=false,
-	breaklines=true,
-	captionpos=b,
-	keepspaces=true,
-	showspaces=false,
-	showstringspaces=false,
-	showtabs=false,
-	tabsize=2
+\setminted{
+	bgcolor=backcolour,
+	breaklines=true
 }
-
-%"mystyle" code listing set
-\lstset{style=mystyle}
 
 \newfloat{lstfloat}{htbp}{lop}
 \floatname{lstfloat}{Listing}
