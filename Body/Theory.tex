@@ -42,31 +42,60 @@ This report is divided into three parts with multiple chapters containing severa
 
 Developing and maintaining applications that rely on neural network models and run on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learnining pipelines, not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter-process communication mechanisms, multitasking etc.
 
-The target embedded device to run these applications are the ECUs aboard a Scania vehicle. These ECUs have ARM application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. Linux is the preferred choice for such a guest operating system due to its configurability and rich support for application development.
+The target embedded device to run the neural network applications are the ECUs aboard a Scania vehicle. These ECUs have ARM application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. This report focuses on environments that use the embedded linux operating system to run applications that train the neural network models.
+
+This chapter introduces several terms and techniques associated with embedded application development and starts with a small section on ARM based embedded boards. The next section gives an overview of the terminolgies and processes associated with embedded linux and application development for embedded linux boards. The subsequent section introduces a discussion on neural network application development for embedded platforms. The final section on Federated Learning motivates the efforts to study training of the neural network on embedded devices contrasting the conventional model of training neural network models for embedded platforms.
 
 \section{Embedded Platforms}
 
 Embedded systems perform a varied mixture of applications including industrial automation, consumer electronics, automotive, etc. and have capabilities ranging from ultra low power wireless data logging to thrust vector control on rocket ships. Embedded boards for an application domain are generally designed in concert with multiple entities, each responsible for a different component in the hardware-software stack.
 
-An example of such an arrangement could be as follows. The semiconductor and software design company ARM produces ARM processors that are used in a significant fraction of embedded devices due to their power efficiency and versatility. \textit{Silicon vendors} such as Atmel, Qualcomm, NXP, etc. buy CPU core designs from ARM and adds a suite of peripherals to offer application processors. Ultimately, a \textit{system maker} would select among these application processors, sensors, and other devices to design an embedded board for a particular application domain.There are several different practises that the industry adopts at creating embedded devices for different applications with the example presented here being one among several. The embedded device considered in this project derives from such a process.
+An example of such an arrangement could be as follows. The semiconductor and software design company ARM produces ARM processors that are used in a significant fraction of embedded devices due to their power efficiency and versatility. \textit{Silicon vendors} such as Atmel, Qualcomm, NXP, etc. buy CPU core designs from ARM and adds a suite of peripherals to offer application processors. Ultimately, a \textit{system maker} would select among these application processors, sensors, and other devices to design an embedded board for a particular application domain. There are several different practises that the industry adopts to create embedded devices for different applications with the example presented here being one among several. The embedded devices considered in this project derives from such a process.
 
-\section{Development Process for Embedded Linux}
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\node[inner sep=0pt] (cpu) at (0, 2)
+			{\includegraphics[scale=0.14]{cpu.png}};
 
-Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}. The Yocto project was chosen as the primary build system and used to generate the Embedded Linux and application programs used within this project. The next chapter contains a \hyperref[section:yocto-demo]{section} takes a look at a development environment that uses the Yocto project.
+		\node[inner sep=0pt] (cpu) at (2, 2)
+			{\includegraphics[scale=0.14]{battery.png}};
 
-\subsection{SDKs and Compiler Toolchains}
+		\node[inner sep=0pt] (cpu) at (0, 4)
+			{\includegraphics[scale=0.14]{sd-card.png}};
+
+		\node[inner sep=0pt] (cpu) at (2, 4)
+			{\includegraphics[scale=0.14]{antenna.png}};
+
+		\fill[gray!10, rounded corners] (0, 0) rectangle (2.35, 1);
+		\draw (1.15, 0.5) node {Components};
+
+		\node[inner sep=0pt] (cpu) at (5, 3)
+			{\includegraphics[scale=0.14]{AM3358BZCZ.jpeg}};
+
+		\fill[gray!30, rounded corners] (4, 0) rectangle (6, 1);
+			\draw (5, 0.5) node {CPU Core};
+
+		\draw[line width=1pt, -{Stealth[red]}] (7, 3) -- (7.5, 3);
+
+		\node[inner sep=0pt] (cpu) at (10, 3)
+			{\includegraphics[scale=0.21]{bbb.jpeg}};
+	\end{tikzpicture}
+\end{figure}
+
+\section{Embedded Linux and Application Development}
+
+Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most featureful and widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}.
+
+The Yocto project was chosen as the primary build system for this project and was used to generate the associated Embedded Linux and application programs. The next chapter contains a \hyperref[section:yocto-demo]{section} takes a look at a development environment that uses the Yocto project. Application development for embedded linux has associated with it several tools and practises, some of which are outlined in the following subsections.
+
+\subsection{Software Development Kits}
 
 Creating applications for embedded devices requires a set of software components that are usually collectively referred to as \textit{Software Development Kits} (SDK). This suite of programs usually contain a \textit{toolchain} that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on the target embedded device.
 
 Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called \textit{linux kernel header files}. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
 
-% TODO : Add information on ARM processors, and other terminology such as armv7l
-
-\subsection{Cross Compilers}
-
-The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a \textit{cross compiling} toolchain. A compiler toolchain that creates executables for the sample platform is termed a native compiler toolchain. Cross compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, etc. and they are ultimately an unavoidable part of creating programs for a new hardware platform. Most software that are run on embedded devices are created on a different computing platform. Such a computing platform in the context of cross compilation is referred to as a \textit{development host} and the embedded device that the software ultimately runs on is the \textit{target}.
-
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[fill opacity=0.9]
 		\fill[green!20] (0.25,0.25) rectangle (7.75, 3.75);
@@ -85,7 +114,13 @@ The software development toolchains for embedded devices are generally run on a 
 	\end{tikzpicture}
 \end{figure}
 
+\subsection{Cross Compiling Toolchains}
+
+The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a \textit{cross compiling} toolchain. A compiler toolchain that creates executables for the sample platform is termed a \textit{native} compiler toolchain. Cross compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, etc. and they are ultimately an unavoidable part of creating programs for a new hardware platform. Most software that are run on embedded devices are created on a different computing platform. Such a computing platform in the context of cross compilation is referred to as a \textit{development host} and the embedded device that the software ultimately runs on is called the \textit{target}.
+
 \subsubsection{A brief discussion on the ARM GNU toolchain}
+
+% TODO : Add information on ARM processors, and other terminology such as armv7l
 
 A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{<libc/abi>}. This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, or the target triple in LLVM\textquotesingle s Clang.
 
@@ -130,7 +165,7 @@ The interpreter programs registered with \texttt{binfmt\_misc} are usually user 
 
 After an interpreter and binary file format pair are registerd, \texttt{binfmt\_misc} recognises the associated binary files by matching some bytes at the begining of a file with a magic byte sequence that had been supplied. The usage of magic bytes at the begining of files is a UNIX tradition adopted as a means of incorporating file type metadata within the file.
 
-As with some linux features, \texttt{binfmt\_misc} must first be mounted at specific location after which it can be configured.
+As with some linux features, \texttt{binfmt\_misc} must first be mounted at specific location after which it can be configured. If \texttt{binfmt\_misc} is not already present at the default path location at \texttt{/proc/sys/fs/binfmt\_misc}, it may be mounted by using the following command.
 
 \begin{minted}{bash}
 mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
