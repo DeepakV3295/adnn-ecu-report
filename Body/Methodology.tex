@@ -1,6 +1,6 @@
 \part{Implementation}
 
-The traditional model for deploying neural network applications on embedded devices has over time developed the neural network inference step. The popular frameworks for machine learning such as PyTorch and Tensorflow provide approaches for porting neural network models written using those frameworks with a focus on allowing for model inference on embedded platforms. Under this paradigm, training would be completed on more powerful hardware and the data would have to be collected seperately to allow for the continual training of the neural network model. Targetting even smaller devices with Tensorflow based neural network models is possible for neural network inference applications via Tensorflow Lite Micro \cite{tflm} further expanding the range of platforms that this paradigm applies. Efforts to allow training as well in these frameworks require more effort due to the compute and memory intensive nature of the training process. Another reason for the delay in adopting training on board is fragmented nature of embedded ecosystem and the difficulties involved in streamlining features for any machine learning framework that would have to support the varied hardware platforms in the ecosystem.
+The traditional model for deploying neural network applications on embedded devices has over time developed the neural network inference step. The popular frameworks for machine learning such as PyTorch and Tensorflow provide approaches for porting neural network models written using those frameworks with a focus on allowing for model inference on embedded platforms. Under this paradigm, training would be completed on more powerful hardware and the data would have to be collected separately to allow for the continual training of the neural network model. Targetting even smaller devices with Tensorflow based neural network models is possible for neural network inference applications via Tensorflow Lite Micro \cite{tflm} further expanding the range of platforms that this paradigm applies. Efforts to allow training as well in these frameworks require more effort due to the memory and computation intensive nature of the training process. Another reason for the delay in adopting training on board is fragmented nature of embedded ecosystem and the difficulties involved in streamlining features for any machine learning framework that would have to support the varied hardware platforms in the ecosystem.
 
 This part of the report contains the description of multiple application programs that train a neural network model for the purpose of benchmarking the training step on an embedded device. The neural network structure, the learning algorithm, and the dataset remain the same across the implementations however they are completed in a traditional general purpose neural network frameworks as well as straightforward implementations in \texttt{C}, \texttt{C++}, and Python. The design of the neural network is based on a textbook example and is kept configurable to allow for testing across different neural network architectures. Greater detail on the design is presented in the first chapter, followed by another chapter describing the different implementations.
 
@@ -80,11 +80,11 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 	\end{tikzpicture}
 \end{center}
 
-The benchmark programs would also compute charactersitics of the neural network such as accuracy and are also capable of producing a dump of the network values such as the hidden layer structure, weight and bias values, etc. into a \texttt{.nn} binary file format. The \texttt{.nn} binary format can then be consumed by any of the implementations to perform an image inference. For instance, the \texttt{C} based benchmark application could produce a \texttt{.nn} file after training the network and then the Python based benchmark application can then take that file as input to complete a feedforward pass for an MNIST 28 x 28 image in PGM format. The feedforward pass between different implementations of the benchmark applications can be compared in this manner as well.
+The benchmark programs would also compute characteristics of the neural network such as accuracy and are also capable of producing a dump of the network values such as the hidden layer structure, weight and bias values, etc. into a \texttt{.nn} binary file format. The \texttt{.nn} binary format can then be consumed by any of the implementations to perform an image inference. For instance, the \texttt{C} based benchmark application could produce a \texttt{.nn} file after training the network and then the Python based benchmark application can then take that file as input to complete a feedforward pass for an MNIST 28 x 28 image in PGM format. The feedforward pass between different implementations of the benchmark applications can be compared in this manner as well.
 
 \subsection{The Learning Algorithm}
 
-The HDR-NN benchmark applications all share the same standard training algorithm listed below (\ref{alg:cap}). Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm through out the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations.
+The HDR-NN benchmark applications all share the same standard training algorithm listed below (\ref{alg:cap}). Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm throughout the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations.
 
 \begin{algorithm}[h]
 	\caption{Mini Batch Gradient Descent with learning rate $\gamma$ and the Mean Squared Error (\texttt{MSE}) cost function}
@@ -204,7 +204,7 @@ The number of epochs to train the network, specified by \texttt{--epochs} or \te
 
 \textbf{Network Shape}
 
-The size and shape of the HDR-NN network as comma seperated numbers after the \texttt{--shape} or \texttt{-s} flag
+The size and shape of the HDR-NN network as comma separated numbers after the \texttt{--shape} or \texttt{-s} flag
 
 \begin{minted}{bash}
 ./hdr train --shape 16,16
@@ -233,21 +233,21 @@ The batch size while performing mSGD as an integer after the \texttt{--batch\_si
 
 \chapter{Development}
 
-The HDR-NN benchmark applications were completed in different programming languages and in PyTorch. Details about the target environment and the benchmark implementations are layed out in this chapter
+The HDR-NN benchmark applications were completed in different programming languages and in PyTorch. Details about the target environment and the benchmark implementations are laid out in this chapter
 
 \section{Targeting MCIMX6Q-SDB}
 
-The target environment necessitates the use of cross compilers and as part of the development process multiple build environments and systems were examined. Ultimately, the primary platform that ended up being used was the Yocto Project extensible SDK (eSDK) based application development process running on a standard linux based build environment. The QEMU emulator was also employed at various staged to check the build, and further test the application before moving onto tests on the actual hardware.
+The target environment necessitates the use of cross-compilers and as part of the development process multiple build environments and systems were examined. Ultimately, the primary platform that ended up being used was the Yocto Project extensible SDK (eSDK) based application development process running on a standard linux based build environment. The QEMU emulator was also employed at various staged to check the build, and further test the application before moving onto tests on the actual hardware.
 
 \subsection{Compiler Toolchains \& Yocto Recipes}
 
 The \textit{meta-freescale} Yocto BSP layer by NXP supports the target processor and in combination with the Poky reference distribution provides an eSDK that was primarily used to test and develop the benchmark applications.
 
-GCC based cross compilers and debuggers were usefull for the \texttt{C}, \texttt{C++}  programs. The \textit{meta-python} layer provided by Open Embedded was also useful in allowing for applications using Python and Numpy. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well.
+GCC based cross-compilers and debuggers were useful for the \texttt{C}, \texttt{C++}  programs. The \textit{meta-python} layer provided by Open Embedded was also useful in allowing for applications using Python and NumPy. The general portability of the benchmark applications and the Yocto project allows for further experiments to be conducted on different target architectures as well.
 
 \subsection{Building PyTorch for armv7hl}
 
-PyTorch project provides LibTorch as a binary distribution of all the headers, libraries, CMake configurations required to use PyTorch. However the PyTorch project does not provide these binaries for MCIMX6Q-SDB. The source code could however, with some effort, be used to generate these binaries and for this project a QEMU based user-mode emulation environment was used for native compilation of the libtorch binaries.
+PyTorch project provides LibTorch as a binary distribution of all the headers, libraries, CMake configurations required to use PyTorch. However, the PyTorch project does not provide these binaries for MCIMX6Q-SDB. The source code could however, with some effort, be used to generate these binaries and for this project a QEMU based user-mode emulation environment was used for native compilation of the libtorch binaries.
 
 \subsection{i.MX6 Overview}
 
@@ -255,13 +255,13 @@ The iMX6 series is designed for high performance low power applications and targ
 
 \section{HDR-NN Implementations}
 
-With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms and the correctness verification routines and execution statistics measurement runs were seperated. The benchmark executions did not produce disk I/O after the dataset was read, unlike the correctness verification runs which produced the final weights from the execution runs that were subsequently compared with the other benchmark program execution output weights
+With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms and the correctness verification routines and execution statistics measurement runs were separated. The benchmark executions did not produce disk I/O after the dataset was read, unlike the correctness verification runs which produced the final weights from the execution runs that were subsequently compared with the other benchmark program execution output weights
 
 % TODO : Fill in greater detail on the different implementations
 
 \subsection{The Reference HDR-NN in Python}
 
-This is the baseline implementation and follows close to the implementation exhibitied on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library Numpy. The following listing shows the function that performs feedforward pass in the Network.
+This is the baseline implementation and follows close to the implementation exhibited on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library NumPy. The following listing shows the function that performs feedforward pass in the Network.
 
 \begin{minted}{python}
 class Network(object):
@@ -284,9 +284,9 @@ def feedforward(self, a):
 
 \subsection{PyTorch based HDR-NN}
 
-Developing ANNs using PyTorch is straightforward with good support and well documented APIs. There were two primary choices for programming language to write the neural network in PyTorch, namely Python and C++. PyTorch project does not provide binaries for either language choice for \texttt{armv7hl} however with the source code of the project being available, the libtorch binaries were generated as mention in the previous section.
+Developing ANNs using PyTorch is straightforward with good support and well documented APIs. There were two primary choices for programming language to write the neural network in PyTorch, namely Python and C++. The PyTorch project does not provide binaries for either language choice for \texttt{armv7hl} however with the source code of the project being available, the libtorch binaries were generated as mention in the previous section.
 
-The implementation used the MNIST made available by Torchvision library which is mainted under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the Numpy based Python implementation.
+The implementation used the MNIST made available by Torchvision library which is maintained under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the NumPy based Python implementation.
 
 \begin{minted}{cpp}
 struct Net : torch::nn::Module
@@ -368,7 +368,7 @@ typedef struct
 
 \subsection{C++ based HDR-NN}
 
-The \texttt{C++} implementation used the n-dimensional arrays of popular \texttt{C++} linear algebra library, Eigen. It is a straight forward port of the same structure and learning algorithm as the Numpy based Python implementation. A portion of the learning algorithm is shown in the listing below.
+The \texttt{C++} implementation used the n-dimensional arrays of popular \texttt{C++} linear algebra library, Eigen. It is a straight forward port of the same structure and learning algorithm as the NumPy based Python implementation. A portion of the learning algorithm is shown in the listing below.
 
 Compared to the \texttt{C} version, the \texttt{C++} version uses the richer language feature set of \texttt{C++} such as namespaces, classes, etc. The \texttt{C++} implementation uses the popular build automation tool \texttt{CMake} instead of the GNU autotools setup adopted by the \texttt{C} implementation.
 
