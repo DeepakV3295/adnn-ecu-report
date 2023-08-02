@@ -167,6 +167,8 @@ The training time of the neural network applications increases exponentially as 
 \subsection{Peak Memory Usage}
 Regardless of the hidden layer sizes, the peak memory utilisation remains constant for the neural network application across all implementations. The \texttt{C++}, Eigen implementation has the lowest run time memory footprint, while Python Numpy is the least efficient.
 
+% TODO : Replace this graph with a table
+
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[scale=0.32]{memory-bar}
@@ -174,40 +176,6 @@ Regardless of the hidden layer sizes, the peak memory utilisation remains consta
 \end{figure}
 
 Note that the device RAM is 1024 MB however the peak memory utilisation for both \texttt{C} and Numpy are higher than this value. This can be explained by over allocation of memory by the operating system utilising the swap space. The peak memory utilisation measure is using the Maximum resident set size measure, which is roughly the total amount of physical memory assigned to a process at a given point in time. It does not count pages that have been swapped out, or that are mapped from a file but not currently loaded into physical memory.
-
-\subsection{Early stopping}
-
-The training for all the implementations were executed by configuring the number of epochs as 30. This leads to the accuracy of model dropping significantly due to overfitting, which could be avoided if early stopping was implemented. But, early stopping is not implemented as the performance would be completely different and there wouldn't be a standard setting to compare the implementations and the different network model shapes within the same implementations.
-
-\section{Comparing the implementations}
-
-\begin{figure}[!ht]
-	\centering
-	\includegraphics[scale=0.40]{exec_time_comparisons}
-	\caption[Execution Time vs Model Parameters]{Percentage difference between the implementations. Example: C is 38\% faster than Eigen for the network size of 1600.}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.30]{peak_memory_comparisons}
-	\caption[Peak Memory Utilisation]{Percentage difference between the implementations}
-\end{figure}
-
-The tables in (figure 6.4 and figure 6.5) shows the comparison between C-Eigen, Eigen-Numpy and C-Numpy. It is calculated as the percentage of 1 - (x/y) where x is performance value of the application which has lower value and y is performance value of the application that has higher number.
-
-\subsection{C vs Eigen}
-For smaller models, it can be observed that \texttt{C} is faster than Eigen (for the network size of 1600, \texttt{C} is 38 percent faster than Eigen). But as model becomes complex, Eigen perform better and the difference is execution time is less than 15 percent. Again the abnormal behaviour can be observed in case of network size 101770 where \texttt{C} is 26 percent faster than Eigen. More test on the \texttt{C} implementation needs to conducted to identify the bug causing this behaviour.
-
-With regards to memory utilisation Eigen perform better than \texttt{C} by 30\%.
-
-\subsection{C vs Numpy}
-\texttt{C} constantly performs much better than Numpy. For the network size 101770, \texttt{C} is 62\% faster.
-Numpy utilises 17\% more runtime memory than C.
-
-\subsection{Eigen vs Numpy}
-Similar to \texttt{C}, irrespective of network size, Eigen is faster than Numpy by similar margins.
-
-Eigen is efficient in memory utilisation and 42\% better than Numpy.
 
 % ============================================
 %        Discussion
@@ -217,29 +185,37 @@ Eigen is efficient in memory utilisation and 42\% better than Numpy.
 
 This chapter contains discussions on the experience while working on the project with the first section examining the process of developing the benchmark applications. The last section describes in brief the distribution of work on the project between the two authors.
 
+% TODO : Introduce discussion of Benchmark results. Compare the different implementations
+
+\section{Comparing Benchmark Applications}
+
+% TODO :  Talk about the optimizations present in each of the implementations and their effective advantages.
+
+\section{Processor Specific Optimizations}
+
 \section{Developer Experience}
 
-Embedded environments are greatly varied and working on these platforms are different compared to the more general platforms with comparably reduced support. The greatest challenge in writing the benchmark applications were in sourcing the binaries for the general purpose neural network frameworks. Both Tensorflow and PyTorch do not target the ARMv7 environment that was the primary target for this project. There were are older community tensorflow binaries that are available for the platform that are currently unmaintained, at the time of writing this report. Finally the PyTorch source code was successfully compiled for our target environment using QEMU user-mode emulation.
+Embedded environments are greatly varied and working on these platforms are different compared to the more general platforms with comparably reduced support. The greatest challenge in writing the benchmark applications were in sourcing the binaries for the general purpose neural network frameworks. Both Tensorflow and PyTorch do not target the ARMv7 environment that was the primary target for this project. There were are older community tensorflow binaries that are available for the platform that are currently unmaintained, at the time of writing this report. Finally, the PyTorch source code was successfully compiled for our target environment using QEMU user-mode emulation.
 
-The embedded hardware and software ecosystems are greatly varied and fragmented leading to less support from the machine learning software ecosystem. The embedded machine learning communities largely contain sprawling technologies that have several different components that have varying degrees of maintanance and create complicated inter relationships over time that are difficult or unwieldy to maintain. This has lead to a lack of good software infrastructure that can support multi-hardware, mult-architecture neural network frameworks.
+The embedded hardware and software ecosystems are greatly varied and fragmented leading to less support from the machine learning software ecosystem. The embedded machine learning communities largely contain sprawling technologies that have several components that have varying degrees of maintenance and create complicated interrelationships over time that are difficult or unwieldy to maintain. This has lead to a lack of good software infrastructure that can support multi-hardware, multi-architecture neural network frameworks.
 
 \subsection{Reverse Engineering Scania C300}
 
-Scania ECU is like a black box with no information. A custom encased hardware that supports ethernet over modem and an UART interface along with hardware circuit schematic document was the only information available regarding the ECU. There is no information regarding the processor,  memory support, bootloader. As the ECU is a production unit, there is no development tools on device and no support to port packages and application to the ECU. Many features on the bootloader, kernel were disabled making it futile to execute the common commands that provide system information.
+Scania ECU is like a black box with no information. A custom encased hardware that supports Ethernet over modem and an UART interface along with hardware circuit schematic document was the only information available regarding the ECU. There is no information regarding the processor,  memory support, bootloader. As the ECU is a production unit, there is no development tools on device and no support to port packages and application to the ECU. Many features on the bootloader, kernel were disabled making it futile to execute the common commands that provide system information.
 
-The task of repurposing the Scania ECU comprised of reverse engineering and obtaining the required hardware/software information and flashing a custom operating system to benchmark the neural network applications. The first task was partially successfully as hardware information such as processor, architecture, I/O interfaces, device tree and software information such as kernel, compiler, glic and versions was obtained. But information regarding the memory layout and boot flow could not be concretely reverse engineered. The second task was not achieved as flashing custom embedded linux always resulted in the ECU being bricked. Experiments conducted from booting the normal operation and from serial download mode had different issues and failed. While flashing from the normal boot, only the bootloader is replaced in the mtd partition. This could have failed because of incorrect u-boot image with wrong device trees or loading kernel failed as version mismatch between bootloader and kernel or checksum failure or size of the file is big overwriting a different region with crucial data. Serial download mode flashing required some crucial information regarding the memory load address and entry point for bootloader, kernel, root file system which is configured in the custom device tree. This information could be obtained from reverse engineering.
+The task of repurposing the Scania ECU comprised of reverse engineering and obtaining the required hardware/software information and flashing a custom operating system to benchmark the neural network applications. The first task was partially successfully as hardware information such as processor, architecture, I/O interfaces, device tree and software information such as kernel, compiler, glibc and versions was obtained. But information regarding the memory layout and boot flow could not be concretely reverse engineered. The second task was not achieved as flashing custom embedded linux always resulted in the ECU being bricked. Experiments conducted from booting the normal operation and from serial download mode had different issues and failed. While flashing from the normal boot, only the bootloader is replaced in the MTD partition. This could have failed because of incorrect u-boot image with wrong device trees or loading kernel failed as version mismatch between bootloader and kernel or checksum failure or size of the file is big overwriting a different region with crucial data. Serial download mode flashing required some crucial information regarding the memory load address and entry point for bootloader, kernel, root file system which is configured in the custom device tree. This information could be obtained from reverse engineering.
 
 \hyperref[rtc-c300]{Appendix II} contains a summary of the efforts involved in reverse engineering the C300 hardware. The project focus shifted to the MCIMX6Q-SDB board after having spend considerable time on the C300.
 
 \section{General Distribution of Work}
 
-The reverse engineering efforts were done in unison between the authors by suggesting then attempting different ideas, with Deepak Venkataram working on soldering and other physical manipulations on the Scania C300. The programming of the benchmark applications was completed by Prasanth Thomas Shaji while the testing of these applications on the MCIMX6Q-SDB were completed by Deepak Venkataram. The primary responsibilities of most activities were divided between the authors however they were performed in concert were possible. The benchmark applications and the report were version controlled in two seperate repositories containing commits from both authors and provides the primary accounting of the distribution of work.
+The reverse engineering efforts were done in unison between the authors by suggesting then attempting different ideas, with Deepak Venkataram working on soldering and other physical manipulations on the Scania C300. The programming of the benchmark applications was completed by Prasanth Thomas Shaji while the testing of these applications on the MCIMX6Q-SDB were completed by Deepak Venkataram. The primary responsibilities of most activities were divided between the authors however they were performed in concert were possible. The benchmark applications and the report are version controlled in two separate repositories containing commits from both authors and provides the primary accounting of the distribution of work.
 
 \chapter{Conclusion and Future Work}
 
 Developing of neural network implementations for the embedded environment is considerably more challenging than a traditional general purpose personal computer or server computers. The lack of support of on these platforms for the traditional machine learning frameworks stems from the fragmented nature of the embedded ecosystem. There are several challenges in the way for developing a machine learning framework for embedded devices. The current mature frameworks have some means of providing inference passes on embedded platforms however training on-board is still limited to larger platforms.
 
-The development and testing of the benchmark application HDR-NN revealed the difficulties in targetting the \texttt{armv7hl} architecture. The performance of the benchmark applications showed that PyTorch had considerably higher performance than expected for larger shapes than the hand made \texttt{C} implementation. This could however change by working on performance engineering of the \texttt{C} implementations. However leveraging tool support for performance engineering on these systems are still difficult and requires heavy investment in time.
+The development and testing of the benchmark application HDR-NN revealed the difficulties in targetting the \texttt{armv7hl} architecture. The performance of the benchmark applications showed that PyTorch had considerably higher performance than expected for larger shapes than the hand made \texttt{C} implementation. This could however change by working on performance engineering of the \texttt{C} implementations. However, leveraging tool support for performance engineering on these systems are still difficult and requires heavy investment in time.
 
 \section{Future Work}
 
