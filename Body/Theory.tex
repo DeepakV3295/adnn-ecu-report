@@ -372,7 +372,7 @@ Building an Embedded Linux kernel suited for a mainboard of an embedded device r
 
 To port Linux onto a processor on a particular board requires creating a bootloader capable of that task as well. A bootloader program is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the bootloader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
-The initial target machine for the project was an ECU playing the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the vendor's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the bootloader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similar board, namely the MCIMX6Q-SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is laid out in \hyperref[rtc-c300]{Appendix II}.
+The initial target machine for the project was an ECU playing the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the vendor's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the bootloader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similar board, namely the MCIMX6Q-SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is laid out in \hyperref[rtc-c300]{Appendix I}.
 
 \section{Neural Network Application Development}
 
@@ -404,12 +404,14 @@ However, the primary approach in these cases is with a focus on making the neura
 
 \subsection{Neural Network Training on Embedded Devices}
 
-% \begin{figure}[h]
-% 	\centering
-% 	\includegraphics[scale=0.28]{google-tpu.jpeg}
-% 	\caption{Google's TPU Chip}
-% 	\label{fig:google-tpu}
-% \end{figure}
+The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence, a computing platform that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have optimized hardware features that allow for parallel executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. Google's TPU chip (Figure \ref{fig:google-tpu})
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.28]{google-tpu.jpeg}
+	\caption{Google's TPU Chip}
+	\label{fig:google-tpu}
+\end{figure}
 
 \section{Federated Learning of Neural Networks}
 
@@ -527,8 +529,6 @@ Once a neural network completes a training on a training set, it can then be use
 One of the most interesting characteristics of a neural network is its capacity to form probability weighted associations between a set of inputs and their corresponding outputs. The process of forming this association is called \textit{training} the neural network, the set of input patterns used for this purpose is called a \textit{training set}, and the algorithm by which the network is trained is called the \textit{learning algorithm}. After sufficient training, the network can also produce correct outputs to unseen inputs of the same kind.
 
 % TODO : Give more mathematical motivations on how neural networks learn patterns
-
-The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence, a computing platform that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have optimized hardware features that allow for parallel executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. Google's TPU chip %(Figure \ref{fig:google-tpu})
 
 \section{Embedded Linux}
 

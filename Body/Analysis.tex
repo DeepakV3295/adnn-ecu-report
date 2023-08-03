@@ -79,47 +79,12 @@ The general suite of compiler optimizations from GCC 11.3 are clever enough to u
 
 \section{Profiling Analysis}
 
-A \texttt{perf\_events} based record was conducted using the \texttt{perf} utility for all the programs. Flame graphs were generated for the same as shown attached below revealing the areas where the applications were spending the most time on.
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.34]{c-math.h-fg.png}
-	\caption{c-math.h}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.34]{cpp-eigen-fg.png}
-	\caption{cpp-eigen}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.34]{cpp-libtorch-fg.png}
-	\caption{cpp-libtorch}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.34]{python-numpy-fg.png}
-	\caption{python-numpy}
-\end{figure}
+A \texttt{perf\_events} based record was conducted using the \texttt{perf} utility for all the programs. Flame graphs were generated for the same as shown attached in \hyperref[hdrnn-profile]{Appendix II} revealing the areas where the applications were spending the most time on.
 
 \subsection{Memory Profile}
 
-Heaptrack is an alternative to the popular valgrind programming tool for memory profiling that comes under the KDE gear of applications by the KDE community. Heaptrack was used to profile the memory of the benchmark application programs under execution
+Heaptrack is an alternative to the popular valgrind programming tool for memory profiling that comes under the KDE gear of applications by the KDE community. Heaptrack was used to profile the memory of the benchmark application programs under execution. The resulting graphs are also presented in \hyperref[hdrnn-memory-profile]{Appendix II}
 
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.15]{heaptrack-compare.png}
-	\caption{c-math.h with 2 different shapes}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.32]{c-math.h-allocations.png}
-	\caption{c-math.h allocations}
-\end{figure}
 
 % ============================================
 %        Results
@@ -167,13 +132,23 @@ The training time of the neural network applications increases exponentially as 
 \subsection{Peak Memory Usage}
 Regardless of the hidden layer sizes, the peak memory utilization remains constant for the neural network application across all implementations. The \texttt{C++}, Eigen implementation has the lowest run time memory footprint, while Python NumPy is the least efficient.
 
-% TODO : Replace this graph with a table
-
-\begin{figure}[!ht]
+\begin{table}[h]
 	\centering
-	\includegraphics[scale=0.32]{memory-bar}
-	\caption[Peak Memory Utilization]{Peak Memory Utilized during training with different model sizes remain similar within the same implementation}
-\end{figure}
+	\begin{tabular}{ |p{4em}|p{3em}|p{3em}|p{3em}|p{3em}|p{3em}|p{3em}|p{3em}| }
+		\hline
+		\textbf{Program} & \textbf{1600} & \textbf{6370} & \textbf{13002} & \textbf{40522} & \textbf{57250} & \textbf{85642} & \textbf{101770} \\
+		\hline
+		PyTorch & 1171.8 & 1171.8 & 1171.8 & 1173.8 & 1172.9 & 1172.9 & 1174.8 \\
+		\hline
+		NumPy & 1303.7 & 1303.7 & 1303.7 & 1303.7 & 1303.7 & 1303.7 & 1303.7 \\
+		\hline
+		Eigen & 752.6 & 752.7 & 754.3 & 755.8 & 757.1 & 758.6 & 759.9 \\
+		\hline
+		C & 1079.0 & 1079.2 & 1079.5 & 1080.8 & 1081.6 & 1082.9 & 1083.7\\
+		\hline
+	\end{tabular}
+	\caption[Peak Memory Utilization]{Peak Memory Utilized for a single epoch during training based on Maximum Resident Set Size measure (MB)}
+\end{table}
 
 Note that the device RAM is 1024 MB however the peak memory utilization for both \texttt{C} and NumPy are higher than this value. This can be explained by over allocation of memory by the operating system utilizing the swap space. The peak memory utilization measure is using the Maximum resident set size measure, which is roughly the total amount of physical memory assigned to a process at a given point in time. It does not count pages that have been swapped out, or that are mapped from a file but not currently loaded into physical memory.
 
