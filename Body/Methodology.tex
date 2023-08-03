@@ -143,7 +143,7 @@ This execution will run for 30 epochs with a learning rate of 3.0 and batch size
 
 The \texttt{C} version of the benchmark application can also produce sketch of the image on to stdout, the shell for example, along with the prediction that the network makes and would produce the following output
 
-\begin{minted}{bash}
+\begin{minted}[fontsize=\tiny]{bash}
 
 					x x x x x
 					x x x x x
@@ -263,7 +263,7 @@ With the primary focus on training, MNIST dataset was primarily loaded in an eas
 
 This is the baseline implementation and follows close to the implementation exhibited on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library NumPy. The following listing shows the function that performs feedforward pass in the Network.
 
-\begin{minted}{python}
+\begin{minted}[fontsize=\small]{python}
 class Network(object):
 
 def __init__(self, sizes):
@@ -288,7 +288,7 @@ Developing ANNs using PyTorch is straightforward with good support and well docu
 
 The implementation used the MNIST made available by Torchvision library which is maintained under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the NumPy based Python implementation.
 
-\begin{minted}{cpp}
+\begin{minted}[fontsize=\small]{cpp}
 struct Net : torch::nn::Module
 {
 	Net(std::vector<unsigned int> shape)
@@ -338,7 +338,7 @@ struct Net : torch::nn::Module
 
 The \texttt{C} implementation had the least amount of external dependencies, other than the \texttt{C} standard library. The data structures of the neural network contain float arrays within structs as shown in the listing below. The learning algorithm was implemented to remain identical with those used in the other implementations.
 
-\begin{minted}{c}
+\begin{minted}[fontsize=\small]{c}
 /* HDR Neural Network */
 typedef struct
 {
@@ -372,16 +372,16 @@ The \texttt{C++} implementation used the n-dimensional arrays of popular \texttt
 
 Compared to the \texttt{C} version, the \texttt{C++} version uses the richer language feature set of \texttt{C++} such as namespaces, classes, etc. The \texttt{C++} implementation uses the popular build automation tool \texttt{CMake} instead of the GNU autotools setup adopted by the \texttt{C} implementation.
 
-\begin{minted}{cpp}
+\begin{minted}[fontsize=\small]{cpp}
 void mini_batch_sgd()
 {
 	// Initialize Nabla matrixes
 	std::vector<nabla> nablas;
 	for (std::size_t i = 0; i < network.size(); i++)
 		nablas.push_back(
-					nabla(network[i].weights.rows(),
-						network[i].weights.cols())
-					);
+				nabla(network[i].weights.rows(),
+					network[i].weights.cols())
+				);
 
 	// Go through the training data by batches
 	for (std::size_t i = 0; i < mnist_loader::train.size()
