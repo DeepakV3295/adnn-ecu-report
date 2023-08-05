@@ -1,0 +1,7 @@
+# ignore additional latex files
+*.nav
+*.snm
+*.vrb
+
+# Ignore Haziza's uppsala beamer folder
+uppsala-beamer-080516
