@@ -52,7 +52,7 @@ Embedded systems perform a varied mixture of applications including industrial a
 
 Consider an example of such an arrangement accounted in this paragraph. The semiconductor and software design company ARM produces ARM processors that are used in a significant fraction of embedded devices due to their power efficiency and versatility. \textit{Silicon vendors} such as Atmel, Qualcomm, NXP, Texas Instruments, etc. buy CPU core designs from ARM and adds a suite of peripherals to offer application processors. Ultimately, a \textit{system maker} would select among these application processors, sensors, and other devices to design an embedded board for a particular application domain. There are different practises that the industry adopts to create embedded devices for different applications and the example presented here is one among several. The embedded devices considered in this project derive from such a process.
 
-ARM processor cores are ubiquitous in embedded systems and come in 3 primary flavours for their use in embedded devices. The Cortex A series of processors are general purpose, high performance cores with capabilities such as virtual memory addressing, multicore support, secure boot through hardware enforced isolation, etc. The memory management unit present in these cores makes it easier to run modern operating systems on them. These embedded processor cores are primarily used in smartphones, laptops, network appliances, set-top boxes, medical devices, etc. The Cortex R series of processors with its tightly coupled memory and fault tolerance features target real time applications such as solid state device controllers, media players, airbags, braking systems, etc. Cortex R processors do not have memory management units and are hence not fit for running linux, and instead run real time operating systems such as ARM's Mbed OS. Lastly, the Cortex M series of processor cores target Microcontroller devices.
+ARM processor cores are ubiquitous in embedded systems and come in 3 primary flavours for their use in embedded devices. The Cortex A series of processors are general purpose, high performance cores with capabilities such as virtual memory addressing, multicore support, secure boot through hardware enforced isolation, etc. The memory management unit present in these cores makes it easier to run modern operating systems on them. These embedded processor cores are primarily used in smartphones, laptops, network appliances, set-top boxes, medical devices, etc. The Cortex R series of processors with its tightly coupled memory and fault tolerance features target real time applications such as solid state device controllers, media players, airbags, braking systems, etc. Cortex R processors do not have memory management units and are hence not fit for running linux, and instead run real time operating systems such as ARM's Mbed OS. Lastly, the Cortex M series of processor cores target Microcontroller applications.
 
 \begin{figure}[h]
 	\centering
@@ -74,18 +74,22 @@ The Yocto project was chosen as the primary build system for this project and wa
 \subsubsection{An excursion through Yocto Project's Embedded Linux build system}
 \label{section:yocto-demo}
 
-Embedded linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, number and nature of the software engineers using the tool, the build and deploy infrastructure, and the list of supported target platforms. Consider a simple development scenario targetting the embedded target platform MCIMX6Q-SDB, which is the primary target for this report. The aim is to build and run an embedded linux distribution for the MCIMX6Q-SDB using a personal computer running linux. Note that several of the code listings used in this discussion may break their interface, hence the emphasis is primary on the essential concepts involved.
+Embedded linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, number and nature of the software engineers using the tool, the build and deploy infrastructure, and the list of supported target platforms. Consider a simple development scenario targetting the embedded target platform MCIMX6Q-SDB, which is the primary target for this report. The aim is to build and run an embedded linux distribution for the MCIMX6Q-SDB using a personal computer running linux. Note that several of the code listings used in this discussion may break their interface, hence the emphasis is primarily on the essential concepts involved.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.32]{MCIMX6Q-SDB-BD.png}
+	\begin{tikzpicture}
+		\node (image) at (0, 0)
+			{\includegraphics[scale=0.32]{MCIMX6Q-SDB-BD.png}};
+		\draw[rounded corners=1ex, thick, yellow] (-6, 0.7) rectangle (-5.1, 1.9);
+	\end{tikzpicture}
 	\caption{MCIMX6Q-SDB-BD}
 	\label{fig:mcimx6q-sdb}
 \end{figure}
 
 The Yocto Project is arranged into several components out of which the core 3 components are BitBake, OpenEmbedded-Core, and Poky. BitBake is a build engine that interprets configuration files to schedule and then perform tasks. The configuration files, also called  \textit{recipes}, describe how to build a particular package such as a shared library or application program. Recipes contain information as to where to obtain the source code for a package, instructions for compiling the source code, and installing or removing that package from a distribution. OpenEmbedded-Core is a set of platform and distribution independent recipes and other metadata while Poky is a reference system containing a collection of projects and tools that can be used to bootstrap a new distribution.
 
-The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded. The big picture of the Yocto project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto project to have a steep learning curve. A simplified illustration of the Yocto project is presented in Figure \ref{fig:yocto-overview} below. A set of recipes (teal) sharing a common purpose are arranged into a \textit{layer} (cyan) \ref{fig:yocto-overview}. Layers can depend on other layers, with multiple layers usually being used in an embedded linux distribution. Note that a legend is also present in the diagram.
+The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded. The big picture of the Yocto project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto project to have a steep learning curve. A simplified illustration of the Yocto project is presented in Figure \ref{fig:yocto-overview} below. A set of recipes (teal) sharing a common purpose are arranged into a \textit{layer} (cyan). Layers can depend on other layers, with multiple layers usually being used in a single embedded linux distribution. Note that a legend is also present in the bottom right of the diagram.
 
 \begin{figure}[h]
 	\centering
@@ -172,7 +176,7 @@ The Yocto Project came out of the work associated with OpenEmbedded build automa
 	\label{fig:yocto-overview}
 \end{figure}
 
-The primary version control system used within the Yocto project is git. The Yocto project has even several software packages requirements for its build system laid out in its documentation (see \href{https://docs.yoctoproject.org/}{docs.yoctoproject.org}). Furthermore, there are minimum versions for the required packages for a corresponding version of the Yocto project (see \href{https://wiki.yoctoproject.org/wiki/Releases}{wiki.yoctoproject.org/wiki/Releases}).
+The primary version control system used within the Yocto project is git. The Yocto project has several other software packages that are required for its build system, all of which are laid out in its documentation (see \href{https://docs.yoctoproject.org/}{docs.yoctoproject.org}). Furthermore, there are minimum versions for the required packages for a given version of its release (see \href{https://wiki.yoctoproject.org/wiki/Releases}{wiki.yoctoproject.org/wiki/Releases}).
 
 The following listing presents the typical required packages however, based on the linux distribution of the development host the command will vary.
 
@@ -180,13 +184,13 @@ The following listing presents the typical required packages however, based on t
 PACKAGE_MANAGER install bc make automake gcc gcc-c++ chrpath cpio diffstat gawk git python texinfo wget zstd lz4
 \end{minted}
 
-The above list is not complete and relies on nonstandard package names. Consulting the documentation above will provide more accurate instructions as to the packages that are necessary to start with the Yocto project. An example install of the packages necessary on the Fedora 37 operating system as recommended by the Yocto project documentation is given in the following listing.
+The above list is not complete and relies on non-standard package names. Consulting the Yocto project documentation will provide more accurate instructions as to the packages that are necessary to start with the Yocto project. An example install of the packages necessary on the Fedora 37 operating system as recommended by the Yocto project documentation is given in the following listing.
 
 \begin{minted}{bash}
 sudo dnf install gawk make wget tar bzip2 gzip python3 unzip perl patch diffutils diffstat git cpp gcc gcc-c++ glibc-devel texinfo chrpath ccache perl-Data-Dumper perl-Text-ParseWords perl-Thread-Queue perl-bignum socat python3-pexpect findutils which file cpio python python3-pip xz python3-GitPython python3-jinja2 SDL-devel rpcgen mesa-libGL-devel perl-FindBin perl-File-Compare perl-File-Copy perl-locale zstd lz4 hostname glibc-langpack-en
 \end{minted}
 
-For this section, consider the \texttt{kirkstone} Long Term Support (LTS) release of the Yocto project. To begin clone the Poky repository from \href{https://git.yoctoproject.com}{git.yoctoproject.com}
+For this section, consider the \textit{kirkstone} Long Term Support (LTS) release of the Yocto project. To begin clone the Poky repository from \href{https://git.yoctoproject.com}{git.yoctoproject.com}
 
 \begin{minted}{bash}
 git clone https://git.yoctoproject.org/git/poky
@@ -198,33 +202,37 @@ The Poky repository contains the OpenEmbedded-Core as well as the BitBake tool t
 git clone https://git.yoctoproject.org/git/meta-freescale
 \end{minted}
 
-Checkout the kirkstone version of all the different components by checking out the corresponding branches.
+Checkout the kirkstone version of the different components by checking out the corresponding branches of the git repos.
 
 \begin{minted}{bash}
-git checkout kirkstone-4.0.10
+git checkout kirkstone-4.0.11 # for poky
 \end{minted}
 
-Once the correct branches have been checked out, the next step is to bring the BitBake tool into the shell environment. The Poky repository contains scripts that facilitate this step. Create a directory to manage the build configuration and output files and run the setup script inside the Poky repo.
+\begin{minted}{bash}
+git checkout kirkstone # for meta-freescale
+\end{minted}
+
+Once the correct branches have been checked out, the next step is to bring the BitBake tool into the shell environment. The Poky repository contains scripts that facilitate this step. Create a directory (assumed that \texttt{\$BUILDDIR} holds the pathname) to manage the build configuration and output files, and run the setup script inside the Poky repo.
 
 \begin{minted}{bash}
 source poky/oe-init-build-env $BUILDDIR
 \end{minted}
 
-The script will set up BitBake along with some additional tools and scripts in the current shell environment and also creates a few directories in \texttt{\$BUILDDIR} along with some configuration files. The first configuration file to edit will be the \texttt{\$BUILDDIR/conf/bblayers.conf} to configure the build system for the MCIMX6Q-SDB.
+The script will set up BitBake along with some additional tools and scripts in the current shell environment and also creates a few directories in \texttt{\$BUILDDIR} along with some configuration files. The first configuration file to edit will be the \texttt{\$BUILDDIR/conf/bblayers.conf} to configure the build system for the MCIMX6Q-SDB. Note that this step may also be avoided by setting the \texttt{\$MACHINE} environment variable.
 
 \begin{minted}{bash}
 	MACHINE = "imx6qdlsabresd"
 \end{minted}
 
-After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal image that can boot the MCIMX6Q-SDB building the packages for \texttt{core-image-minimal} recipe.
+After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal image that can boot the MCIMX6Q-SDB by building the packages for \texttt{core-image-minimal} recipe.
 
 \begin{minted}{bash}
 bitbake core-image-minimal
 \end{minted}
 
-Build images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. To boot the MCIMX6Q-SDB with the build image simply flash an SD card with the rootfs image and configure the board to boot from the SD card slot. SD-3 slot may be configured in this manner by toggling the dip switches to D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF
+The output images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. To boot the MCIMX6Q-SDB with the build image, flash an SD card with the \textit{rootfs} image and configure the board to boot from the SD card slot. The MCIMX6Q-SDB can be configured to start from the SD-3 slot may be configured in this manner by toggling the dip switches (shown in yellow highlights in Figure \ref{fig:mcimx6q-sdb}) to the D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF configuration. An interface is then accessible via the USB UART (found beside the dip switches) on the MCIMX6Q-SDB. Use a serial console terminal emulator at 115200 baud after connecting via the micro-B USB plug.
 
-Connecting to the board via USB-UART via a serial console terminal emulator program should then be possible after power on the MCIMX6Q-SDB.
+% TODO : Add an overview of the process described and give more brief on the upcoming content
 
 Application development for embedded linux has associated with it several tools and practises, some of which are outlined in the following subsections.
 
@@ -344,7 +352,7 @@ For example, versions of the fedora linux distribution provides these packages v
 dnf install --releasever=36 --installroot=/tmp/f36arm --forcearch=armv7hl --repo=fedora --repo=updates systemd passwd dnf fedora-release vim-minimal m4 cmake gcc-c++ tar gcc git make tmux -y
 \end{minted}
 
-The target directory \texttt{/tmp/f36arm/} will then contain a simple root directory for the required development environment for \texttt{armv7l}. After configuring the environment in this manner, simply test changing the root directory and running a simple \texttt{C} program.
+The target directory \texttt{/tmp/f36arm/} will then contain a simple root directory for the required development environment for \texttt{armv7l}. Note that the choice of the fedora linux release version (36) and the \texttt{/tmp/f36arm/} directory is somewhat arbitrary. After configuring the environment in this manner, simply test changing the root directory and running a simple \texttt{C} program.
 
 \begin{minted}{bash}
 chroot /tmp/f36arm /usr/bin/bash
@@ -362,7 +370,7 @@ int main()
 }
 \end{minted}
 
-Development environments such as these are easy to set up and can prove valuable for rapid prototyping. Another use case may be as part of a continuous integration and continuous delivery mechanism for embedded application development
+Development environments such as these are easy to set up and can prove valuable for rapid prototyping. Another use case may be as part of a continuous integration and continuous delivery mechanism for a more complete embedded application development lifecycle.
 
 \subsection{Targeting Embedded Devices}
 
