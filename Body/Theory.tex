@@ -50,7 +50,9 @@ This chapter introduces several terms and techniques associated with embedded ap
 
 Embedded systems perform a varied mixture of applications including industrial automation, consumer electronics, automotive, etc. and have capabilities ranging from ultra low power wireless data logging to thrust vector control on rocket ships. Depending on the application domain, embedded devices are generally designed in concert with multiple entities that are each responsible for a different component in the hardware-software stack.
 
-Consider an example of such an arrangement accounted in this paragraph. The semiconductor and software design company ARM produces ARM processors that are used in a significant fraction of embedded devices due to their power efficiency and versatility. \textit{Silicon vendors} such as Atmel, Qualcomm, NXP, Texas Instruments, etc. buy CPU core designs from ARM and adds a suite of peripherals to offer application processors, also referred to as a \textit{system on a chip} or SoC. Ultimately, a \textit{system maker} would select among these application processors, sensors, and other devices to design an embedded \textit{board} for a particular application domain. There are different practises that the industry adopts to create embedded devices for different applications and the example presented here is one among several. The embedded devices considered in this project derive from such a process.
+Consider an example of such an arrangement accounted in this paragraph. The semiconductor and software design company ARM produces ARM processors that are used in a significant fraction of embedded devices due to their power efficiency and versatility. \textit{Silicon vendors} such as Atmel, Qualcomm, NXP, Texas Instruments, etc. buy CPU core designs from ARM and create application processors along with a suite of electrical components in an integrated circuit referred to as a \textit{system on a chip} or SoC. Ultimately, a \textit{system maker} would select among these application processors, sensors, and other peripheral devices to design an embedded \textit{board} for a particular application domain. There are different practises that the industry adopts to create embedded devices for different applications and the example presented here is one among several. The embedded devices considered in this project derive from such a process.
+
+The configuration and functionality of peripheral devices and how they can interact with the processor on the SoC are decided by the silicon vendor. There are several architectural factors that go into this decision such as the computer organization, memory addressing model, supported instruction set architectures, etc. These decision in turn necessitates controller circuits such as for memory access, interrupt control, debug interfaces, etc. Another important component are controllers that enable communication to peripheral devices through standard serial communication buses such as SPI (Serial Peripheral Interface), I2C (Inter-Integrated Circuit), USB (Universal Serial Bus), etc. The sum of these factors determine the hardware software interface of the SoC. A simplified diagram of an ARM based embedded board is presented in Figure \ref{fig:arm-scheme}
 
 \begin{figure}[h]
 	\centering
@@ -107,20 +109,22 @@ Consider an example of such an arrangement accounted in this paragraph. The semi
 		\draw [->, very thick] (10.4, 4) -- (11, 4);
 
 	\end{tikzpicture}
+	\caption{Simplified schematic view of an ARM Platform}
+	\label{fig:arm-scheme}
 \end{figure}
 
-ARM processor cores are ubiquitous in embedded systems and come in 3 primary flavours for their use in embedded devices. The Cortex A series of processors are general purpose, high performance cores with capabilities such as virtual memory addressing, multicore support, secure boot through hardware enforced isolation, etc. The memory management unit present in these cores makes it easier to run modern operating systems on them. These embedded processor cores are primarily used in smartphones, laptops, network appliances, set-top boxes, medical devices, etc. The Cortex R series of processors with its tightly coupled memory and fault tolerance features target real time applications such as solid state device controllers, media players, airbags, braking systems, etc. Cortex R processors do not have memory management units and are hence not fit for running linux, and instead run real time operating systems such as ARM's Mbed OS. Lastly, the Cortex M series of processor cores target Microcontroller applications.
+\subsubsection{A Brief Overview of ARM Processor Families}
+
+ARM processor cores are ubiquitous in embedded systems and come in 3 primary flavours for their use in embedded devices. The Cortex A series of processors are general purpose, high performance cores with capabilities such as virtual memory addressing, support for multiple processing units, secure boot through hardware enforced isolation, and more. The memory management unit present in these cores makes it easier to run modern operating systems on them. These embedded processor cores are primarily used in smartphones, laptops, network appliances, set-top boxes, medical devices, etc. The Cortex R series of processors with its tightly coupled memory and fault tolerance features target real time applications such as solid state device controllers, media players, airbags, braking systems, etc. Cortex R processors do not have memory management units and are hence not fit for running linux, and instead run real time operating systems such as ARM's Mbed OS. Lastly, the Cortex M series of processor cores are low-cost, energy-efficient cores targeting microcontroller applications and commonly runs bare metal programs as well as Mbed OS.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.42]{bbb.jpeg}
+	\includegraphics[scale=0.34]{bbb.jpeg}
 	\caption{BeagleBone Black}
 	\label{fig:bbb}
 \end{figure}
 
-The popular open source educational single board computer BeagleBone Black has an ARM Cortex A8 based Texas Instruments AM3359 processor core. Embedded linux is commonly found on Cortex A based processor series such as the one present in the BeagleBone. Preceding sections explore embedded linux based software development on these platforms.
-
-% TODO : Talk about the software and hardware stacks of programming embedded linux on ARM boards
+The popular open source educational single board computer BeagleBone Black (Figure \ref{fig:bbb}) has an ARM Cortex A8 based Texas Instruments AM3359 processor core. Embedded linux is commonly found on Cortex A based processor series such as the one present in the BeagleBone. The upcoming sections explore embedded linux based software development on these platforms.
 
 \section{Embedded Linux and Application Development}
 
@@ -287,7 +291,13 @@ After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal i
 bitbake core-image-minimal
 \end{minted}
 
-The output images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. To boot the MCIMX6Q-SDB with the build image, flash an SD card with the \textit{rootfs} image and configure the board to boot from the SD card slot. The MCIMX6Q-SDB can be configured to start from the SD-3 slot may be configured in this manner by toggling the dip switches (shown in yellow highlights in Figure \ref{fig:mcimx6q-sdb}) to the D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF configuration. An interface is then accessible via the USB UART (found beside the dip switches) on the MCIMX6Q-SDB. Use a serial console terminal emulator at 115200 baud after connecting via the micro-B USB plug.
+The output images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. The path ends at the same name as the \texttt{\$MACHINE} variable name and contains several binary images. One way to use the resulting binary images to boot the MCIMX6Q-SDB is to use an SD card and the \textit{rootfs} image. The rootfs image should be named with the name of the machine, a time stamp, and the string \texttt{"rootfs"}.
+
+Booting the board using this image is one way to verify the build completed by BitBake. Obtain and flash an SD card with the \textit{rootfs} image using a suitable program such as \texttt{dd}. Furthermore, the MCIMX6Q-SDB should be configured to boot from an SD card slot. The board can be configured to boot from the SD-3 slot by toggling the dip switches (shown in yellow highlights in Figure \ref{fig:mcimx6q-sdb}) to the configuration : \texttt{D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF}.
+
+Assuming the previous steps were completed in a correct manner, the board should boot using the embedded linux that was created by BitBake using the \texttt{core-image-minimal} recipe. The Micro-B USB plug beside the previously mentioned dip switches can then be used to start a serial terminal emulator program using USB UART using a 115200 baud rate. Alternatively, the board should be accessible via the Ethernet interface also present on the MCIMX6Q-SDB.
+
+
 
 % TODO : Add an overview of the process described and give more brief on the upcoming content
 
