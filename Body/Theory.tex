@@ -115,7 +115,7 @@ The configuration and functionality of peripheral devices and how they can inter
 
 \subsubsection{A Brief Overview of ARM Processor Families}
 
-ARM processor cores are ubiquitous in embedded systems and come in 3 primary flavours for their use in embedded devices. The Cortex A series of processors are general purpose, high performance cores with capabilities such as virtual memory addressing, support for multiple processing units, secure boot through hardware enforced isolation, and more. The memory management unit present in these cores makes it easier to run modern operating systems on them. These embedded processor cores are primarily used in smartphones, laptops, network appliances, set-top boxes, medical devices, etc. The Cortex R series of processors with its tightly coupled memory and fault tolerance features target real time applications such as solid state device controllers, media players, airbags, braking systems, etc. Cortex R processors do not have memory management units and are hence not fit for running linux, and instead run real time operating systems such as ARM's Mbed OS. Lastly, the Cortex M series of processor cores are low-cost, energy-efficient cores targeting microcontroller applications and commonly runs bare metal programs as well as Mbed OS.
+ARM processor cores are ubiquitous in embedded systems and come in 3 primary flavours for their use in embedded devices. The Cortex A series of processors are general purpose, high performance cores with capabilities such as virtual memory addressing, support for multiple processing units, secure boot through hardware enforced isolation, and more. The memory management unit present in these cores makes it easier to run modern operating systems on them. These embedded processor cores are primarily used in smartphones, laptops, network appliances, set-top boxes, medical devices, etc. The Cortex R series of processors with its tightly coupled memory and fault tolerance features target real time applications such as solid state device controllers, media players, airbags, braking systems, etc. Cortex R processors do not have memory management units and instead implement a protected memory system architecture due to their requirement to support hard real time applications. A suitable modified linux can be made to run on Cortex R, however the cores more commonly runs ARM's real time operating system Mbed OS. Lastly, the Cortex M series of processor cores are low-cost, energy-efficient cores targeting microcontroller applications. Cortex M cores are notably simpler compared to Cortex A or Cortex R and commonly run bare metal programs as well as Mbed OS.
 
 \begin{figure}[h]
 	\centering
@@ -291,17 +291,75 @@ After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal i
 bitbake core-image-minimal
 \end{minted}
 
+% TODO : Talk about (1) what BitBake is doing at this point, (2)how much information is contained within the core image minimal recipe, and (3) what kernel/linux images
+
 The output images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. The path ends at the same name as the \texttt{\$MACHINE} variable name and contains several binary images. One way to use the resulting binary images to boot the MCIMX6Q-SDB is to use an SD card and the \textit{rootfs} image. The rootfs image should be named with the name of the machine, a time stamp, and the string \texttt{"rootfs"}.
 
 Booting the board using this image is one way to verify the build completed by BitBake. Obtain and flash an SD card with the \textit{rootfs} image using a suitable program such as \texttt{dd}. Furthermore, the MCIMX6Q-SDB should be configured to boot from an SD card slot. The board can be configured to boot from the SD-3 slot by toggling the dip switches (shown in yellow highlights in Figure \ref{fig:mcimx6q-sdb}) to the configuration : \texttt{D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF}.
 
 Assuming the previous steps were completed in a correct manner, the board should boot using the embedded linux that was created by BitBake using the \texttt{core-image-minimal} recipe. The Micro-B USB plug beside the previously mentioned dip switches can then be used to start a serial terminal emulator program using USB UART using a 115200 baud rate. Alternatively, the board should be accessible via the Ethernet interface also present on the MCIMX6Q-SDB.
 
+The Yocto project can be used work on several aspects of Application and Kernel level development for Embedded Linux. Application development in the Yocto Project can be thought to have several practises such as arranging the information regarding the application packaging in a related metadata layer within BitBake recipes. The development process would also have multiple computer machines associated with it as shown in the diagram in Figure \ref{fig:yocto-dev}. In this model, the Yocto Project machine is the core environment for building the software stack, including the linux kernel and user space applications. The development machine is used for coding, compiling, and debugging applications, while the target hardware runs the final images and executes the developed applications.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[font=\small, >=Latex]
+
+		\fill [fill=blue!30] (0, 3.4) rectangle (4.5, 6);
+		\draw (2, 6.21) node {\textbf{Yocto Project Machine}};
+		\draw (2, 4.75) node[align=left]
+			{
+				Hosts Yocto Project \\
+				Can Host an SDK \\
+				Can Build an SDK \\
+				Can Build an Image \\
+				Can Build an Application
+			};
+
+		\draw [<-, very thick] (4.5, 5) -- (6.5, 5);
+		\draw (5.5, 5.2) node {Objects};
+
+		\fill [fill=green!30] (6.5, 4.2) rectangle (9.5, 6);
+		\draw (8, 6.2) node {\textbf{Development Machine}};
+		\draw (8, 5.25) node[align=left]
+			{
+				Compile Code \\
+				Debug Code \\
+				Hosts an SDK
+			};
+
+		\draw [very thick] (5.5, 2) -- (6.5, 2);
+		\draw [very thick] (5.5, 4) -- (5.5, 2);
+		\draw [<-, very thick] (4.5, 4) -- (5.5, 4);
+		\draw (5.5, 4.2) node {Objects};
+
+		\fill [fill=green!30] (6.5, 1.2) rectangle (9.5, 3);
+		\draw (8, 3.2) node {\textbf{Development Machine}};
+		\draw (8, 2.25) node[align=left]
+			{
+				Compile Code \\
+				Debug Code \\
+				Hosts an SDK
+			};
+
+		\draw [->, line width=0.42em] (2.25, 3.4) -- (2.25, 2.1);
+		\draw (3, 3.1) node {Deploy};
+
+		\fill [fill=red!30] (0.25, 0) rectangle (4, 1.75);
+		\draw (2, 1.95) node {\textbf{Target Hardware}};
+		\draw (2.1, 0.95) node[align=left]
+		{
+			Boots and Runs Images \\
+			Runs Applications
+		};
+
+	\end{tikzpicture}
+	\caption{Simplified overview of an Application development practise using the Yocto Project}
+	\label{fig:yocto-dev}
+\end{figure}
 
 
-% TODO : Add an overview of the process described and give more brief on the upcoming content
-
-Application development for embedded linux has associated with it several tools and practises, some of which are outlined in the following subsections.
+Application development for embedded linux in general has associated with it several tools and practises, some of which are outlined in the following subsections.
 
 \subsection{Software Development Kits}
 
