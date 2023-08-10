@@ -106,7 +106,7 @@
 
 \institute[Dept. of Information Technology] % appears in the footline
 {
-  Thesis \\
+  Master's Thesis \\
   Uppsala University
 }
 
@@ -254,129 +254,6 @@
   See \href{http://story.idi.ntnu.no/~cassens/blog/categories/20-LaTeX}{his blog on the Trondheim theme}.
 }
 
-\begin{frame}
-  \frametitle{Using Ti\textit{k}Z for Petri-Net}
-  \begin{center}
-\begin{tikzpicture}
-  [node distance=1.3cm,>=stealth',bend angle=45,auto,
-   place/.style={circle,thick,draw=blue!75,fill=blue!20,minimum size=6mm},
-   red place/.style={place,draw=red!75,fill=red!20},
-   transition/.style={rectangle,thick,draw=black!75,fill=black!20,minimum size=4mm},
-   every label/.style={red},on grid]
-
-  \begin{scope}
-    % First net
-    \node [place,tokens=1] (w1)                                    {};
-    \node [place] (c1) [below=of w1]                      {};
-    \node [place] (s)  [below=of c1,label=above:$s\le 3$] {};
-    \node [place] (c2) [below=of s]                       {};
-    \node [place,tokens=1] (w2) [below=of c2]                      {};
-
-    \node [transition] (e1) [left=of c1] {}
-      edge [pre,bend left]                  (w1)
-      edge [post,bend right]                (s)
-      edge [post]                           (c1);
-
-    \node [transition] (e2) [left=of c2] {}
-      edge [pre,bend right]                 (w2)
-      edge [post,bend left]                 (s)
-      edge [post]                           (c2);
-
-    \node [transition] (l1) [right=of c1] {}
-      edge [pre]                            (c1)
-      edge [pre,bend left]                  (s)
-      edge [post,bend right] node[swap] {2} (w1);
-
-    \node [transition] (l2) [right=of c2] {}
-      edge [pre]                            (c2)
-      edge [pre,bend right]                 (s)
-      edge [post,bend left]  node {2}       (w2);
-  \end{scope}
-
-  \begin{scope}[xshift=6cm]
-    % Second net
-    \node [place,tokens=1]
-                      (w1')                                                {};
-    \node [place]     (c1') [below=of w1']                                 {};
-    \node [red place] (s1') [below=of c1',xshift=-5mm,label=left:$s$]      {};
-    \node [red place,tokens=3]
-                      (s2') [below=of c1',xshift=5mm,label=right:$\bar s$] {};
-    \node [place]     (c2') [below=of s1',xshift=5mm]                      {};
-    \node [place,tokens=1]
-                      (w2') [below=of c2']                                 {};
-
-    \node [transition] (e1') [left=of c1'] {}
-      edge [pre,bend left]                  (w1')
-      edge [post]                           (s1')
-      edge [pre]                            (s2')
-      edge [post]                           (c1');
-
-    \node [transition] (e2') [left=of c2'] {}
-      edge [pre,bend right]                 (w2')
-      edge [post]                           (s1')
-      edge [pre]                            (s2')
-      edge [post]                           (c2');
-
-    \node [transition] (l1') [right=of c1'] {}
-      edge [pre]                            (c1')
-      edge [pre]                            (s1')
-      edge [post]                           (s2')
-      edge [post,bend right] node[swap] {2} (w1');
-
-    \node [transition] (l2') [right=of c2'] {}
-      edge [pre]                            (c2')
-      edge [pre]                            (s1')
-      edge [post]                           (s2')
-      edge [post,bend left]  node {2}       (w2');
-  \end{scope}
-
-  \begin{pgfonlayer}{background}
-    \node (r1) [fill=black!10,rounded corners,fit=(w1)(w2)(e1)(e2)(l1)(l2)] {};
-    \node (r2) [fill=black!10,rounded corners,fit=(w1')(w2')(e1')(e2')(l1')(l2')] {};
-  \end{pgfonlayer}
-
-  \draw [shorten >=1mm,-to,thick,decorate,decoration={snake,amplitude=.4mm,segment
-      length=2mm,pre=moveto,pre length=1mm,post length=2mm}]
-    (r1) -- (r2)
-    node [above=1mm,midway,text width=3cm,text centered]
-      {replacement of the \textcolor{red}{capacity} by \textcolor{red}{two places}};
-
-\end{tikzpicture}
-  \end{center}
-\end{frame}
-
-%% PFG capabilities
-% \begin{frame}
-%   \frametitle{Using Ti\textit{k}Z for Drawings -- 2}
-
-%   \begin{pgfpicture}{0cm}{0cm}{5cm}{2cm}
-%     \pgfputat{\pgfxy(1,1)}{\pgfbox[center,center]{Hi!}}
-%     \pgfcircle[stroke]{\pgfxy(1,1)}{0.5cm}
-%     \pgfline{\pgfxy(1.5,1)}{\pgfxy(2.2,1)}
-%      \pgfputat{\pgfxy(3,1)}{
-%      \begin{pgfrotateby}{\pgfdegree{30}}
-%        \pgfbox[center,center]{$\int_0^\infty xdx$}
-%      \end{pgfrotateby}}
-%     \pgfcircle[stroke]{\pgfxy(3,1)}{0.75cm}
-%     \pgfmoveto{\pgfxy(5,1)}
-%     \pgfcurveto{\pgfxy(6,0.5)}{\pgfxy(6,1.5)}{\pgfxy(8,1)}
-%     \pgfstroke
-%     \pgfsetdash{{3pt}{3pt}}{0pt}
-%     \pgfmoveto{\pgfxy(5,1)}
-%     \pgflineto{\pgfxy(6,0.5)}
-%     \pgflineto{\pgfxy(6,1.5)}
-%     \pgflineto{\pgfxy(7,1)}
-%     \pgfstroke
-%     \pgfmoveto{\pgfxy(9,1)}
-%     \pgfcurveto{\pgfxy(9,0)}{\pgfxy(10,0)}{\pgfxy(10,1)}
-%     \pgfcurveto{\pgfxy(10,2)}{\pgfxy(9,2)}{\pgfxy(9,1)}
-%     \pgfclosepath
-%     \pgffill
-%   \end{pgfpicture}
-
-% \end{frame}
-
-
 % %% Movies capabilities
 % \begin{frame}
 %   \frametitle{Including Movies}
@@ -442,10 +319,17 @@
 
 \end{frame}
 
-\section{Conclusions}
+\begin{frame}[fragile]
+  \frametitle{Reverse Engineering Efforts on the C300}
+
+  Development Experience
+
+\end{frame}
+
+\section{Conclusion}
 
 \begin{frame}
-  \frametitle{Conclusions}
+  \frametitle{Future Work}
 
 %   \begin{itemize}
 %     \item Non official
