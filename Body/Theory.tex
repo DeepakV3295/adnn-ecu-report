@@ -42,9 +42,9 @@ This report is divided into three parts with multiple chapters containing severa
 
 Developing and maintaining applications that rely on neural network models and run on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learning pipelines, not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter-process communication mechanisms, multitasking etc.
 
-The target embedded device to run the neural network applications are the ECUs aboard a Scania vehicle. These ECUs have ARM application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. The benchmark applications of interest in this report focuses on training neural network models on environments that use the embedded linux operating system.
+The embedded device that is meant to run the neural network applications are the ECUs aboard a Scania vehicle. These ECUs have ARM application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. The benchmark applications of interest in this report focuses on training neural network models on environments that use the embedded Linux operating system.
 
-This chapter introduces several terms and techniques associated with embedded application development and starts with a small section on ARM based embedded boards. The next section gives an overview of the terminologies and processes associated with embedded linux and application development for embedded linux boards. The subsequent section introduces a discussion on neural network application development for embedded platforms. The final section on Federated Learning motivates the efforts to study training of the neural network on embedded devices contrasting further with the conventional model of training neural network models for embedded platforms.
+This chapter introduces several terms and techniques associated with embedded application development and starts with a small section on ARM based embedded boards. The next section gives an overview of the terminologies and processes associated with embedded Linux and application development for embedded Linux boards. The subsequent section introduces a discussion on neural network application development for embedded platforms. The final section on Federated Learning motivates the efforts to study training of the neural network on embedded devices contrasting further with the conventional model of training neural network models for embedded platforms.
 
 \section{Embedded Platforms}
 
@@ -115,7 +115,7 @@ The configuration and functionality of peripheral devices and how they can inter
 
 \subsubsection{A Brief Overview of ARM Processor Families}
 
-ARM processor cores are ubiquitous in embedded systems and come in 3 primary flavours for their use in embedded devices. The architecture implemented by these different categories of processors also differ in their nature and complexity. The Cortex A series of processors implement the ARM Application profile (A-profile) architecture and are general purpose, high performance cores with capabilities such as virtual memory addressing, support for multiple processing units, secure boot through hardware enforced isolation, and more. The memory management unit present in these cores makes it easier to run modern operating systems on them. These embedded processor cores are primarily used in smartphones, laptops, network appliances, set-top boxes, medical devices, etc. The Cortex R series of processors implement the ARM Real-time profile (R-profile) architecture with its tightly coupled memory and fault tolerance features target real time applications such as solid state device controllers, media players, airbags, braking systems, etc. Cortex R processors do not have memory management units and instead implement a protected memory system architecture due to their requirement to support hard real time applications. A suitable modified linux can be made to run on Cortex R, however the cores more commonly runs ARM's real time operating system Mbed OS. Lastly, the Cortex M series of processor cores implement ARM Microcontroller profile (M-profile) and are low-cost, energy-efficient cores targeting microcontroller applications. Cortex M cores are notably simpler compared to Cortex A or Cortex R and commonly run bare metal programs as well as Mbed OS.
+ARM processor cores are ubiquitous in embedded systems and come in 3 primary flavours for their use in embedded devices. The architecture implemented by these different categories of processors also differ in their nature and complexity. The Cortex A series of processors implement the ARM Application profile (A-profile) architecture and are general purpose, high performance cores with capabilities such as virtual memory addressing, support for multiple processing units, secure boot through hardware enforced isolation, and more. The memory management unit present in these cores makes it easier to run modern operating systems on them. These embedded processor cores are primarily used in smartphones, laptops, network appliances, set-top boxes, medical devices, etc. The Cortex R series of processors implement the ARM Real-time profile (R-profile) architecture with its tightly coupled memory and fault tolerance features target real time applications such as solid state device controllers, media players, airbags, braking systems, etc. Cortex R processors do not have memory management units and instead implement a protected memory system architecture due to their requirement to support hard real time applications. A suitable modified Linux can be made to run on Cortex R, however the cores more commonly runs ARM's real time operating system Mbed OS. Lastly, the Cortex M series of processor cores implement ARM Microcontroller profile (M-profile) and are low-cost, energy-efficient cores targeting microcontroller applications. Cortex M cores are notably simpler compared to Cortex A or Cortex R and commonly run bare metal programs as well as Mbed OS.
 
 \begin{table}[h]
 	\centering
@@ -156,7 +156,7 @@ ARM processor cores are ubiquitous in embedded systems and come in 3 primary fla
 	\label{table:arm}
 \end{table}
 
-The popular open source educational single board computer BeagleBone Black (Figure \ref{fig:bbb}) has an ARM Cortex A8 based Texas Instruments AM3359 processor core. Table \ref{table:arm} lists further examples of different ARM based SoCs, their Application Domain, Processor Cores, and specific Architecture Profiles. Embedded linux is commonly found on Cortex A based processor series such as the one present in the BeagleBone. The upcoming sections explore embedded linux based software development on these platforms.
+The popular open source educational single board computer BeagleBone Black (Figure \ref{fig:bbb}) has an ARM Cortex A8 based Texas Instruments AM3359 processor core. Table \ref{table:arm} lists further examples of different ARM based SoCs, their Application Domain, Processor Cores, and specific Architecture Profiles. embedded Linux is commonly found on Cortex A based processor series such as the one present in the BeagleBone. The upcoming sections explore embedded Linux based software development on similar platforms.
 
 \begin{figure}[h]
 	\centering
@@ -167,14 +167,53 @@ The popular open source educational single board computer BeagleBone Black (Figu
 
 \section{Embedded Linux and Application Development}
 
-Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as glibc or musl libc, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto project, Buildroot, OpenWrt, etc., with The Yocto project and Buildroot being the most feature full and widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto}.
+Creating application programs and building a particular distribution of an embedded Linux kernel requires a suite of software programs. This section presents an overview of aspects of this software stack, focusing on the categories of critical tools that facilitate development in the domain of embedded Linux. Communicating with an embedded system requires hardware specific connectors and software tools, the latter of which will be explored in the next paragraph. Furthermore, the concept of Cross Compiling Toolchains will be explored, highlighting their significance in enabling developers to build software for hardware architectures different from the development machine. Subsequent sections will examine the software components that are used to generate a bootable executable file for an embedded Linux kernel, and with the use of emulation environment for embedded application development.
 
-The Yocto project with its ability to create tailored and optimized Linux distributions, its comprehensive toolset, and its focus on reproducibility and flexibility was chosen as the primary build system for this project and was used to generate the associated Embedded Linux and application programs.
+\subsection{Software Development Kits}
+
+Creating applications for embedded devices requires a set of software components that are usually collectively referred to as \textit{Software Development Kits} (SDK). This suite of programs usually contain a \textit{toolchain} that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on an embedded device.
+
+Software development toolchains consists of a compiler, linker, libraries, and debuggers. Additionally, the toolchain will have a collection of programs to create and manage executable binary programs. An example for the same is the commonly used GNU binary utilities, a.k.a. binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called \textit{Linux kernel header files}. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[fill opacity=0.9]
+		\fill [green!20] (0.25,0.25) rectangle (7.75, 3.75);
+
+		\fill [orange!20, rounded corners] (0.75,2.25) rectangle (3.75, 3.25);
+		\draw (2.25, 2.75) node {Binutils};
+
+		\fill [orange!20, rounded corners] (4.5,2.25) rectangle (7.25, 3.25);
+		\draw (5.95, 2.75) node {Kernel headers};
+
+		\fill [orange!20, rounded corners] (0.75,0.75) rectangle (3.75, 1.75);
+		\draw (2.25, 1.25) node {\texttt{C/C++} libraries};
+
+		\fill [orange!20, rounded corners] (4.5,0.75) rectangle (7.25, 1.75);
+		\draw (5.95, 1.25) node {GCC compiler};
+	\end{tikzpicture}
+\end{figure}
+
+\subsection{Cross Compiling Toolchains}
+
+The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a \textit{cross compiling} toolchain. A compiler toolchain that creates executables for the sample platform is termed a \textit{native} compiler toolchain. Cross-compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, etc. and they are ultimately an unavoidable part of creating programs for a new hardware platform. Most software that are run on embedded devices are created on a different computing platform. Such a computing platform in the context of cross compilation is referred to as a \textit{development host} and the embedded device that the software ultimately runs on is called the \textit{target}.
+
+\subsubsection{A brief discussion on the ARM GNU toolchain}
+
+A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{<libc/abi>}. This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, or the target triple in LLVM\textquotesingle s Clang.
+
+ARM GNU toolchain is a GNU toolchain for ARM architecture that is released and maintained by ARM and from open-source project GCC, Binutils, glibc, Newlib, and GDB. The toolchain supports \texttt{C} and \texttt{C++} languages and supports CPUs based on the A, R, and M profiles of the ARM architectures.
+
+\subsection{Embedded Linux Build Systems}
+
+Building and maintaining embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as \textit{glibc} or \textit{musl} libc, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto Project, Buildroot, OpenWrt, etc., with The Yocto Project and Buildroot being the most feature full and widely used embedded Linux build systems. In comparison with Buildroot, the Yocto Project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto} making it ideal for managing embedded Linux builds for diverse hardware platforms.
+
+The Yocto Project with its ability to create tailored and optimized Linux distributions, its comprehensive toolset, and its focus on reproducibility and flexibility was chosen as the primary build system for this project and was used to generate the associated embedded Linux and application programs.
 
 \subsubsection{An excursion through Yocto Project's Embedded Linux build system}
 \label{section:yocto-demo}
 
-Embedded linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, number and nature of the software engineers using the tool, the build and deploy infrastructure, and the list of supported target platforms. Consider a simple development scenario targetting the embedded target platform MCIMX6Q-SDB, which is the primary target for this report. The aim is to build and run an embedded Linux distribution for the MCIMX6Q-SDB using a personal computer running linux. Note that several of the code listings used in this discussion may break their interface, hence the emphasis is primarily on the essential concepts involved.
+Embedded Linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, the number and the nature of Software Engineers using the tool, the continuous integration and deployment infrastructure, and the list of supported hardware platforms. Consider a simple development scenario targetting the embedded hardware platform MCIMX6Q-SDB, the primary hardware utilized for this report. The aim is to build and run an embedded Linux distribution for the MCIMX6Q-SDB using a personal computer running Linux. Note that several of the code listings used in this discussion may break their interface, hence the emphasis is primarily on the essential concepts involved.
 
 \begin{figure}[h]
 	\centering
@@ -189,7 +228,7 @@ Embedded linux build systems can become fairly large and complicated software st
 
 The Yocto Project is arranged into several components out of which the core 3 components are BitBake, OpenEmbedded-Core, and Poky. BitBake is a build engine that interprets configuration files to schedule and then perform tasks. The configuration files, also called  \textit{recipes}, describe how to build a particular package such as a shared library or application program. Recipes contain information as to where to obtain the source code for a package, instructions for compiling the source code, and installing or removing that package from a distribution. OpenEmbedded-Core is a set of platform and distribution independent recipes and other metadata while Poky is a reference system containing a collection of projects and tools that can be used to bootstrap a new distribution.
 
-The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded. The big picture of the Yocto project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto project to have a steep learning curve. A simplified illustration of the Yocto project is presented in Figure \ref{fig:yocto-overview} below. A set of recipes (teal) sharing a common purpose are arranged into a \textit{layer} (cyan). Layers can depend on other layers, with multiple layers usually being used in a single embedded Linux distribution. Note that a legend is also present in the bottom right of the diagram.
+The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded. The big picture of the Yocto Project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto Project to have a steep learning curve. A simplified illustration of the Yocto Project is presented in Figure \ref{fig:yocto-overview} below. A set of recipes (teal) sharing a common purpose are arranged into a \textit{layer} (cyan). Layers can depend on other layers, with multiple layers usually being used in a single embedded Linux distribution. Note that a legend is also present in the bottom right of the diagram.
 
 \begin{figure}[h]
 	\centering
@@ -279,7 +318,7 @@ The Yocto Project came out of the work associated with OpenEmbedded build automa
 	\label{fig:yocto-overview}
 \end{figure}
 
-The primary version control system used within the Yocto project is git. The Yocto project has several other software packages that are required for its build system, all of which are laid out in its documentation (see \href{https://docs.yoctoproject.org/}{docs.yoctoproject.org}). Furthermore, there are minimum versions for the required packages for a given version of its release (see \href{https://wiki.yoctoproject.org/wiki/Releases}{wiki.yoctoproject.org/wiki/Releases}).
+The primary version control system used within the Yocto Project is git. The Yocto Project has several other software packages that are required for its build system, all of which are laid out in its documentation (see \href{https://docs.yoctoproject.org/}{docs.yoctoproject.org}). Furthermore, there are minimum versions for the required packages for a given version of its release (see \href{https://wiki.yoctoproject.org/wiki/Releases}{wiki.yoctoproject.org/wiki/Releases}).
 
 The following listing presents the typical required packages however, based on the Linux distribution of the development host the command will vary.
 
@@ -287,13 +326,13 @@ The following listing presents the typical required packages however, based on t
 PACKAGE_MANAGER install bc make automake gcc gcc-c++ chrpath cpio diffstat gawk git python texinfo wget zstd lz4
 \end{minted}
 
-The above list is an incomplete example and relies on non-standard package names. Consulting the Yocto project documentation provides a more accurate instruction as to the package names that are necessary to start with the Yocto project on a given Linux distribution. An example install of the packages necessary on the Fedora 37 operating system as recommended by the Yocto project documentation is given in the following code listing.
+The above list is an incomplete example and relies on non-standard package names. Consulting the Yocto Project documentation provides a more accurate instruction as to the package names that are necessary to start with the Yocto Project on a given Linux distribution. An example install of the packages necessary on the Fedora 37 operating system as recommended by the Yocto Project documentation is given in the following code listing.
 
 \begin{minted}{bash}
 sudo dnf install gawk make wget tar bzip2 gzip python3 unzip perl patch diffutils diffstat git cpp gcc gcc-c++ glibc-devel texinfo chrpath ccache perl-Data-Dumper perl-Text-ParseWords perl-Thread-Queue perl-bignum socat python3-pexpect findutils which file cpio python python3-pip xz python3-GitPython python3-jinja2 SDL-devel rpcgen mesa-libGL-devel perl-FindBin perl-File-Compare perl-File-Copy perl-locale zstd lz4 hostname glibc-langpack-en
 \end{minted}
 
-For this section, consider the \textit{kirkstone} Long Term Support (LTS) release of the Yocto project. To begin clone the Poky repository from \href{https://git.yoctoproject.com}{git.yoctoproject.com}
+For this section, consider the \textit{kirkstone} Long Term Support (LTS) release of the Yocto Project. To begin clone the Poky repository from \href{https://git.yoctoproject.com}{git.yoctoproject.com}
 
 \begin{minted}{bash}
 git clone https://git.yoctoproject.org/git/poky
@@ -305,7 +344,7 @@ The Poky repository contains the OpenEmbedded-Core as well as the BitBake tool t
 git clone https://git.yoctoproject.org/git/meta-freescale
 \end{minted}
 
-Checkout the kirkstone version of the different components by checking out the corresponding branches of the git repos. Using a different version of the Yocto project would primarily mean checking out to a different branch or tag at this point.
+Checkout the kirkstone version of the different components by checking out the corresponding branches of the git repos. Using a different version of the Yocto Project would primarily mean checking out to a different branch or tag at this point.
 
 \begin{minted}{bash}
 git checkout kirkstone-4.0.11 # for poky
@@ -333,15 +372,13 @@ After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal i
 bitbake core-image-minimal
 \end{minted}
 
-% TODO : Talk about (1) what BitBake is doing at this point, (2) how much information is contained within the core image minimal recipe, and (3) what kernel/linux images
+% TODO : Talk about (1) what BitBake is doing at this point, (2) how much information is contained within the core image minimal recipe, and (3) what kernel/Linux images
 
 The output images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. The path ends at the same name as the \texttt{\$MACHINE} variable name and contains several binary images. One way to use the resulting binary images to boot the MCIMX6Q-SDB is to use an SD card and the \textit{rootfs} image. The rootfs image should be named with the name of the machine, a time stamp, and the string \texttt{"rootfs"}.
 
 Booting the board using this image is one way to verify the build completed by BitBake. Obtain and flash an SD card with the \textit{rootfs} image using a suitable program such as \texttt{dd}. Furthermore, the MCIMX6Q-SDB should be configured to boot from an SD card slot. The board can be configured to boot from the SD-3 slot by toggling the dip switches (shown in yellow highlights in Figure \ref{fig:mcimx6q-sdb}) to the configuration : \texttt{D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF}.
 
-Assuming the previous steps were completed in a correct manner, the board should boot using the embedded linux that was created by BitBake using the \texttt{core-image-minimal} recipe. The Micro-B USB plug beside the previously mentioned dip switches can then be used to start a serial terminal emulator program using USB UART using a 115200 baud rate. Alternatively, the board should be accessible via the Ethernet interface also present on the MCIMX6Q-SDB.
-
-The Yocto project can be used work on several aspects of Application and Kernel level development for Embedded Linux. Application development in the Yocto Project can be thought to have several practises such as arranging the information regarding the application packaging in a related metadata layer within BitBake recipes. The development process would also have multiple computer machines associated with it as shown in the diagram in Figure \ref{fig:yocto-dev}. In this model, the Yocto Project machine is the core environment for building the software stack, including the linux kernel and user space applications. The development machine is used for coding, compiling, and debugging applications, while the target hardware runs the final images and executes the developed applications.
+Assuming the previous steps were completed in a correct manner, the board should boot using the embedded Linux that was created by BitBake using the \texttt{core-image-minimal} recipe. The Micro-B USB plug beside the previously mentioned dip switches can then be used to start a serial terminal emulator program using USB UART using a 115200 baud rate. Alternatively, the board should be accessible via the Ethernet interface also present on the MCIMX6Q-SDB.
 
 \begin{figure}[h]
 	\centering
@@ -400,43 +437,7 @@ The Yocto project can be used work on several aspects of Application and Kernel 
 	\label{fig:yocto-dev}
 \end{figure}
 
-
-Application development for embedded linux in general has associated with it several tools and practises, some of which are outlined in the following subsections.
-
-\subsection{Software Development Kits}
-
-Creating applications for embedded devices requires a set of software components that are usually collectively referred to as \textit{Software Development Kits} (SDK). This suite of programs usually contain a \textit{toolchain} that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on the target embedded device.
-
-Software development toolchains consists of a compiler, linker, libraries, debuggers, as well as a collection of programs to create and manage executable binary programs for a target device such as the commonly used GNU binary utilities, a.k.a. binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called \textit{linux kernel header files}. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
-
-\begin{figure}[H]
-	\centering
-	\begin{tikzpicture}[fill opacity=0.9]
-		\fill [green!20] (0.25,0.25) rectangle (7.75, 3.75);
-
-		\fill [orange!20, rounded corners] (0.75,2.25) rectangle (3.75, 3.25);
-		\draw (2.25, 2.75) node {Binutils};
-
-		\fill [orange!20, rounded corners] (4.5,2.25) rectangle (7.25, 3.25);
-		\draw (5.95, 2.75) node {Kernel headers};
-
-		\fill [orange!20, rounded corners] (0.75,0.75) rectangle (3.75, 1.75);
-		\draw (2.25, 1.25) node {\texttt{C/C++} libraries};
-
-		\fill [orange!20, rounded corners] (4.5,0.75) rectangle (7.25, 1.75);
-		\draw (5.95, 1.25) node {GCC compiler};
-	\end{tikzpicture}
-\end{figure}
-
-\subsection{Cross Compiling Toolchains}
-
-The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a \textit{cross compiling} toolchain. A compiler toolchain that creates executables for the sample platform is termed a \textit{native} compiler toolchain. Cross-compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, etc. and they are ultimately an unavoidable part of creating programs for a new hardware platform. Most software that are run on embedded devices are created on a different computing platform. Such a computing platform in the context of cross compilation is referred to as a \textit{development host} and the embedded device that the software ultimately runs on is called the \textit{target}.
-
-\subsubsection{A brief discussion on the ARM GNU toolchain}
-
-A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{<libc/abi>}. This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, or the target triple in LLVM\textquotesingle s Clang.
-
-ARM GNU toolchain is a GNU toolchain for ARM architecture that is released and maintained by ARM and from open-source project GCC, Binutils, glibc, Newlib, and GDB. The toolchain supports \texttt{C} and \texttt{C++} languages and supports CPUs based on the A, R, and M profiles of the ARM architectures.
+The Yocto Project can be used work on several aspects of Application and Kernel level development for embedded Linux. Application development in the Yocto Project can be thought to have several practises such as arranging the information regarding the application packaging in a related metadata layer within BitBake recipes. The development process would also have multiple computer machines associated with it as shown in the diagram in Figure \ref{fig:yocto-dev}. In this model, the Yocto Project machine is the core environment for building the software stack, including the Linux kernel and user space applications. The development machine is used for coding, compiling, and debugging applications, while an embedded device runs the final images and executes the developed applications.
 
 \subsection{Application development using QEMU}
 
@@ -444,15 +445,15 @@ Another common alternative to cross compiling in this manner is by using native 
 
 \subsubsection{An example Embedded Development Environment on Linux using QEMU}
 
-In this section let's consider a simple development environment capable of compiling and executing \texttt{C} programs for an \texttt{armv7} ARM processor using a personal computer running linux. This setup leverages features of the Linux operating system running on the development host and the capabilities of the QEMU machine emulation system. The code listings in this section assumes a fedora workstation operating system and was tested using such a setup. As with the previous code listings within the section about the Yocto Project, some commands may break their interfaces, such as fedora\textquotesingle s package manager utility \texttt{dnf}. However, the general principles maybe used to create a similar setup on Linux distributions.
+In this section let's consider a simple development environment capable of compiling and executing \texttt{C} programs for an \texttt{armv7} ARM processor using a personal computer running Linux. This setup leverages features of the Linux operating system running on the development host and the capabilities of the QEMU machine emulation system. The code listings in this section assumes a fedora workstation operating system and was tested using such a setup. As with the previous code listings within the section about the Yocto Project, some commands may break their interfaces, such as fedora\textquotesingle s package manager utility \texttt{dnf}. However, the general principles maybe used to create a similar setup on Linux distributions.
 
 The Linux kernel has a feature called \texttt{binfmt\_misc} which stands for \textit{Miscellaneous Binary Format}. This feature allows for interpreter programs to be associated and invoked upon using certain binary format files. Together with the \texttt{chroot} command, \texttt{binfmt\_misc} can be leveraged to set up an environment that can use a QEMU emulator program to test and develop for a different architecture than that of the development host.
 
-The interpreter programs registered with \texttt{binfmt\_misc} are usually user space applications such as emulators and virtual machines. For this section the interpreter program will be a QEMU user space emulator program, namely \texttt{qemu-arm}. QEMU has multiple operating modes apart from a full system emulation such as its user-mode emulation mode. In user-mode emulation, QEMU can perform system call translation and POSIX signal handling in linux which effectively allows for programs compiled for a different instruction set to be executed using QEMU. Cross compiling and cross debugging are common use cases for this user-mode emulation in QEMU. \texttt{qemu-arm} is a QEMU User space emulator program for executing programs compiled for ARM.
+The interpreter programs registered with \texttt{binfmt\_misc} are usually user space applications such as emulators and virtual machines. For this section the interpreter program will be a QEMU user space emulator program, namely \texttt{qemu-arm}. QEMU has multiple operating modes apart from a full system emulation such as its user-mode emulation mode. In user-mode emulation, QEMU can perform system call translation and POSIX signal handling in Linux which effectively allows for programs compiled for a different instruction set to be executed using QEMU. Cross compiling and cross debugging are common use cases for this user-mode emulation in QEMU. \texttt{qemu-arm} is a QEMU User space emulator program for executing programs compiled for ARM.
 
 After an interpreter and binary file format pair are registered, \texttt{binfmt\_misc} recognizes the associated binary files by matching some bytes at the beginning of a file with a magic byte sequence that had been supplied. The usage of magic bytes at the beginning of files is a UNIX tradition adopted as a means of incorporating file type metadata within the file.
 
-As with some linux features, \texttt{binfmt\_misc} must first be mounted at specific location after which it can be configured. If \texttt{binfmt\_misc} is not already present at the default path location at \texttt{/proc/sys/fs/binfmt\_misc}, it may be mounted by using the following command.
+As with some Linux features, \texttt{binfmt\_misc} must first be mounted at specific location after which it can be configured. If \texttt{binfmt\_misc} is not already present at the default path location at \texttt{/proc/sys/fs/binfmt\_misc}, it may be mounted by using the following command.
 
 \begin{minted}{bash}
 mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
@@ -466,7 +467,7 @@ echo ":qemu-arm:M::\x7fELF\x01\x01\x01\x00\x00\x00" "\x00\x00\x00\x00\x00\x00\x0
 
 Note that the \texttt{echo} should produce a string without whitespaces. A new file named \texttt{qemu-arm} will show up in the path \texttt{/proc/sys/fs/binfmt\_misc/} upon successful completion of the \texttt{echo} command.
 
-Another linux feature is \texttt{chroot} which allows for changing the apparent root directory of a running process and its children. \texttt{chroot} system call interface started with UNIX and is useful for testing and developing software systems in a modified test environment.
+Another Linux feature is \texttt{chroot} which allows for changing the apparent root directory of a running process and its children. \texttt{chroot} system call interface started with UNIX and is useful for testing and developing software systems in a modified test environment.
 
 Prior to running \texttt{chroot}, a root directory for the target environment must be prepared. A root directory is simply the top most directory in a hierarchy and can be prepared by sourcing programs and packages necessary for developing \texttt{C} programs for \texttt{armv7}. Sourcing these programs can be a matter of approaching maintainers of the packages who may provide the appropriate binaries or building them from source using a cross-compiler.
 
@@ -478,7 +479,7 @@ dnf install --releasever=36 --installroot=/tmp/f36arm --forcearch=armv7hl --repo
 
 % TODO : Explain the armv7hl here
 
-The target directory \texttt{/tmp/f36arm/} will then contain a simple root directory for the required development environment for \texttt{armv7}. Note that the choice of the fedora linux release version (36) and the \texttt{/tmp/f36arm/} directory is somewhat arbitrary. After configuring the environment in this manner, simply test changing the root directory and running a simple \texttt{C} program.
+The target directory \texttt{/tmp/f36arm/} will then contain a simple root directory for the required development environment for \texttt{armv7}. Note that the choice of the fedora Linux release version (36) and the \texttt{/tmp/f36arm/} directory is somewhat arbitrary. After configuring the environment in this manner, simply test changing the root directory and running a simple \texttt{C} program.
 
 \begin{minted}{bash}
 chroot /tmp/f36arm /usr/bin/bash
@@ -500,7 +501,7 @@ Development environments such as these are easy to set up and can prove valuable
 
 \subsection{Targeting Embedded Devices}
 
-Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
+Building an embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
 
 % TODO : Add discussion on device tree layouts - possibly move the discussion to the Theory chapter, link to that discussion from here
 
@@ -538,7 +539,7 @@ However, the primary approach in these cases is with a focus on making the neura
 
 \subsection{Neural Network Training on Embedded Devices}
 
-The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence, a computing platform that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have optimized hardware features that allow for parallel executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. Google's TPU chip (Figure \ref{fig:google-tpu})
+Neural network training is a fundamental process in machine learning where a model learns to make predictions by adjusting its parameters based on input data. The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence, a computing platform that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have specialized hardware features that allow for parallel vectorized executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. These hardware optimizations are particularly beneficial when dealing with larger datasets and complex network architectures.
 
 \begin{figure}[h]
 	\centering
@@ -546,6 +547,8 @@ The bulk of the mathematical operations involved in training a neural network ar
 	\caption{Google's TPU Chip}
 	\label{fig:google-tpu}
 \end{figure}
+
+Further specializations of hardware such as in the case of Application-Specific Integrated Circuits (ASICs) have improved upon this trend. Google's Tensor Processing Unit or TPU chip shown in Figure \ref{fig:google-tpu} is an example of such an ASIC meant to execute neural network operations, and other similar large matrix operations with great efficiency.
 
 \section{Federated Learning of Neural Networks}
 
@@ -592,7 +595,7 @@ One way to address this problem is to rely on alternative mechanisms to perform 
 
 Federated learning has several approaches differing in the manner in which distributed training can take place, the algorithm to combine different locally trained models, and other strategies used in completing the development loop. In the LOBSTR \cite{lobstr} and FAMOUS \cite{famous} projects Scania has developed statistical models and neural network models for anomaly detection using a federated learning approach. The statistical models are lightweight and can easily be trained with limited computational resources.
 
-This thesis focuses on repurposing existing hardware (ECU) to ML edge devices that are tailored to train neural network in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the communicator to benchmark and experiment different neural network implementations and evaluate.
+This thesis focuses on repurposing existing hardware (ECU) to ML edge devices that are tailored to train neural network in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto Project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the communicator to benchmark and experiment different neural network implementations and evaluate.
 
 
 % ============================================
@@ -601,7 +604,7 @@ This thesis focuses on repurposing existing hardware (ECU) to ML edge devices th
 
 \chapter{Theory}
 
-The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualized in Embedded Linux.
+The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualized in embedded Linux.
 
 \section{Neural Networks}
 
@@ -666,9 +669,9 @@ One of the most interesting characteristics of a neural network is its capacity 
 
 \section{Embedded Linux}
 
-As presented in the previous chapter, the development, deployment, and maintenance of Embedded Linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as bootloaders, device tree layouts, flash memory, cross compiling toolchains, board support package, etc. with the later two having already been introduced in the preceding chapter.
+As presented in the previous chapter, the development, deployment, and maintenance of embedded Linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as bootloaders, device tree layouts, flash memory, cross compiling toolchains, board support package, etc. with the later two having already been introduced in the preceding chapter.
 
-Porting an Embedded Linux distribution on some embedded hardware completes successfully when the processor on the board is able to run the Linux operating system. Depending on hardware several paths may be taken by the processor to reach this stage after powering on. This process of starting the computer is called \textit{booting} and the sequence of stages the board goes through is called \textit{boot sequence}. Embedded devices are greatly varied and hence there is great variance in how boot sequence take place.
+Porting an embedded Linux distribution on some embedded hardware completes successfully when the processor on the board is able to run the Linux operating system. Depending on hardware several paths may be taken by the processor to reach this stage after powering on. This process of starting the computer is called \textit{booting} and the sequence of stages the board goes through is called \textit{boot sequence}. Embedded devices are greatly varied and hence there is great variance in how boot sequence take place.
 
 \subsection{A Simplified Boot Sequence}
 
@@ -697,5 +700,5 @@ Once U-Boot completes and gives up control over the processor, the kernel then s
 
 \subsection{Porting Embedded Linux}
 
-Creating the binaries for an embedded linux and managing configurations for a particular board requires a build system capable of the task. This section takes a look at one such system, namely the Yocto project.
+Creating the binaries for an embedded Linux and managing configurations for a particular board requires a build system capable of the task. This section takes a look at one such system, namely the Yocto Project.
 
