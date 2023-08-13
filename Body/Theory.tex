@@ -207,7 +207,7 @@ Finally, a \textit{loader} program then takes this executable file and places it
 
 The toolchains used for software development consists of a compiler, linker, libraries, and debuggers. Additionally, the toolchain will have a collection of programs to create and manage executable binary programs. An example for the same is the commonly used GNU binary utilities, a.k.a. binutils. To develop applications that interface with the Linux operating system APIs, a toolchain targeting a Linux operating system will also contain the necessary header files called \textit{Linux kernel header files}. These header files encode the user level Linux API that user-level applications can use to interact with and utilize the different features of the Linux kernel. As an example, System level utility software programs make heavy use of this interface to provide their functionality.
 
-The final important piece of a toolchain will be the \texttt{C} runtime library, which is the primary component that enables the execution of \texttt{C} and \texttt{C++} programs. It provides essential functionality in the form of functions and routines to interact with the operating system, manage memory, and perform various Input Output (I/O) operations. The most popular choice of a \texttt{C} runtime library is GNU's \texttt{glibc}.
+The final important piece of a toolchain will be the \texttt{C} runtime library, which is the primary component that enables the execution of \texttt{C} and \texttt{C++} programs. It provides essential functionality in the form of functions and routines to interact with the operating system, manage memory, and perform various Input Output (I/O) operations. The most popular choice of a \texttt{C} runtime library is GNU's \texttt{glibc}. Alternatives include \texttt{musl libc} and \texttt{uClibc}.
 
 \subsection{Cross Compiling}
 
@@ -563,25 +563,21 @@ Development environments such as these are easy to set up and can prove valuable
 
 The software development process for neural network application in industry has several steps. These steps include collecting and preparing the data, choosing a network architecture, implementing that model, training and evaluating the model, tuning the hyperparameters of the model, deploying the model to perform inference on new data, and monitoring and improving the model. This process requires several software components, network resources, computing devices, engineering personnel to come together for the effective deployment such an application.
 
-\subsection{Choice of Programming Language and Machine Learning Framework}
-
 The most popular ways to write neural network models are by using machine learning frameworks such as Tensorflow, MXNet, PyTorch, Caffe, etc. all of which have Python as their primary programming language. As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Most neural network models are trained in a rich compute environments with dedicated machine learning computer systems or general purpose computer systems with plentiful operational capacities. Machine learning based companies and their service offerings such as cloud machine learning platforms almost invariably target these hardware platforms and provide software tools for developers to utilize on them. Developers in these platforms enjoy several resources such as productivity tools that allows for CI/CD, performance profiling tools, etc \cite{Saucedo_Awesome_Production_Machine}.
 
 The programming environment for embedded devices however are not as feature full. Developer resources such as productivity tools for neural network application development and maintenance are lacking and the software stacks that are traditionally used are either too large or unsupported on the broader list of embedded hardware platforms.
 
+\subsection{Choice of Programming Language and Machine Learning Framework}
+
 Another aspect to consider is the programming language and software stack used to describe a neural network application. Most machine learning models at present are written in Python and frameworks like PyTorch and Tensorflow have richer interfaces for Python compared to other programming languages. This may be unfavourable to embedded devices where a Python application may take up higher memory and have longer latencies. The programming language of choice for embedded applications is \texttt{C} and \texttt{C++} which are supported by the ML frameworks but not to the same extent as their Python interfaces.
 
-Machine learning frameworks also utilize multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute platform its running on, Tensorflow determines the operations involved, execution order, etc. and execute the computation. At this stage Tensorflow may also use other software libraries such as XNNPACK, or Intel oneAPI Math Kernel Library to perform the calculations.
-
-% TODO : Link to XNNPACK, oneAPI papers / resources
+Machine learning frameworks also utilize multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute platform its running on, Tensorflow determines the operations involved, execution order, etc. and execute the computation. At this stage Tensorflow may also use other software libraries such as Intel's oneMKL \cite{oneMKL} or XNNPACK \cite{XNNPACK} to perform the calculations.
 
 \subsection{Neural Network Inference on Embedded Devices}
 
 The typical deployment of neural network models on embedded devices follows a pattern of gathering sensor data from the embedded device onto an external data lake, training a neural network model using this data on workstations or cloud platforms, then implementing the neural network model inference on the embedded device. Preferably the implementation utilize linear algebra kernel libraries that are made specifically for the embedded platform and the popular machine learning frameworks may provide an avenue to transfer models written in them to target the embedded platform.
 
-The possibilities in making embedded platforms more involved in the neural network development process has been explored in research avenues such as TinyML\cite{tinyml}, and other efforts motivated by interests in getting the neural network applications ready for mobile devices such as Tensorflow Lite\cite{tfl} and PyTorch Mobile \cite{pytorch-mobile}
-
-However, the primary approach in these cases is with a focus on making the neural network model inference step faster on these embedded platforms. Efforts in enabling On-Device Training where the significant parts of the neural network model training happens on the embedded device is an area of active research.
+The possibilities in making embedded platforms more involved in the neural network development process has been explored in research avenues such as TinyML \cite{tinyml}, and other efforts motivated by interests in getting the neural network applications ready for mobile devices such as Tensorflow Lite \cite{tfl} and PyTorch Mobile \cite{pytorch-mobile}. However, the primary approach in these cases is with a focus on making the neural network model inference step faster on these embedded platforms. Efforts in enabling On-Device Training where the significant parts of the neural network model training happens on the embedded device is an area of active research.
 
 % TODO : Talk about On-Device Training
 
@@ -600,7 +596,7 @@ Further specializations of hardware such as in the case of Application-Specific 
 
 \section{Federated Learning of Neural Networks}
 
-A significant problem in the traditional model for neural network application development in embedded devices is the consumption of network bandwidth associated with continual transmission of sensor data to the data lake. The data from different devices are then combined to form the dataset that will be used to further train the model. However, this stream of data coming from the embedded platform exposes the device to computer security risks such as an attacker gaining access to the behavioural data of the vehicle.
+A significant problem in the traditional model for neural network application development in embedded devices is the consumption of network bandwidth associated with continual transmission of sensor data to the data lake. The data from different devices are combined to form the dataset that will be used to further train the model. However, this stream of data coming from the embedded platform exposes the device to computer security risks such as an attacker gaining access to the behavioural data of the vehicle.
 
 \begin{figure}[h]
 	\centering
@@ -739,8 +735,6 @@ After power up, the processor requires initialization which for the kind of proc
 After getting control of the processor, U-Boot then has to take care of initializing the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the device tree, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to dissuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
 
 Once U-Boot completes and gives up control over the processor, the kernel then starts with more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices. The kernel then proceeds to complete its start up by setting up Stacks, initializing the Scheduler, setting up and allocating Pages, etc. and completes the start-up after having spawned the \texttt{init} process, which is the first process to that starts after booting completes.
-
-% TODO : Include more discussion on device tree layouts (see previous TODO on device tree layouts)
 
 \subsection{Porting Embedded Linux}
 
