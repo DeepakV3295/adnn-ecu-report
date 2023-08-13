@@ -1358,14 +1358,40 @@
 \usepackage{tikz}
 \usepackage{listofitems} % for \readlist
 
+\usetikzlibrary{positioning}
 \usetikzlibrary{arrows.meta}
+
+% Simple Box Diagrams
+
+\tikzstyle{box}=[
+	rectangle,
+	fill=orange!20,
+	rounded corners,
+	text width=2cm,
+	align=center,
+	minimum height=1cm,
+	opacity=0.9
+]
+
+\tikzstyle{next}=[
+	->,
+	very thick,
+	blue,
+	opacity=0.8
+]
 
 % Neural Network Diagrams
 
-\tikzstyle{connect}=[->,thick,RoyalPurple,shorten >=1]
+\tikzstyle{connect}=[
+	->,
+	thick,
+	RoyalPurple,
+	shorten >=1
+]
 
 \tikzstyle{node}=[
-	very thick,circle,
+	very thick,
+	circle,
 	minimum size=21,
 	inner sep=0.5,
 	outer sep=0.6

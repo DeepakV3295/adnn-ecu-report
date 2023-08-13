@@ -44,7 +44,7 @@ Developing and maintaining applications that rely on neural network models and r
 
 The embedded device that is meant to run the neural network applications are the ECUs aboard a Scania vehicle. These ECUs have ARM application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. The benchmark applications of interest in this report focuses on training neural network models on environments that use the embedded Linux operating system.
 
-This chapter introduces several terms and techniques associated with embedded application development and starts with a small section on ARM based embedded boards. The next section gives an overview of the terminologies and processes associated with embedded Linux and application development for embedded Linux boards. The subsequent section introduces a discussion on neural network application development for embedded platforms. The final section on Federated Learning motivates the efforts to study training of the neural network on embedded devices contrasting further with the conventional model of training neural network models for embedded platforms.
+This chapter introduces several terms and techniques associated with embedded application development and starts with a small section on ARM based embedded boards. The next section gives an overview of the terminologies and processes associated with embedded Linux and application development for embedded Linux boards. The subsequent section introduces a discussion on neural network application development for embedded platforms. The final section on federated learning motivates the efforts to study training of the neural network on embedded devices contrasting further with the conventional model of training neural network models for embedded platforms.
 
 \section{Embedded Platforms}
 
@@ -167,13 +167,45 @@ The popular open source educational single board computer BeagleBone Black (Figu
 
 \section{Embedded Linux and Application Development}
 
-Creating application programs and building a particular distribution of an embedded Linux kernel requires a suite of software programs. This section presents an overview of aspects of this software stack, focusing on the categories of critical tools that facilitate development in the domain of embedded Linux. Communicating with an embedded system requires hardware specific connectors and software tools, the latter of which will be explored in the next paragraph. Furthermore, the concept of Cross Compiling Toolchains will be explored, highlighting their significance in enabling developers to build software for hardware architectures different from the development machine. Subsequent sections will examine the software components that are used to generate a bootable executable file for an embedded Linux kernel, and with the use of emulation environment for embedded application development.
+Creating application programs and building a particular distribution of an embedded Linux kernel requires a suite of software programs. This section presents an overview of aspects of this software stack, focusing on the categories of critical tools that facilitate development in the domain of embedded Linux. Communicating with an embedded system requires hardware specific connectors and software tools, the latter of which will be explored further. Additionally, the concept of the cross compiling toolchain will be explored, highlighting their significance in enabling developers to build software for hardware architectures different from the development machine. After that, the section explores a software system that is used to generate a bootable executable file for an embedded Linux kernel. The concluding part of the section demonstrate the use of QEMU emulator as a means of embedded application development.
 
 \subsection{Software Development Kits}
 
-Creating applications for embedded devices requires a set of software components that are usually collectively referred to as \textit{Software Development Kits} (SDK). This suite of programs usually contain a \textit{toolchain} that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on an embedded device.
+Creating applications for embedded devices requires a set of software components that are usually collectively referred to as a \textit{Software Development Kit} (SDK). This suite of programs usually contain a \textit{toolchain} that is capable of converting application source code, such as those in \texttt{C}  or \texttt{C++}, into executables that can be run on an embedded device. A simplified account for that process now follows.
 
-Software development toolchains consists of a compiler, linker, libraries, and debuggers. Additionally, the toolchain will have a collection of programs to create and manage executable binary programs. An example for the same is the commonly used GNU binary utilities, a.k.a. binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being the closest alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called \textit{Linux kernel header files}. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
+\texttt{C} and \texttt{C++} programming languages are implemented in such a way that source code written in either language has to be first read by a \textit{compiler} program, which will then generate machine code in the form of an \textit{object file}.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\node [box] (source) {Source Code};
+		\node [box, right=of source, fill=red!20] (compiler) {Compiler};
+		\node [box, right=of compiler] (objects) {Object files};
+
+		\draw [next] (source) -- (compiler);
+		\draw [next] (compiler) -- (objects);
+	\end{tikzpicture}
+\end{figure}
+
+The object files of a program generated via the compiler together with their required libraries, which are usually themselves object files of some kind, will then be combined by another program referred to as a \textit{linker}. The linker merges the object files taking care to identify their interdependencies to generate another object file, or possible an \textit{executable file}.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\node [box] (objects) {Source Object files};
+		\node [box, right=of objects, fill=red!20] (linker) {Linker};
+		\node [box, above=of linker] (libraries) {Library Object files};
+		\node [box, right=of linker] (executable) {Executable file};
+
+		\draw [next] (objects) -- (linker);
+		\draw [next] (libraries) -- (linker);
+		\draw [next] (linker) -- (executable);
+	\end{tikzpicture}
+\end{figure}
+
+Finally, a \textit{loader} program then takes this executable file and places it in memory such that it can begin its execution. A similar program to a compiler is the \textit{assembler} which takes an assembly file as input before generating an object file. Another useful program in this context is the \textit{debugger}, which is a tool used to test a program.
+
+The toolchains used for software development consists of a compiler, linker, libraries, and debuggers. Additionally, the toolchain will have a collection of programs to create and manage executable binary programs. An example for the same is the commonly used GNU binary utilities, a.k.a. binutils. The primary choice for a \texttt{C} compiler is the GNU Compiler Collection \texttt{GCC}, with LLVM's Clang being a close alternative. To develop applications that interface with the Linux operating system APIs, the toolchain also contains necessary header files called \textit{Linux kernel header files}. The last important piece of a toolchain will be the \texttt{C} runtime, with the most popular choice being GNU's glibc.
 
 \begin{figure}[H]
 	\centering
@@ -200,7 +232,7 @@ The software development toolchains for embedded devices are generally run on a 
 
 \subsubsection{A brief discussion on the ARM GNU toolchain}
 
-A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{<libc/abi>}. This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, or the target triple in LLVM\textquotesingle s Clang.
+A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{<libc/abi>}. This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, or the target triple in LLVM\textquotesingle s Clang. Another naming convention used for the \texttt{<arch>} string when referring to ARM architectures is the use of strings such as \texttt{armv7} to denote the ARMv7 architecture found in ARM Cortex A (ARMv7-A), ARM Cortex R (ARMv7-R), and ARM Cortex M (ARMv7-M) cores.
 
 ARM GNU toolchain is a GNU toolchain for ARM architecture that is released and maintained by ARM and from open-source project GCC, Binutils, glibc, Newlib, and GDB. The toolchain supports \texttt{C} and \texttt{C++} languages and supports CPUs based on the A, R, and M profiles of the ARM architectures.
 
@@ -210,29 +242,28 @@ Building and maintaining embedded Linux distributions with the Linux kernel and 
 
 The Yocto Project with its ability to create tailored and optimized Linux distributions, its comprehensive toolset, and its focus on reproducibility and flexibility was chosen as the primary build system for this project and was used to generate the associated embedded Linux and application programs.
 
+\subsubsection{The Target Embedded Device}
+
+Building an embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
+
+To port Linux onto a processor on a particular board requires creating a \textit{bootloader} program capable of that task as well. A bootloader is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the bootloader has to be configured will be based on the particulars of the hardware that it will be configured for.
+
+The initial target machine for the project was an ECU playing the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the system maker's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the bootloader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints, the details of the attempt to uncover this information is laid out in Appendix \hyperref[rtc-c300]{I}. Ultimately, the MCIMX6Q-SDB evaluation board was chosen as an alternative to the ECU. The required information for the MCIMX6Q-SDB is publicly provided by processor chip vendor NXP.
+
 \subsubsection{An excursion through Yocto Project's Embedded Linux build system}
-\label{section:yocto-demo}
 
-Embedded Linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, the number and the nature of Software Engineers using the tool, the continuous integration and deployment infrastructure, and the list of supported hardware platforms. Consider a simple development scenario targetting the embedded hardware platform MCIMX6Q-SDB, the primary hardware utilized for this report. The aim is to build and run an embedded Linux distribution for the MCIMX6Q-SDB using a personal computer running Linux. Note that several of the code listings used in this discussion may break their interface, hence the emphasis is primarily on the essential concepts involved.
-
-\begin{figure}[h]
-	\centering
-	\begin{tikzpicture}
-		\node (image) at (0, 0)
-			{\includegraphics[scale=0.34]{MCIMX6Q-SDB-BD.png}};
-		\draw[rounded corners=1ex, line width=2.1pt, yellow] (-6.5, 0.7) rectangle (-5.2, 1.9);
-	\end{tikzpicture}
-	\caption{MCIMX6Q-SDB-BD}
-	\label{fig:mcimx6q-sdb}
-\end{figure}
+Embedded Linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, the number and the nature of Software Engineers using the tool, the continuous integration and deployment infrastructure, and the list of supported hardware platforms. Consider a simple development scenario targetting the embedded hardware platform MCIMX6Q-SDB (Figure \ref{fig:mcimx6q-sdb}), the primary hardware utilized for this report. The aim is to build and run an embedded Linux distribution for the MCIMX6Q-SDB using a personal computer running Linux. Note that several of the code listings used in this discussion may break their interface, hence the emphasis is primarily on the essential concepts involved.
 
 The Yocto Project is arranged into several components out of which the core 3 components are BitBake, OpenEmbedded-Core, and Poky. BitBake is a build engine that interprets configuration files to schedule and then perform tasks. The configuration files, also called  \textit{recipes}, describe how to build a particular package such as a shared library or application program. Recipes contain information as to where to obtain the source code for a package, instructions for compiling the source code, and installing or removing that package from a distribution. OpenEmbedded-Core is a set of platform and distribution independent recipes and other metadata while Poky is a reference system containing a collection of projects and tools that can be used to bootstrap a new distribution.
 
-The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded. The big picture of the Yocto Project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto Project to have a steep learning curve. A simplified illustration of the Yocto Project is presented in Figure \ref{fig:yocto-overview} below. A set of recipes (teal) sharing a common purpose are arranged into a \textit{layer} (cyan). Layers can depend on other layers, with multiple layers usually being used in a single embedded Linux distribution. Note that a legend is also present in the bottom right of the diagram.
+The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded. The big picture of the Yocto Project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto Project to have a steep learning curve. A simplified illustration of the Yocto Project is presented in Figure \ref{fig:yocto-overview}. A set of recipes (teal) sharing a common purpose are arranged into a \textit{layer} (cyan). Layers can depend on other layers, with multiple layers usually being used in a single embedded Linux distribution. Note that a legend is also present in the bottom right of the diagram in Figure \ref{fig:yocto-overview}.
 
 \begin{figure}[h]
 	\centering
 	\begin{tikzpicture}[font=\small]
+
+		\fill [fill=pink!20] (-0.5, -4.5) rectangle (14.5, 9.5);
+
 		\fill [fill=red!30] (0, 0) rectangle (5, 9);
 		\draw (2.5, 8.5) node {\textbf{OpenEmbedded Project}};
 
@@ -360,21 +391,45 @@ Once the correct branches have been checked out, the next step is to bring the B
 source poky/oe-init-build-env $BUILDDIR
 \end{minted}
 
-The script will set up BitBake along with some additional tools and scripts in the current shell environment and also creates a few directories in \texttt{\$BUILDDIR} along with some configuration files. The first configuration file to edit will be the \texttt{\$BUILDDIR/conf/bblayers.conf} to configure the build system for the MCIMX6Q-SDB. Note that this step may also be avoided by setting the \texttt{\$MACHINE} environment variable.
+The script will set up BitBake along with some additional tools and scripts in the current shell environment and also creates a few directories in \texttt{\$BUILDDIR} along with some configuration files. Note that after sourcing the \texttt{oe-init-build-env} script, the shell switches to the \texttt{\$BUILDDIR} directory. The first configuration file to edit will be the \texttt{\$BUILDDIR/conf/bblayers.conf}. The \texttt{bblayers.conf} file contains a list of layers to be used in the Yocto Project set up. The \texttt{bitbake-layers} utility program can be used to list and modify the entries in the \texttt{bblayers.conf} file.
 
 \begin{minted}{bash}
-	MACHINE = "imx6qdlsabresd"
+bitbake-layers show-layers # list layers in the Yocto Project set up
 \end{minted}
 
-After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal image that can boot the MCIMX6Q-SDB by building the packages for \texttt{core-image-minimal} recipe.
+The above code listings shows \texttt{bitbake-layers} being used to list the layers of Yocto Project set up. The command should then list the \texttt{meta}, \texttt{meta-poky}, and \texttt{meta-yocto-bsp} layers. The names of the layers may change with the particular version of the Yocto Project being used. The path corresponding to those layers and a priority value attached to the layers will also be shown by the \texttt{show-layers} command of \texttt{bitbake-layers}. The priority is a means for BitBake to choose between layers for searching a recipe for particular software package, since multiple layers may have instructions for the same package. The \texttt{meta-freescale} layer that was cloned in the previous command to some path \texttt{\$META\_FREESCALE\_PATH} can then be added to the Yocto Project configuration using the same utility.
 
 \begin{minted}{bash}
-bitbake core-image-minimal
+bitbake-layers add-layer $META_FREESCALE_PATH
 \end{minted}
 
-% TODO : Talk about (1) what BitBake is doing at this point, (2) how much information is contained within the core image minimal recipe, and (3) what kernel/Linux images
+The next step is to configure the build system for the MCIMX6Q-SDB. The Note that this step may also be avoided by setting the \texttt{\$MACHINE} environment variable.
 
-The output images will be generated in \texttt{\$BUILDDIR/tmp/deploy/images/imx6qdlsabresd}. The path ends at the same name as the \texttt{\$MACHINE} variable name and contains several binary images. One way to use the resulting binary images to boot the MCIMX6Q-SDB is to use an SD card and the \textit{rootfs} image. The rootfs image should be named with the name of the machine, a time stamp, and the string \texttt{"rootfs"}.
+\begin{minted}{bash}
+# edit inside $BUILDDIR/conf/local.conf
+MACHINE = "imx6qdlsabresd"
+\end{minted}
+
+After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal image that can boot the MCIMX6Q-SDB by building the packages for \texttt{core-image-minimal} recipe. BitBake can parse a recipe file to determine a series of tasks to generate a software package or some binary artefacts. To satisfy the \texttt{core-image-minimal} recipe, BitBake has to perform a series of operations. BitBake has to parse a list of recipe files that are associated with the \texttt{core-image-minimal} recipe, examine the dependencies defined in the recipes and recursively determine all the software components that are required.
+
+\begin{minted}{bash}
+bitbake core-image-minimal # generate images for MCIMX6Q-SDB
+\end{minted}
+
+At this point the Yocto Project has been configured to find the correct metadata for building software packages and the linux kernel for the MCIMX6Q-SDB. BitBake will proceed by first going through the \texttt{core-image-minimal} recipe to determine the order and list of tasks to be executed. After listing some information on the particular build configuration, it will then proceed to execute the tasks. The generated output images can be found in \texttt{\$BUILDDIR/tmp/deploy/images}. The path ends at the same name as the \texttt{\$MACHINE} variable name and contains several binary images. One way to use the resulting binary images to boot the MCIMX6Q-SDB is to use an SD card and the \textit{rootfs} image. The rootfs image should be named with the name of the machine, a time stamp, and the string \texttt{"rootfs"}.
+
+% TODO : Link to the Theory chapter section on Embedded Linux
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		\node (image) at (0, 0)
+			{\includegraphics[scale=0.34]{MCIMX6Q-SDB-BD.png}};
+		\draw[rounded corners=1ex, line width=2.1pt, yellow] (-6.5, 0.7) rectangle (-5.2, 1.9);
+	\end{tikzpicture}
+	\caption{MCIMX6Q-SDB-BD}
+	\label{fig:mcimx6q-sdb}
+\end{figure}
 
 Booting the board using this image is one way to verify the build completed by BitBake. Obtain and flash an SD card with the \textit{rootfs} image using a suitable program such as \texttt{dd}. Furthermore, the MCIMX6Q-SDB should be configured to boot from an SD card slot. The board can be configured to boot from the SD-3 slot by toggling the dip switches (shown in yellow highlights in Figure \ref{fig:mcimx6q-sdb}) to the configuration : \texttt{D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF}.
 
@@ -384,9 +439,11 @@ Assuming the previous steps were completed in a correct manner, the board should
 	\centering
 	\begin{tikzpicture}[font=\small, >=Latex]
 
-		\fill [fill=blue!30] (0, 3.4) rectangle (4.5, 6);
-		\draw (2, 6.21) node {\textbf{Yocto Project Machine}};
-		\draw (2, 4.75) node[align=left]
+		\fill [fill=pink!20] (0, 0) rectangle (11, 7.5);
+
+		\fill [fill=blue!30] (0.5, 3.5) rectangle (4.5, 6);
+		\draw (2.5, 6.21) node {\textbf{Yocto Project Machine}};
+		\draw (2.5, 4.75) node[align=left]
 			{
 				Hosts Yocto Project \\
 				Can Host an SDK \\
@@ -395,38 +452,36 @@ Assuming the previous steps were completed in a correct manner, the board should
 				Can Build an Application
 			};
 
-		\draw [<-, very thick] (4.5, 5) -- (6.5, 5);
-		\draw (5.5, 5.2) node {Objects};
+		\draw [<-, very thick] (4.5, 5.2) -- (7.5, 5.2);
+		\draw (6, 5.4) node {Objects};
 
-		\fill [fill=green!30] (6.5, 4.2) rectangle (9.5, 6);
-		\draw (8, 6.2) node {\textbf{Development Machine}};
-		\draw (8, 5.25) node[align=left]
+		\fill [fill=green!30] (7.5, 4.7) rectangle (10.5, 6.5);
+		\draw (9, 6.7) node {\textbf{Development Machine}};
+		\draw (9, 5.6) node[align=left]
 			{
 				Compile Code \\
 				Debug Code \\
 				Hosts an SDK
 			};
 
-		\draw [very thick] (5.5, 2) -- (6.5, 2);
-		\draw [very thick] (5.5, 4) -- (5.5, 2);
-		\draw [<-, very thick] (4.5, 4) -- (5.5, 4);
-		\draw (5.5, 4.2) node {Objects};
+		\draw [<-, very thick] (4.5, 3.75) -- (7.5, 3.75);
+		\draw (6, 3.95) node {Objects};
 
-		\fill [fill=green!30] (6.5, 1.2) rectangle (9.5, 3);
-		\draw (8, 3.2) node {\textbf{Development Machine}};
-		\draw (8, 2.25) node[align=left]
+		\fill [fill=green!30] (7.5, 2.3) rectangle (10.5, 4.1);
+		\draw (9, 4.3) node {\textbf{Development Machine}};
+		\draw (9, 3.2) node[align=left]
 			{
 				Compile Code \\
 				Debug Code \\
 				Hosts an SDK
 			};
 
-		\draw [->, line width=0.42em] (2.25, 3.4) -- (2.25, 2.1);
-		\draw (3, 3.1) node {Deploy};
+		\draw [->, line width=0.42em] (2.5, 3.5) -- (2.5, 2.2);
+		\draw (3.4, 3.1) node {Deploy};
 
-		\fill [fill=red!30] (0.25, 0) rectangle (4, 1.75);
-		\draw (2, 1.95) node {\textbf{Target Hardware}};
-		\draw (2.1, 0.95) node[align=left]
+		\fill [fill=red!30] (1, 0.5) rectangle (5, 1.75);
+		\draw (2.5, 2) node {\textbf{Target Hardware}};
+		\draw (3, 1) node[align=left]
 		{
 			Boots and Runs Images \\
 			Runs Applications
@@ -477,7 +532,7 @@ For example, versions of the fedora Linux distribution provides these packages v
 dnf install --releasever=36 --installroot=/tmp/f36arm --forcearch=armv7hl --repo=fedora --repo=updates systemd passwd dnf fedora-release vim-minimal m4 cmake gcc-c++ tar gcc git make tmux -y
 \end{minted}
 
-% TODO : Explain the armv7hl here
+Note that the \texttt{hl} in \texttt{armv7hl} is
 
 The target directory \texttt{/tmp/f36arm/} will then contain a simple root directory for the required development environment for \texttt{armv7}. Note that the choice of the fedora Linux release version (36) and the \texttt{/tmp/f36arm/} directory is somewhat arbitrary. After configuring the environment in this manner, simply test changing the root directory and running a simple \texttt{C} program.
 
@@ -498,16 +553,6 @@ int main()
 \end{minted}
 
 Development environments such as these are easy to set up and can prove valuable for rapid prototyping. Another use case may be as part of a continuous integration and continuous delivery mechanism for a more complete embedded application development lifecycle.
-
-\subsection{Targeting Embedded Devices}
-
-Building an embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the embedded Linux that is to be managing the hardware platform. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
-
-% TODO : Add discussion on device tree layouts - possibly move the discussion to the Theory chapter, link to that discussion from here
-
-To port Linux onto a processor on a particular board requires creating a bootloader capable of that task as well. A bootloader program is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the bootloader has to be configured will be based on the particulars of the hardware that it will be configured for.
-
-The initial target machine for the project was an ECU playing the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the vendor's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the bootloader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints and ultimately a similar board, namely the MCIMX6Q-SDB evaluation board, with the required information publicly provided by processor chip vendor NXP was chosen as the target platform. The details of the attempt at uncovering this information is laid out in \hyperref[rtc-c300]{Appendix I}.
 
 \section{Neural Network Application Development}
 
@@ -633,7 +678,6 @@ A neural network consists of a collection nodes called \textit{neurons} that are
 
 			\ifnum\lay>1
 				\foreach \j in {1,...,\Shape[\prev]}{
-				\draw[connect,white,line width=1.2] (nodes\prev-\j) -- (nodes\lay-\i);
 				\draw[connect] (nodes\prev-\j) -- (nodes\lay-\i);
 				}
 			\fi
@@ -679,16 +723,13 @@ After power up, the processor requires initialization which for the kind of proc
 
 \begin{figure}[h]
 	\centering
-	\begin{tikzpicture}[fill, rounded corners, opacity=0.7]
-		\tikzset{next/.style={blue, ->, very thick, opacity=0.8}}
-		\fill [orange!20] (0,0) rectangle (2.5, 1);
-		\draw [opacity=0.9] (1.25, 0.5) node {Boot ROM};
-		\draw [next] (2.75, 0.5) -- (3.75, 0.5);
-		\fill [orange!20] (4,0) rectangle (6.5, 1);
-		\draw [opacity=0.9] (5.25, 0.5) node {U-boot};
-		\draw [next] (6.75, 0.5) -- (7.75, 0.5);
-		\fill [orange!20] (8,0) rectangle (10.5, 1);
-		\draw [opacity=0.9] (9.25, 0.5) node {Kernel};
+	\begin{tikzpicture}
+		\node [box] (rom) {Boot ROM};
+		\node [box, right=of rom] (uboot) {UBoot};
+		\node [box, right=of uboot] (kernel) {Kernel};
+
+		\draw [next] (rom) -- (uboot);
+		\draw [next] (uboot) -- (kernel);
 	\end{tikzpicture}
 \end{figure}
 

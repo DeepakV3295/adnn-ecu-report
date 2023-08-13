@@ -29,7 +29,6 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 		\foreachitem \N \in \Shape{ % loop over layers
 			\def\lay{\Ncnt} % alias of index of current layer
 			\pgfmathsetmacro\prev{int(\Ncnt-1)} % number of previous layer
-			\message{\lay,}
 			\foreach \i [evaluate={
 				\c=int(\i==\N);
 				\y=\N/2-\i-\c*\yshift;
@@ -39,7 +38,6 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 
 			\ifnum\lay>1
 				\foreach \j in {1,...,\Shape[\prev]}{
-				\draw[connect,white,line width=1.2] (N\prev-\j) -- (N\lay-\i);
 				\draw[connect] (N\prev-\j) -- (N\lay-\i);
 				}
 			\fi
@@ -69,7 +67,6 @@ The input layer has 784 neurons corresponding to 28 x 28 pixel images of the MNI
 
 			\ifnum\lay>1
 				\foreach \j in {1,...,\Shape[\prev]}{
-				\draw[connect,white,line width=1.2] (N\prev-\j) -- (N\lay-\i);
 				\draw[connect] (N\prev-\j) -- (N\lay-\i);
 				}
 			\fi
