@@ -12,6 +12,7 @@
 *.synctex.gz
 
 _minted-Thesis/
+svg-inkscape/
 
 # Proposal document
 proposal

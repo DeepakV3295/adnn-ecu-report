@@ -73,33 +73,25 @@
 
 \author{Prasanth Shaji, Deepak Venkataram}
 \title{Training Neural Networks \\ on Embedded Devices}
-\subtitle{Neural Network Frameworks vs Systems Programming Languages}
-\titlepagelogo{UU_logo_sv_42.pdf}
+\subtitle{Neural Network Frameworks vs Systems Programming Languagess}
+\titlepagelogo{UU_logo_color.svg}
 
-\abstractdummy{
+\abstractthesis{
 	There is great potential in enabling neural network applications in embedded devices and an important step in that is to allow for these devices to perform the training of the neural network on board the device. Neural network inference is a popular and well-supported functionality on these platforms however neural network training still has ways to go. In this project we take a closer look at this step and try to compare the performance capabilities of popular machine learning frameworks with straight forward implementation approaches. This report also contains a discussion on the nature of implementing neural network applications on top the fragmented embedded ecosystem.
 
-	% \subsection*{Acknowledgement}
-
-	% keep things short and pithy
+	\begin{tikzpicture}[overlay, opacity = 0.9]
+	\node [anchor=south west, xshift=-2cm, yshift=-22cm] at (current page.south west)
+		{\includesvg[width = \linewidth, height = \linewidth]{uu-sigil/UU_sigill_5proc_down_left.svg}};
+	\end{tikzpicture}
 }
 
 \begin{document}
 \frontmatter
-	% Creates the front matter (title page(s), abstract, list of papers)
-	% for either a Comprehensive Summary or a Monograph.
-	% Authors of Comprehensive Summaries use this front matter
-	\frontmatterCS
-	% Monograph authors use this front matter
-	% \frontmatterMonograph
+
+	\frontmatterThesis
 
 	% Optional dedication
 	% \dedication{dedication ...}
-
-	% Environment used to create a list of papers
-	% \begin{listofpapers}
-	% 	\item A Paper Discussed in this Thesis \label{apaperlabel}
-	% \end{listofpapers}
 
 	\begingroup
 		% To adjust the indentation in your table of contents, uncomment and enter the widest numbers for each level
@@ -121,12 +113,13 @@
 \backmatter
 	% References
 	% No restriction is set to the reference styles
-	% Save your references in References.bib
+	% Save references in References.bib
 	\nocite{*} % Remove this for your own citations
 	\bibliographystyle{plain}
 	\bibliography{References}
 
 	\part{Appendixes}
+
 	\input{Appendix/C300.tex}
 	\input{Appendix/Profiling.tex}
 

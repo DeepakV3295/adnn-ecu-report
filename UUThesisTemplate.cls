@@ -1184,7 +1184,7 @@
 }
 
 \renewcommand{\maketitle}{%
-	\providecommand{\titlepagelogo}{UU_logo.jpeg}%
+	\providecommand{\titlepagelogo}{UU_logo_color.svg}%
 	\begin {titlepage}%
 		\def\first##1{##1}%
 		\def\last##1{##1}%
@@ -1204,10 +1204,10 @@
 					%\ClassWarning{UUThesisTemplate warning: Image \@titlepagelogo does not exist, placeholder used.}\null
 					\framebox(120,120)[c]{Title page logo}%
 				\else%
-					\ifx\includegraphics\undefined%
+					\ifx\includesvg\undefined%
 						\framebox(120,120)[c]{Title page logo}%
 					\else%
-						\includegraphics{\@titlepagelogo}%
+						\includesvg[width=6cm]{\@titlepagelogo}%
 					\fi%
 				\fi%
 				\immediate\closein0%
@@ -1246,10 +1246,17 @@
 }
 
 \providecommand{\abstractdummy}[1]{\gdef\@abstractdummy{#1}}
+
 \abstractdummy{\clearpage\vspace*{\stretch{1}}\hfill Abstract Dummy Page. \hfill\vspace*{\stretch{1}}\clearpage}
 
 \newcommand{\frontmatterCS}{\maketitle\@abstractdummy}
+
 \newcommand{\frontmatterMonograph}{\makehalftitle\maketitle\@abstractdummy}
+
+\providecommand{\abstractthesis}[1]{\gdef\@abstractthesis{#1}}
+
+\newcommand{\frontmatterThesis}
+{\maketitle\@abstractthesis}
 
 \AtEndDocument{
 	\pagecount{\the\c@page}
@@ -1356,10 +1363,12 @@
 % ============================================
 
 \usepackage{tikz}
+\usepackage{svg}
 \usepackage{listofitems} % for \readlist
 
-\usetikzlibrary{positioning}
 \usetikzlibrary{arrows.meta}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{positioning}
 
 % Simple Box Diagrams
 
