@@ -212,7 +212,7 @@ The toolchains used for software development consists of a compiler, linker, lib
 	\begin{tikzpicture}[fill opacity=0.9]
 		\fill [green!20] (0.25,0.25) rectangle (7.75, 3.75);
 
-		\fill [orange!20, rounded corners] (0.75,2.25) rectangle (3.75, 3.25);
+		\fill [red!20, rounded corners] (0.75,2.25) rectangle (3.75, 3.25);
 		\draw (2.25, 2.75) node {Binutils};
 
 		\fill [orange!20, rounded corners] (4.5,2.25) rectangle (7.25, 3.25);
@@ -221,7 +221,7 @@ The toolchains used for software development consists of a compiler, linker, lib
 		\fill [orange!20, rounded corners] (0.75,0.75) rectangle (3.75, 1.75);
 		\draw (2.25, 1.25) node {\texttt{C/C++} libraries};
 
-		\fill [orange!20, rounded corners] (4.5,0.75) rectangle (7.25, 1.75);
+		\fill [red!20, rounded corners] (4.5,0.75) rectangle (7.25, 1.75);
 		\draw (5.95, 1.25) node {GCC compiler};
 	\end{tikzpicture}
 \end{figure}
@@ -230,7 +230,7 @@ The toolchains used for software development consists of a compiler, linker, lib
 
 The software development toolchains for embedded devices are generally run on a development machine that is different from the embedded device. In this configuration the compiler toolchain creates executables for a different platform that the one it is currently running on and is termed a \textit{cross compiling} toolchain. A compiler toolchain that creates executables for the sample platform is termed a \textit{native} compiler toolchain. Cross-compilers are common due to several factors such as limited resources on embedded devices, ease of targetting multiple hardware platforms, etc. and they are ultimately an unavoidable part of creating programs for a new hardware platform. Most software that are run on embedded devices are created on a different computing platform. Such a computing platform in the context of cross compilation is referred to as a \textit{development host} and the embedded device that the software ultimately runs on is called the \textit{target}.
 
-\subsubsection{A brief discussion on the ARM GNU toolchain}
+\subsubsection{A short introduction to the ARM GNU toolchain}
 
 A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value "none" for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{<libc/abi>}. This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, or the target triple in LLVM\textquotesingle s Clang. Another naming convention used for the \texttt{<arch>} string when referring to ARM architectures is the use of strings such as \texttt{armv7} to denote the ARMv7 architecture found in ARM Cortex A (ARMv7-A), ARM Cortex R (ARMv7-R), and ARM Cortex M (ARMv7-M) cores.
 
@@ -248,11 +248,11 @@ Building an embedded Linux kernel suited for a mainboard of an embedded device r
 
 To port Linux onto a processor on a particular board requires creating a \textit{bootloader} program capable of that task as well. A bootloader is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the bootloader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
-The initial target machine for the project was an ECU playing the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the system maker's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the bootloader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints, the details of the attempt to uncover this information is laid out in Appendix \hyperref[rtc-c300]{I}. Ultimately, the MCIMX6Q-SDB evaluation board was chosen as an alternative to the ECU. The required information for the MCIMX6Q-SDB is publicly provided by processor chip vendor NXP.
+The initial target machine for the project was an ECU playing the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the system maker's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the bootloader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints, the details of the attempt to uncover this information is laid out in Appendix \hyperref[rtc-c300]{I}. Ultimately, the MCIMX6Q-SDB evaluation board (Figure \ref{fig:mcimx6q-sdb}) was chosen as an alternative to the ECU. The required information for the MCIMX6Q-SDB is publicly provided by processor chip vendor NXP.
 
 \subsubsection{An excursion through Yocto Project's Embedded Linux build system}
 
-Embedded Linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, the number and the nature of Software Engineers using the tool, the continuous integration and deployment infrastructure, and the list of supported hardware platforms. Consider a simple development scenario targetting the embedded hardware platform MCIMX6Q-SDB (Figure \ref{fig:mcimx6q-sdb}), the primary hardware utilized for this report. The aim is to build and run an embedded Linux distribution for the MCIMX6Q-SDB using a personal computer running Linux. Note that several of the code listings used in this discussion may break their interface, hence the emphasis is primarily on the essential concepts involved.
+Embedded Linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, the number and the nature of Software Engineers using the tool, the Continuous Integration (CI) and Continuous Delivery (CD) infrastructure, and the list of supported hardware platforms. Consider a simple development scenario targetting the embedded hardware platform MCIMX6Q-SDB, the primary hardware utilized for this report. The aim is to build and run an embedded Linux distribution for the MCIMX6Q-SDB using a personal computer running Linux. Note that several of the code listings used in this discussion may break their interface, hence the emphasis is primarily on the essential concepts involved.
 
 The Yocto Project is arranged into several components out of which the core 3 components are BitBake, OpenEmbedded-Core, and Poky. BitBake is a build engine that interprets configuration files to schedule and then perform tasks. The configuration files, also called  \textit{recipes}, describe how to build a particular package such as a shared library or application program. Recipes contain information as to where to obtain the source code for a package, instructions for compiling the source code, and installing or removing that package from a distribution. OpenEmbedded-Core is a set of platform and distribution independent recipes and other metadata while Poky is a reference system containing a collection of projects and tools that can be used to bootstrap a new distribution.
 
@@ -526,13 +526,13 @@ Another Linux feature is \texttt{chroot} which allows for changing the apparent 
 
 Prior to running \texttt{chroot}, a root directory for the target environment must be prepared. A root directory is simply the top most directory in a hierarchy and can be prepared by sourcing programs and packages necessary for developing \texttt{C} programs for \texttt{armv7}. Sourcing these programs can be a matter of approaching maintainers of the packages who may provide the appropriate binaries or building them from source using a cross-compiler.
 
-For example, versions of the fedora Linux distribution provides these packages via its packages manager and the following command can source the necessary programs for that architecture.
+For example, versions of the fedora Linux distribution provides the required software packages for the \texttt{armv7hl} architecture via its package manager \texttt{dnf}. The following \texttt{dnf} command can source the necessary programs for the \texttt{armv7hl}.
 
 \begin{minted}{bash}
 dnf install --releasever=36 --installroot=/tmp/f36arm --forcearch=armv7hl --repo=fedora --repo=updates systemd passwd dnf fedora-release vim-minimal m4 cmake gcc-c++ tar gcc git make tmux -y
 \end{minted}
 
-Note that the \texttt{hl} in \texttt{armv7hl} is
+Note that the \textit{h} in \texttt{armv7hl} stands for \textit{hard float} indicating that the architecture uses hardware acceleration for its floating point operations, while the \textit{l} stands for \textit{little endian} byte order. Endianness refers to the byte order in which multibyte data types are stored in computer memory. It determines whether the most significant byte (MSB) or the least significant byte (LSB) comes first. If the MSB is stored in the smallest memory address, the system is said to be big endian. Otherwise, if the LSB comes first, then the system is said to be little endian. Endianness affects how data is interpreted and manipulated by different processors and architectures. ARM processor usually support both endianness while the little endian byte order is the most commonly used.
 
 The target directory \texttt{/tmp/f36arm/} will then contain a simple root directory for the required development environment for \texttt{armv7}. Note that the choice of the fedora Linux release version (36) and the \texttt{/tmp/f36arm/} directory is somewhat arbitrary. After configuring the environment in this manner, simply test changing the root directory and running a simple \texttt{C} program.
 
@@ -552,7 +552,7 @@ int main()
 }
 \end{minted}
 
-Development environments such as these are easy to set up and can prove valuable for rapid prototyping. Another use case may be as part of a continuous integration and continuous delivery mechanism for a more complete embedded application development lifecycle.
+Development environments such as these are easy to set up and can prove valuable for rapid prototyping. Another use case may be as part of a CI/CD mechanism for a more complete embedded application development lifecycle.
 
 \section{Neural Network Application Development}
 
