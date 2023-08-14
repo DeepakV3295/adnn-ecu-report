@@ -1,7 +1,7 @@
 \chapter{Scania C300 Communicator} \label{rtc-c300}
 % The communicator contains iMX6 series processors
 
-Scania ECU was set to be the target hardware to benchmark the training of a machine learning model. The ECU is developed by an external system maker Actia who designed the board in association with Scania and with an i.MX6 series processor and a number of on-board peripherals including CAN controllers. Much of the build system configuration files and Yocto BSP layers used for the board are not made available by the system maker, instead providing embedded linux binaries and SDKs to Scania. The initial mandate included creating such a BSP layer for the C300 which would facilitate the repurposing of the hardware on board. For this purpose, some examinations on the board were conducted and this part of the report will account the activites made in this effort.
+Scania ECU was set to be the target hardware to benchmark the training of a machine learning model. The ECU is developed by an external system maker Actia who designed the board in association with Scania and with an i.MX6 series processor and a number of on-board peripherals including CAN controllers. Much of the build system configuration files and Yocto BSP layers used for the board are not made available by the system maker, instead providing embedded Linux binaries and SDKs to Scania. The initial mandate included creating such a BSP layer for the C300 which would facilitate the repurposing of the hardware on board. For this purpose, some examinations on the board were conducted and this part of the report will account the activites made in this effort.
 
 \begin{figure}[h]
 	\centering
@@ -29,6 +29,6 @@ The first naive approach taken was of flashing the MTD partitions that houses th
 % (TODO: results of unbricking the board)
 % (TODO: reasoning not enough memory layout infomation)
 
-Exploring the target ECU board involved several examinations of a known state of the board. The linux kernel binaries were made via the Yocto project however there was no access to source code such as the recipes or the meta-layers themselves
+Exploring the target ECU board involved several examinations of a known state of the board. The Linux kernel binaries were made via the Yocto project however there was no access to source code such as the recipes or the meta-layers themselves
 
 The i.MX SoCs have a special boot mode named Serial Download Mode (SDM) typically accessible through boot switches. When configured into this mode, the ROM code will poll for a connection on a USB OTG port
