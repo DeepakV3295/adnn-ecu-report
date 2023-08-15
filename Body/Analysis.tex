@@ -10,7 +10,7 @@ The MNIST dataset was selected to train the model, which contains 60,000 trainin
 
 It is essential that the hardware utilized for benchmarking closely resemble the i.MX6 processor on Scania ECUs, as this will make it easier to replicate the experiment on a repurposed ECU and will also provide the most precise results. The MCIMX6Q-SDB evaluation board, which is armed with four 32-bit Cortex A9 cores, is an ideal choice. The Cortex A9 core is equipped with ARM V7 instruction set architecture and a powerful VFPv3 floating point unit with NEON SIMD capabilities. The processor has 32 KB instruction and data L1 caches, 1 MB L2 cache and 1 GB DDR3 SDRAM memory. The benchmark applications are designed to be run on a single core of the i.MX6 processor, although it supports quad-core, to ensure the experiment is straightforward and easier to manage. This will also guarantee that the results are precise and accurate.
 
-The Yocto project is used to create a custom Embedded Linux distribution for the \texttt{imx6qsabresd} machine. The NXP Yocto project guide \cite{nxp-yocto} provides the instructions for building the Linux image, and additional packages such as CMake, python3 are installed during the build. The resulting image file, which used to flash the hardware, has a size of $\sim$ 300Mb.
+The Yocto project is used to create an Embedded Linux distribution for the \texttt{imx6qsabresd} machine. The NXP Yocto project guide \cite{nxp-yocto} provides the instructions for building the Linux image, and additional packages such as CMake, python3 are installed during the build. The resulting image file, which used to flash the hardware, has a size of $\sim$ 300Mb.
 
 The accuracy of the model is evaluated after each training epoch on the MNIST test set. After the training of the model for 30 epochs, the final weights and biases of the network and the accuracy on the test set are saved for analysis. This data is used to verify the correctness of the neural network model in each benchmark application.
 
@@ -94,8 +94,6 @@ Heaptrack is an alternative to the popular valgrind programming tool for memory 
 
 This chapter presents the results of the benchmark application runs. The first section contains a brief look at the analysis on the neural network accuracies for the different implementations. The second section considers the performance of the benchmark applications followed by the third section that details their differences.
 
-% TODO : Include a paragraph regarding the reliability of the measurements (coefficient of variation of the multiple measurements, assess the degree of variability among the various trials, the mean and standard deviation were calculated across all runs, and their ratioes indicating the level of variation between different tests)
-
 \section{Evaluating Correctness}
 
 As the benchmark applications are developed to be identical by keeping the same structure and configurations, the model accuracy is expected to be similar. Figure \ref{hdrnn-accuracy} showcases that the different implementations perform similarly irrespective of the number of parameters.
@@ -106,12 +104,6 @@ As the benchmark applications are developed to be identical by keeping the same 
 	\caption[HDR-NN Accuracy]{Comparing the accuracy of the different HDR-NN implementations.}
 	\label{hdrnn-accuracy}
 \end{figure}
-
-Further, an abnormal behaviour can be observed when the number of parameters exceeds 101770. The accuracy of the \texttt{C} implementation decreases due to (an unknown bug).
-
-% \subsection{Weights and Biases}
-
-% TODO : Evaluate the mean squared error in the generated weights and biases between the different implementation.
 
 \section{Evaluating effectiveness}
 
@@ -162,9 +154,6 @@ This chapter contains discussions on the experience while working on the project
 
 \section{Comparing Benchmark Applications}
 
-% TODO :  Talk about the optimizations present in each of the implementations and their effective advantages.
-
-\section{Processor Specific Optimizations}
 
 \section{Developer Experience}
 
@@ -198,6 +187,8 @@ The initial mandate on the project was to repurpose the Scania C300 to provide a
 
 Repurposing the Scania ECU is a technical challenge that was left incomplete during the project. The experience as detailed in \hyperref[rtc-c300]{Appendix II} and throughout the report. The attempt concluded without having ported the Embedded Linux onto the board. Further information on the device tree layout may be extracted by leveraging the \texttt{/proc/device-tree} Linux interface and a binary disassembly of the bootloader on-board the device could reveal more information about the memory layout. These efforts were dropped in favour of continuing the work on the MCIMX6Q-SDB.
 
-\subsection{TinyML research on On-Device Training}
+\subsection{On Device Training}
 
-Multi-framework and multi-architecture based software infrastructure that allows On-Device Training are being developed my the community in parts such as Modular \cite{mojo}, EdgeImpulse, etc. There are innovative approaches to bring down the memory requirements of deep learning neural network models such as TinyTL \cite{cai2021tinytl} by changing the learning algorithm that will be running on-board.
+Multi-framework software infrastructure that allows On Device training are being developed my the community in parts such as Modular \cite{mojo}, EdgeImpulse, etc. There are innovative approaches to bring down the memory requirements of deep learning neural network models such as the Tiny Training Engine \cite{lin2022ondevice} and TinyTL \cite{cai2021tinytl} by changing the learning algorithm that will be running on-board.
+
+The fundamental bottleneck of implementing neural network training is the amount of memory required. The memory requirements for training a neural network is larger than for neural network inference due to the requirement for storing intermediate activations of the neural network layers. The backpropagation algorithm requires these intermediate calculations of these values to be present while executing the backward pass. Ideas that work for implementing efficient neural network inference on embedded hardware, such as improving parameter efficiency by reducing the number of parameters in the neural network model, do not work to bring down on the total number of activations values required to be stored during the training process.

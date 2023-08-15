@@ -84,7 +84,7 @@ The benchmark programs would also compute characteristics of the neural network 
 The HDR-NN benchmark applications all share the same standard training algorithm listed below (\ref{alg:cap}). Describing this algorithm in general purpose neural network frameworks is straight forward and plenty of general implementations of the algorithm exists, making the development process easier to target multiple programming paradigms. The configurable parameters of the learning algorithm throughout the implementations are the learning rate, the total number of epochs for training, and the batch size for gradient descent iterations.
 
 \begin{algorithm}[h]
-	\caption{Mini Batch Gradient Descent with learning rate $\gamma$ and the Mean Squared Error (\texttt{MSE}) cost function}
+	\caption{Mini Batch Gradient Descent with learning rate $\eta$ and the Mean Squared Error (\texttt{MSE}) cost function}
 	\label{alg:cap}
 	\begin{algorithmic}
 	\Require initial weights $w^{(0)}$, number of epochs $E$, batch size $B$, training data with $T$ entries
@@ -95,7 +95,7 @@ The HDR-NN benchmark applications all share the same standard training algorithm
 			\State estimate $\nabla \mathcal{L}(w^{(t)})$ \Comment{$\mathcal{L}$ here is \texttt{MSE}}
 			\State compute $\Delta w^{(b)} += - \nabla \mathcal{L}(w^{(t)})$\label{lin:deep-learning-delta-w}
 			\EndFor
-			\State $w^{(e + 1)} := w^{(e)} + \gamma \Delta w^{(e)}$
+			\State $w^{(e + 1)} := w^{(e)} + \eta \Delta w^{(e)}$
 		\EndFor
 	\EndFor
 	\State return $w^{(T)}$
