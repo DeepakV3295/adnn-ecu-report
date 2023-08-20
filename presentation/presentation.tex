@@ -1,37 +1,11 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Masters thesis presentation slides on
+%% Training Neural Networks on Embedded Devices
 %%
-%% Masters thesis presentation slides derived from:
+%% Uppsala Beamer theme
 %% http://www.it.uu.se/katalog/daz/uppsala_beamer
-%%
-%% Uppsala Beamer theme example by Frédéric Haziza <daz@it.uu.se>
-%%
-%% Describing beamerthemeUppsala version 2008/05/15
-%%
-%% If you have more than three sections or more than three subsections in at least
-%% one section, you might want to use the [hideallsubsections] or
-%% [hideothersubsections] switch.  In this case, only the current (sub-) section is
-%% displayed in the sidebar and not the full overview.
-%%
-%% Options are:
-%% ===========
-%% * hideallsubsections, hideothersubsections
-%% * nonumbers,totalnumber
-%% * withnav, mylogo
-%% * grey
-%% * noprogressbar
-%%
-%% For the sidebar layout:
-%% * subsectionsattop, sectionpathattop
-%%
-%% Removed
-%% =======
-%% * sidebarshades
-%%
-%% Tip
-%% ===
-%% latex this file to see the theme in action
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% by Frédéric Haziza <daz@it.uu.se>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass{beamer}
 %\documentclass[handout]{beamer}
@@ -43,286 +17,578 @@
 \usepackage{hyperref}
 \usepackage{pgf}
 \usepackage{tikz}
+\usepackage{listofitems}
+
 \usepgflibrary{arrows}
 \usepgflibrary{shapes}
+
 \usetikzlibrary{%
-  arrows,%
+  arrows.meta,%
   calc,%
   fit,%
-  patterns,%
-  plotmarks,%
-  shapes.geometric,%
-  shapes.misc,%
-  shapes.symbols,%
-  shapes.arrows,%
-  shapes.callouts,%
-  shapes.multipart,%
-  shapes.gates.logic.US,%
-  shapes.gates.logic.IEC,%
-  er,%
-  automata,%
-  backgrounds,%
-  chains,%
-  topaths,%
-  trees,%
-  petri,%
-  mindmap,%
-  matrix,%
-  calendar,%
-  folding,%
-  fadings,%
-  through,%
-  positioning,%
-  scopes,%
-  decorations.fractals,%
-  decorations.shapes,%
-  decorations.text,%
-  decorations.pathmorphing,%
-  decorations.pathreplacing,%
-  decorations.footprints,%
-  decorations.markings,%
-  shadows}
+}
 
 \usepackage[english]{babel} % or whatever
 \usepackage[utf8]{inputenc} % or whatever
 
 \usepackage{mathptmx}
 \usepackage{helvet}
-%\usepackage{courier}
 
 \usepackage[T1]{fontenc}
-% Or whatever. Note that the encoding and the font should match. If T1
-% does not look nice, try deleting the line with the fontenc.
 
-%% -----------------------------------------------------------
-%% MISC. INFORMATION
-%% -----------------------------------------------------------
-
-\title{Training Neural Networks \\ on Embedded Devices}
+\title
+{Training Neural Networks \\ on Embedded Devices}
 \subtitle{Targeting Embedded Environments}
 
-\author[Prasanth Shaji, Deepak Venkataram] % appears in the footline
+\author[Prasanth Shaji, Deepak Venkataram]
 {Prasanth Shaji, Deepak Venkataram}
 
-\institute[Dept. of Information Technology] % appears in the footline
+\institute[Dept. of Information Technology]
 {
   Master's Thesis \\
   Uppsala University
 }
 
-\date[HDR-NN] % appears in the bottom of the sidebar
+\date[HDR-NN]
 {\today}
 
 %% \logo{...}
 
-%% This is only inserted into the PDF information catalog. Can be left out.
-\subject{Unofficial Beamer Theme for Uppsala University}
-
-%% -----------------------------------------------------------
-%% Extra ``local'' settings
-%% -----------------------------------------------------------
-
-% Comment out this, if you do not want the table of contents to pop up at
-% the beginning of each (sub)section:
-% \AtBeginSection[]
-% {
-%   \begin{frame}<beamer> % with <beamer> => doesn't appear in handout mode
-%     \frametitle{Outline} %% Put the title you want, or none!
-%     %\tableofcontents[currentsection,currentsubsection]
-%     \tableofcontents[currentsection]
-%   \end{frame}
-% }
+\subject{Uppsala University Master's Thesis on Training Neural Networks on Embedded Devices using the Beamer Theme for Uppsala University}
 
 %% Unfolds piecewise element with shading.
 %% Text appears, shaded, and the audience knows that somehting is coming
 %% Note: if you set the number too high, the audience will try to read the
 %% text that now shows up more, and will be disturbed.
 %% ``dynamic'' makes elements show gradually more and more.
-\setbeamercovered{transparent=5}
-%% \setbeamercovered{dynamic=5}
+\setbeamercovered{transparent=9}
+% \setbeamercovered{dynamic=5}
 
-%% -----------------------------------------------------------
+% ============================================
+%        Presentation
+% ============================================
 
 \begin{document}
 
-\begin{frame}[plain] %% Gets the frame to fill up the page, no menu/sidebar/footline
+\begin{frame}[plain]
   \titlepage
 \end{frame}
 
 \begin{frame}
     \frametitle{Outline}
-    \tableofcontents[currentsection]
+    \tableofcontents
 \end{frame}
 
-\section{Introduction}
+\section{NN in Embedded Devices}
 
 \begin{frame}
-  \frametitle{Neural Network Applications on Embedded Devices}
+  \frametitle{Neural Network Applications \\ on Embedded Devices}
 
-  Neural Network Applications on Embedded Devices
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.42]{images/smart-speaker}
+    \includegraphics[scale=0.42]{images/tesla}
+  \end{figure}
 
-  \begin{itemize}
-    \item Embedded Linux
-    \item Federated Learning
-  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Embedded Devices}
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.21]{images/edge-pc}
+    \includegraphics[scale=0.17]{images/smart-phone}
+    \includegraphics[scale=0.07]{images/accupoll-embedded-computer}\hspace{2em}
+    \includegraphics[scale=0.175]{../Body/images/bbb}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Goal : Neural Network training \\ on Scania C300}
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.21]{../Body/images/c300.jpeg}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Goal : Neural Network training \\ on Scania C300}
+
+  \onslide<1>
+    Predictive vehicle maintenance using data from a fleet of connected trucks \\
+
+  \onslide<2>
+    Why Training on the C300?
+    \begin{itemize}
+  \onslide<2>
+        \item Repurpose existing C300 units to perform neural network related tasks
+        \item Training on devices to reduce network bandwidth usage, ensure data privacy, etc.
+    \end{itemize}
+
+    \vskip 1cm
+  \onslide<3>
+    \textbf{Scope} \textit{Repurpose Scania C300, train neural network model, assess training performance}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{ARM Boards}
+
+  \begin{table}[h]
+    \centering
+    \resizebox{\columnwidth}{!}{%
+    \begin{tabular}{ |p{5em}|p{10em}|p{7em}|p{10em}| }
+      \hline
+        \textbf{SoC} &
+        \textbf{Application Domain} &
+        \textbf{Architecture} &
+        \textbf{Processor Core} \\
+      \hline
+        nRF51822 &
+        Ultra low power, BLE &
+        ARM v6-M &
+        ARM Cortex M0 \\
+      \hline
+        AM2732 &
+        Automotive &
+        ARM v7-R &
+        ARM Cortex R5 \\
+      \hline
+        AM3358 &
+        Industrial / IoT &
+        ARM v7-A &
+        ARM Cortex A8 \\
+      \hline
+        i.MX6S &
+        Multimedia applications &
+        ARM v7-A &
+        ARM Cortex A9 \\
+      \hline
+        Kryo 240 &
+        Smartphones &
+        ARM v8-A &
+        ARM Cortex-A73, A53 \\
+      \hline
+    \end{tabular}%
+    }
+  \end{table}
+\end{frame}
+
+\begin{frame}
+  \frametitle{ARM Boards}
+
+  \begin{figure}[h]
+    \centering
+    \resizebox{\columnwidth}{!}{%
+    \begin{tikzpicture}[font=\small, >=Stealth]
+
+      \fill [fill=orange!30] (0, 0) rectangle (14, 5);
+      \draw (7, 5.25) node {Board};
+
+      \fill [fill=yellow!30] (4, 0) rectangle (10, 4.5);
+      \draw (7, 4.25) node {System on Chip};
+
+      \draw [fill=cyan!40, draw=cyan] (6, 2) rectangle (8, 4);
+      \draw (7, 3) node[align=center, font=\normalsize]
+        {ARM \\ Cortex A9};
+
+      \draw [line width=0.42em] (7, 2) -- (7, 0);
+      \draw (7.5, 1.5) node[align=center, font=\tiny]
+        {Internal \\ SoC bus};
+
+      \draw [fill=green!40, draw=green] (4.25, 1.1) rectangle (5.8, 1.95);
+      \draw (5, 1.5) node[align=center] {SPI \\ controller};
+      \draw [<-, very thick] (5.8, 1.5) -- (7, 1.5);
+
+      \draw [fill=green!40, draw=green] (4.25, 0.1) rectangle (5.8, 0.95);
+      \draw (5, 0.5) node {UART};
+      \draw [<-, very thick] (5.8, 0.5) -- (7, 0.5);
+
+      \draw [fill=purple!30, draw=purple] (1.5, 1) rectangle (3, 2);
+      \draw (2.25, 1.5) node[align=center] {SPI \\ device};
+      \draw [<-, very thick] (3, 1.5) -- (4.25, 1.5);
+
+      \draw [very thick] (3.65, 1.5) -- (3.65, 3);
+
+      \draw [fill=purple!30, draw=purple] (1.5, 2.5) rectangle (3, 3.5);
+      \draw (2.25, 3) node[align=center] {SPI \\ device};
+      \draw [<-, very thick] (3, 3) -- (3.65, 3);
+
+      \draw [fill=green!40, draw=green] (8.2, 0.6) rectangle (9.75, 1.45);
+      \draw (9, 1) node[align=center] {I2C \\ controller};
+      \draw [->, very thick] (7, 1) -- (8.2, 1);
+
+      \draw [very thick] (10.4, 1) -- (10.4, 4);
+
+      \draw [fill=purple!30, draw=purple] (11, 0.5) rectangle (12.5, 1.5);
+      \draw (11.75, 1) node[align=center] {I2C \\ device};
+      \draw [->, very thick] (9.75, 1) -- (11, 1);
+
+      \draw [fill=purple!30, draw=purple] (11, 2) rectangle (12.5, 3);
+      \draw (11.75, 2.5) node[align=center] {I2C \\ device};
+      \draw [->, very thick] (10.4, 2.5) -- (11, 2.5);
+
+      \draw [fill=purple!30, draw=purple] (11, 3.5) rectangle (12.5, 4.5);
+      \draw (11.75, 4) node[align=center] {I2C \\ device};
+      \draw [->, very thick] (10.4, 4) -- (11, 4);
+
+    \end{tikzpicture}%
+    }
+  \end{figure}
 
 \end{frame}
 
 \section{Embedded Linux}
 
 \begin{frame}
+  \frametitle{Embedded Linux}
+
+  Operating System for Embedded Devices \\
+  - Customized for Specific Hardware
+
+  \vspace{4em}
+  Kernel, Bootloaders, Device Trees \\
+  Cross Compilation, Toolchains, Root Filesystems
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Software Versions}
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.27]{images/sw-versions.png}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
   \frametitle{Build Systems}
 
+  Yocto Project
 
-  Yocto
-
-  % \begin{example}
-  %   \begin{equation}
-  %     \mathit{Hamming} (X,Y) = \sum_{i=1}^{n} f (x_{i}, y_{i})
-  %   \end{equation}
-  % \end{example}
-
-  % \begin{definition}
-  %   \begin{equation}
-  %     f(x,y)= \left\{ \begin{array}{ll}
-  %         0 & \mbox{iff $|x-y| \leq \epsilon_{h}$,} \\
-  %         1 & \mbox{else.}      \\
-  %       \end{array}
-  %     \right.
-  %   \end{equation}
-  % \end{definition}
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.42]{images/yp-diagram-overview.png}
+  \end{figure}
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Developing ARM Boards}
+  \frametitle{Yocto Project}
 
-  \onslide<1>
-    Shown on first slide.
-  \onslide<2>
-    Shown on second slide.
-  \onslide<1>
-    Shown on first slide.
-    \begin{itemize}
-  \onslide<2-3>
-        \item Shown on the second and the third slide.
-  \onslide+<3->
-        \item Shown from slide 3 on.
-    \end{itemize}
-    Shown from slide 3 on.
-  \onslide
-    Shown on all slides.
+  \begin{figure}
+    \centering
+    \scalebox{0.52}{
+    \begin{tikzpicture}[font=\small]
 
-    \vskip 1cm
-  \onslide<4>
-    \alert<4>{You get fine-grain control over which elements are visible at each time.}
+      \fill [fill=pink!20] (-0.5, -4.5) rectangle (14.5, 9.5);
+
+      \fill [fill=red!30] (0, 0) rectangle (5, 9);
+      \draw (2.5, 8.5) node {\textbf{OpenEmbedded Project}};
+
+      \draw [fill=red!30, draw=red, line width=1.4pt] (5.5, 0) rectangle (14, 9);
+      \draw (7, 8.5) node {\textbf{Yocto Project}};
+
+      \fill [orange!35, rounded corners] (6, 0.5) rectangle (11.85, 8);
+      \draw (7, 7.5) node {\textbf{Poky}};
+
+      \fill [yellow!20, rounded corners] (0.75, 1) rectangle (8.5, 7);
+      \draw (4, 6.5) node {\textbf{OpenEmbedded-Core}};
+
+      \fill [cyan!30] (1.5, 1.5) rectangle (5.5, 6);
+      \draw (2.15, 5.65) node {meta};
+
+      \fill [teal!50] (1.9, 4.1) rectangle (4.2, 5);
+      \draw (3, 4.5) node {recipes-core};
+
+      \fill [teal!50] (1.9, 3.1) rectangle (4.2, 4);
+      \draw (2.925, 3.5) node {recipes-bsp};
+
+      \fill [teal!50] (1.9, 2.1) rectangle (4.4, 3);
+      \draw (3.125, 2.5) node {recipes-kernel};
+
+      \fill [teal!50] (4.5, 3.15) rectangle (5.35, 3.95);
+      \draw (4.95, 3.5) node[text=teal] {\textbf{$\cdots$}};
+
+      \fill [cyan!30] (5.75, 4.75) rectangle (8.25, 6);
+      \draw (7, 5.45) node {meta-skeleton};
+
+      \fill [white!40] (5.75, 3.25) rectangle (8.25, 4.5);
+      \draw (7, 3.9) node {scripts};
+
+      \fill [cyan!30] (9, 5.25) rectangle (11, 6.75);
+      \draw (10, 6) node {meta-poky};
+
+      \fill [cyan!30] (9, 3.25) rectangle (11.65, 4.75);
+      \draw (10.3, 4) node {meta-poky-bsp};
+
+      \fill [white!40, rounded corners] (10.75, 1.25) rectangle (12.75, 2.5);
+      \draw (11.75, 1.9) node {\textbf{BitBake}};
+
+      \fill [white!40] (12.1, 7) rectangle (13.8, 8);
+      \draw (12.95, 7.5) node {Pseudo};
+
+      \fill [white!40] (12, 5.5) rectangle (13.8, 6.5);
+      \draw (13, 6) node {\textbf{$\cdots$}};
+
+      \fill [cyan!30] (1, -4) rectangle (11, -0.5);
+      \draw (2.5, -0.9) node {\textbf{meta-freescale}};
+
+      \fill [teal!50] (2, -2.35) rectangle (4, -1.25);
+      \draw (3, -1.75) node {recipes-bsp};
+
+      \fill [teal!50] (4.2, -2.35) rectangle (6.1, -1.25);
+      \draw (5.15, -1.75) node {recipes-fsl};
+
+      \fill [teal!50] (6.3, -2.35) rectangle (9.2, -1.25);
+      \draw (7.75, -1.75) node {recipes-graphics};
+
+      \fill [teal!50] (9.4, -2.35) rectangle (10.4, -1.25);
+      \draw (9.9, -1.75) node[text=teal] {\textbf{$\cdots$}};
+
+      \fill [teal!50] (2, -3.6) rectangle (4.05, -2.5);
+      \draw (3, -3) node {recipes-core};
+
+      \fill [teal!50] (4.25, -3.6) rectangle (6.75, -2.5);
+      \draw (5.4, -3) node {recipes-kernel};
+
+      \fill [teal!50] (6.95, -3.6) rectangle (10.4, -2.5);
+      \draw (8.65, -3) node {recipes-connectivity};
+
+      \fill [red!30] (11.5, -1.25) rectangle (13.5, -0.5);
+      \draw (12.5, -0.9) node {Entity};
+
+      \fill [cyan!30] (11.5, -2.25) rectangle (13.5, -1.5);
+      \draw (12.5, -1.9) node {Layer};
+
+      \fill [teal!50] (11.5, -3.25) rectangle (13.5, -2.5);
+      \draw (12.5, -2.9) node {Recipes};
+    \end{tikzpicture}}
+  \end{figure}
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Using Ti\textit{k}Z for Drawings}
+  \frametitle{Yocto Project}
 
-  % Taken from the PGF Manual
-    \begin{tikzpicture}[scale=0.9]
-      \draw[fill=yellow] (0,0) -- (60:.75cm) arc (60:180:.75cm);
-      \draw(120:0.4cm) node {$\alpha$};
-      \draw[fill=green!30] (0,0) -- (right:.75cm) arc (0:60:.75cm);
-      \draw(30:0.5cm) node {$\beta$};
-      \begin{scope}[shift={(60:2cm)}]
-        \draw[fill=green!30] (0,0) -- (180:.75cm) arc (180:240:.75cm);
-        \draw (30:-0.5cm) node {$\gamma$};
-        \draw[fill=yellow] (0,0) -- (240:.75cm) arc (240:360:.75cm);
-        \draw (-60:0.4cm) node {$\delta$};
-      \end{scope}
-      \begin{scope}[thick]
-        \draw (60:-1cm) node[fill=red!20] {$E$} -- (60:3cm) node[fill=red!20] {$F$};
-        \draw[red] (-2,0) node[left] {$A$} -- (3,0) node[right]{$B$};
-        \draw[blue,shift={(60:2cm)}] (-3,0) node[left] {$C$} -- (2,0) node[right]{$D$};
-      \end{scope}
-      \path (5,-0.5) node (x) {Hello World!}
-      (7.5,2) node[circle,draw](y) {$\int_1^2 x \mathrm d x$};
-      \draw[->,blue] (x) -- (y);
-      \draw[->,red] (x) -| node[near start,below] {\footnotesize Red} (y);
-      \draw[->,orange] (x) .. controls +(up:1cm) and +(left:1cm) .. node[above,sloped] {\footnotesize Orange} (y);
+  \begin{figure}
+    \centering
+    \scalebox{0.7}{
+    \begin{tikzpicture}[font=\small, >=Latex]
+
+      \fill [fill=pink!20] (0, 0) rectangle (11, 7.5);
+
+      \fill [fill=blue!30] (0.5, 3.5) rectangle (4.5, 6);
+      \draw (2.5, 6.21) node {\textbf{Yocto Project Machine}};
+      \draw (2.5, 4.75) node[align=left]
+        {
+          Hosts Yocto Project \\
+          Can Host an SDK \\
+          Can Build an SDK \\
+          Can Build an Image \\
+          Can Build an Application
+        };
+
+      \draw [<-, very thick] (4.5, 5.2) -- (7.5, 5.2);
+      \draw (6, 5.4) node {Objects};
+
+      \fill [fill=green!30] (7.5, 4.7) rectangle (10.5, 6.5);
+      \draw (9, 6.7) node {\textbf{Development Machine}};
+      \draw (9, 5.6) node[align=left]
+        {
+          Compile Code \\
+          Debug Code \\
+          Hosts an SDK
+        };
+
+      \draw [<-, very thick] (4.5, 3.75) -- (7.5, 3.75);
+      \draw (6, 3.95) node {Objects};
+
+      \fill [fill=green!30] (7.5, 2.3) rectangle (10.5, 4.1);
+      \draw (9, 4.3) node {\textbf{Development Machine}};
+      \draw (9, 3.2) node[align=left]
+        {
+          Compile Code \\
+          Debug Code \\
+          Hosts an SDK
+        };
+
+      \draw [->, line width=0.42em] (2.5, 3.5) -- (2.5, 2.2);
+      \draw (3.4, 3.1) node {Deploy};
+
+      \fill [fill=red!30] (1, 0.5) rectangle (5, 1.75);
+      \draw (2.5, 2) node {\textbf{Target Hardware}};
+      \draw (3, 1) node[align=left]
+      {
+        Boots and Runs Images \\
+        Runs Applications
+      };
+
+    \end{tikzpicture}}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Scania C300 to MCIMX6Q-SDB}
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.21]{../Body/images/MCIMX6Q-SDB-BD.png}
+  \end{figure}
+
+\end{frame}
+
+\section{Neural Networks}
+
+\begin{frame}
+  \frametitle{Training and Inference}
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.42]{images/network.png}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Traditional Paradigm}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+
+      \node (ecu) at (0,0) {\includegraphics[scale=2]{../Body/images/truck.png}};
+
+      \node (cloud) at (3.5, 2) {\includegraphics[scale=2]{../Body/images/db.png}};
+
+      \node (server) at (7, 0) {\includegraphics[scale=2]{../Body/images/server.png}};
+      \draw[-{Latex}, very thick, orange!90] ([xshift=14pt]server.north east) arc (355:0:0.25);
+
+      \draw[->,thick] (ecu) -- (cloud);
+      \draw[->,thick] (cloud) -- (server);
+      \draw[->,thick] (server) -- (ecu);
+
     \end{tikzpicture}
-
+  \end{figure}
 \end{frame}
 
-\note{
-  Example from J\"{o}rg Cassens, University of Trondheim, in his example:
-  \vskip 1cm
-  See \href{http://story.idi.ntnu.no/~cassens/blog/categories/20-LaTeX}{his blog on the Trondheim theme}.
-}
+\begin{frame}
+  \frametitle{Federated Learning}
 
-% %% Movies capabilities
-% \begin{frame}
-%   \frametitle{Including Movies}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[rounded corners, opacity=0.87]
 
-%   \pgfdeclareimage[interpolate=true,width=.45\textwidth]{ccpict}{Building_On_The_Past}
+      \readlist\Trucks {1,2,3,4}
+      \foreachitem \x \in \Trucks
+      {
+        \node (ecu \x) at ({0 + 2.5 * (\x-1)}, 0) {\includegraphics[scale=2]{../Body/images/truck.png}};
+      }
 
-%   \begin{center}
-%     \movie[poster,externalviewer,label=mymovie]{\pgfuseimage{mypic}}{mymovie_path.mpg}
-%   \end{center}
+      \node[inner xsep=21pt] (server) at (3.5, 2) {\includegraphics[scale=1.8]{../Body/images/server.png}};
+      \draw[-{Latex}, very thick, orange!90] ([yshift=-7pt]server.north east) arc (355:0:0.25);
 
-%   {\small
-%   To watch the movie in an external player application, click on the picture above.% or \hyperlinkmovie{mymovie}{\beamerbutton{press this button}}.
+      \foreachitem \x \in \Trucks
+      {
+        \draw[<->,thick] (ecu \x.north) -- (server);
+        \draw[-{Latex}, very thick, orange!50] ([yshift=-7pt]ecu \x.north east) arc (355:0:0.25);
+      }
 
-%   The video is not included in the distribution of this PDF. To watch it, just \href{http://some/long/path/to/the/file.mpg}{\alert{fix }names, paths and all}.
-
-%   {\tiny Don't forget the copyright...}
-
-% \end{frame}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
 
 \section{Benchmark Applications}
 
-\subsection{Design}
-
 \begin{frame}
-  \frametitle{Applications}
+  \frametitle{Handwritten Digit Recognition \\ Neural Network}
 
-  Different implementations
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.37]{images/networks.png}
+  \end{figure}
 
 \end{frame}
 
 \begin{frame}
   \frametitle{Learning Algorithm}
 
-  Add the Algorithm
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.37]{images/mSGD.png}
+  \end{figure}
 
 \end{frame}
 
-\subsection{Development}
+\begin{frame}
+  \frametitle{HDR-NN configurability}
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.37]{images/networks.png}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{HDR-NN configurability}
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.37]{images/usage.png}
+  \end{figure}
+
+\end{frame}
 
 \begin{frame}
   \frametitle{C based HDR-NN}
 
-  Add some code maybe
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.30]{images/c-hdrnn.png}
+    \includegraphics[scale=0.27]{images/c-ff.png}
+  \end{figure}
 
 \end{frame}
 
+\begin{frame}
+  \frametitle{Accuracy}
 
-\subsection{Results}
+  \begin{figure}[!ht]
+    \centering
+    \scalebox{0.52}{
+      \input{../Body/images/accuracy.pgf}}
+  \end{figure}
+
+\end{frame}
 
 \begin{frame}
-  \frametitle{Graphs}
+  \frametitle{Training Time}
 
-  Figures
+  \begin{figure}[!ht]
+    \centering
+    \resizebox{\columnwidth}{!}{%
+    \input{../Body/images/exec-time.pgf}%
+    }
+  \end{figure}
 
 \end{frame}
 
 \section{Discussion}
 
-\begin{frame}[fragile]
+\begin{frame}
   \frametitle{Development Experience}
 
-  Development Experience
-
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Reverse Engineering Efforts on the C300}
-
-  Development Experience
+  \begin{itemize}
+    \item Implementing back propagation in \texttt{C}
+    \item Porting \texttt{libtorch} to \texttt{armv7hl}
+  \end{itemize}
 
 \end{frame}
 
@@ -339,6 +605,13 @@
 %     \item Several look \& feel options
 %     \item Feedback appreciated: \href{mailto:daz@it.uu.se}{\texttt{daz@it.uu.se}}
 %   \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Reverse Engineering Efforts on the C300}
+
+  Development Experience
+
 \end{frame}
 
 \end{document}
