@@ -26,7 +26,7 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - Embedded platforms more varied than these : small computer boxes in trucks, smartphones, voting machines, educational units, robots, so many more
 - Also present in simpler devices such as IoT lights, smart appliances, etc.
 
-## Goal : Neural Network training on Scania C300
+## Goal : Neural Network training on Scania ECU
 
 - anomaly detection applications
 - hint at federated learning (we shall soon talk about the different paradigms for neural network application lifecycle)
@@ -66,7 +66,7 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - Let's consider how to source these software packages
 - upstream more open source
 
-## Scania C300 to MCIMX6Q-SDB
+## Scania ECU to MCIMX6Q-SDB
 
 - could not reverse engineer the SoM software stack
 - pivoted to MCIMX6Q-SDB which has the same processor
