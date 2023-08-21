@@ -3,7 +3,7 @@
 ## Introduction
 
 Work by Prasanth and Deepak for Master's Thesis at Uppsala University
-<!--> Deepak unable to present due to personal reasons </!-->
+[//]: <> Deepak unable to present due to personal reasons </!-->
 
 ## Outline
 
