@@ -79,7 +79,7 @@
     \tableofcontents
 \end{frame}
 
-\section{NN in Embedded Devices}
+\section{Neural Networks in Embedded Devices}
 
 \begin{frame}
   \frametitle{Neural Network Applications \\ on Embedded Devices}
@@ -136,18 +136,20 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{ARM Boards}
+  \frametitle{ARM Boards : Examples}
 
   \begin{table}[h]
     \centering
     \resizebox{\columnwidth}{!}{%
-    \begin{tabular}{ |p{5em}|p{10em}|p{7em}|p{10em}| }
+    \begin{tabular}{ |p{5em}|p{11em}|p{7em}|p{9em}| }
       \hline
+      \rule{0pt}{4ex}
         \textbf{SoC} &
         \textbf{Application Domain} &
         \textbf{Architecture} &
         \textbf{Processor Core} \\
       \hline
+      \rule{0pt}{4ex}
         nRF51822 &
         Ultra low power, BLE &
         ARM v6-M &
@@ -168,10 +170,25 @@
         ARM v7-A &
         ARM Cortex A9 \\
       \hline
-        Kryo 240 &
+        BCM2711 &
+        Educational / IoT &
+        ARM v8-A &
+        ARM Cortex-A72 \\
+      \hline
+        Snapdragon - Kryo 240 &
         Smartphones &
         ARM v8-A &
-        ARM Cortex-A73, A53 \\
+        ARM Cortex-A73, ARM Cortex-A53 \\
+      \hline
+        Apple A16 Bionic &
+        iPhone 14 Pro &
+        ARM v8.6-A &
+        APL1W10 \\
+      \hline
+        Apple M1 &
+        Macbooks / Mac Mini / iPads &
+        ARM v8.5-A &
+        APL1102 \\
       \hline
     \end{tabular}%
     }
@@ -179,7 +196,9 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{ARM Boards}
+  \frametitle{ARM Boards : Outline}
+
+  \centerline{\textbf{ARM} | \textbf{Silicon Vendor} | \textbf{System Maker}}
 
   \begin{figure}[h]
     \centering
@@ -247,22 +266,13 @@
 \begin{frame}
   \frametitle{Embedded Linux}
 
-  Operating System for Embedded Devices \\
-  - Customized for Specific Hardware
-
-  \vspace{4em}
-  Kernel, Bootloaders, Device Trees \\
+  \onslide<2>Kernel, Bootloaders, Device Trees \\
   Cross Compilation, Toolchains, Root Filesystems
 
-\end{frame}
+  \vspace{4em}
 
-\begin{frame}
-  \frametitle{Software Versions}
-
-  \begin{figure}
-    \centering
-    \includegraphics[scale=0.27]{images/sw-versions.png}
-  \end{figure}
+  \onslide<1> Operating System for Embedded Devices \\
+  - Customized for Specific Hardware
 
 \end{frame}
 
@@ -279,7 +289,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Yocto Project}
+  \frametitle{The Yocto Project}
 
   \begin{figure}
     \centering
@@ -374,7 +384,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Yocto Project}
+  \frametitle{Yocto Project : Development}
 
   \begin{figure}
     \centering
@@ -435,6 +445,28 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Software Versions}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[font=\small]
+      \node [fill=cyan!20, draw=cyan, thick, minimum height=7em, minimum width=7em] (upstream) at (0, 0) {};
+      \node [align=center] at ([yshift=-1.5em]upstream.north) {Upstream \\ Project};
+      \node [align=center, font=\tiny] at ([yshift=2em]upstream.south) {Official version \\ Open Source};
+      \node [fill=yellow!20, draw=yellow!140, thick, minimum height=7em, minimum width=7em] (vendor) at ([xshift=5em]upstream.east){};
+      \draw [-{Latex}, very thick] (upstream.east) -- (vendor.west);
+      \node [align=center] at ([yshift=-1.5em]vendor.north) {SoC vendor \\ fork};
+      \node [align=center, font=\tiny] at ([yshift=2em]vendor.south) {Suppports SoC vendor \\ evaluation boards};
+      \node [fill=red!20, draw=red!140, thick, minimum height=7em, minimum width=7em] (system) at ([xshift=5em]vendor.east){};
+      \draw [-{Latex}, very thick] (vendor.east) -- (system.west);
+      \node [align=center] at ([yshift=-1.5em]system.north) {Board/SoM \\ fork};
+      \node [align=center, font=\tiny] at ([yshift=2em]system.south) {Supports board/SoM};
+    \end{tikzpicture}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
   \frametitle{Scania C300 to MCIMX6Q-SDB}
 
   \begin{figure}
@@ -447,11 +479,61 @@
 \section{Neural Networks}
 
 \begin{frame}
-  \frametitle{Training and Inference}
+  \frametitle{Handwritten Digit Recognition \\ Neural Network}
 
   \begin{figure}
     \centering
-    \includegraphics[scale=0.42]{images/network.png}
+    \begin{tikzpicture}
+      \node (mnist) at (0, 0) {\includegraphics{images/mnist.png}};
+      \node [yshift=-0.25cm] at (mnist.south) {MNIST};
+    \end{tikzpicture}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Neural Network Training}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \node (image) at (0, 5) {
+        \includegraphics{../Body/images/3.jpg}};
+      \node [font=\tiny] at (image.south) {label = 0};
+      \node (network) at (3, 5) {
+        \includegraphics[scale=0.42]{images/network-training.png}
+      };
+      \node [font=\small] at (network.east) {0};
+      \draw[-{Latex}, ultra thick, orange!90] ([yshift=14pt]network.north) arc (355:0:0.35);
+    \end{tikzpicture}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Learning Algorithm}
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.37]{images/mSGD.png}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Neural Network Inference}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \node (image) at (0, 5) {
+        \includegraphics{../Body/images/9.jpg}};
+      \node (network) at (3, 5) {
+        \includegraphics[scale=0.42]{images/network.png}
+      };
+      \node [font=\small] at (network.east) {9};
+      \draw[ultra thick, blue!90] ([yshift=-9pt,xshift=-9pt]network.north)-- (network.north) -- ([xshift=-6pt]network.north) -- ([xshift=3pt,yshift=9pt]network.north);
+    \end{tikzpicture}
   \end{figure}
 
 \end{frame}
@@ -464,10 +546,15 @@
     \begin{tikzpicture}
 
       \node (ecu) at (0,0) {\includegraphics[scale=2]{../Body/images/truck.png}};
+      \node [font=\small] at (ecu.south) {ECU};
+      \draw[very thick, blue!90] ([yshift=-7pt,xshift=-7pt]ecu.north west)-- (ecu.north west) -- ([xshift=-5pt]ecu.north west) -- ([xshift=2pt,yshift=7pt]ecu.north west);
 
-      \node (cloud) at (3.5, 2) {\includegraphics[scale=2]{../Body/images/db.png}};
+      \node (cloud) at (3.5, 2)
+        {\includegraphics[scale=2]{../Body/images/db.png}};
+      \node [font=\small] at (cloud.north) {Database};
 
       \node (server) at (7, 0) {\includegraphics[scale=2]{../Body/images/server.png}};
+      \node [font=\small] at (server.south) {Server};
       \draw[-{Latex}, very thick, orange!90] ([xshift=14pt]server.north east) arc (355:0:0.25);
 
       \draw[->,thick] (ecu) -- (cloud);
@@ -483,7 +570,7 @@
 
   \begin{figure}
     \centering
-    \begin{tikzpicture}[rounded corners, opacity=0.87]
+    \begin{tikzpicture}[opacity=0.87]
 
       \readlist\Trucks {1,2,3,4}
       \foreachitem \x \in \Trucks
@@ -498,6 +585,7 @@
       {
         \draw[<->,thick] (ecu \x.north) -- (server);
         \draw[-{Latex}, very thick, orange!50] ([yshift=-7pt]ecu \x.north east) arc (355:0:0.25);
+        \draw[very thick, blue!70] ([yshift=-14pt,xshift=-7pt]ecu \x.north west)-- ([yshift=-7pt]ecu \x.north west) -- ([xshift=-5pt, yshift=-7pt]ecu \x.north west) -- ([xshift=2pt]ecu \x.north west);
       }
 
     \end{tikzpicture}
@@ -507,21 +595,14 @@
 \section{Benchmark Applications}
 
 \begin{frame}
-  \frametitle{Handwritten Digit Recognition \\ Neural Network}
+  \frametitle{C based HDR-NN}
+
+  github.com/paperbound/hdrnn-arm
 
   \begin{figure}
     \centering
-    \includegraphics[scale=0.37]{images/networks.png}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Learning Algorithm}
-
-  \begin{figure}
-    \centering
-    \includegraphics[scale=0.37]{images/mSGD.png}
+    \includegraphics[scale=0.32]{images/c-hdrnn.png}
+    \includegraphics[scale=0.28]{images/c-ff.png}
   \end{figure}
 
 \end{frame}
@@ -542,17 +623,6 @@
   \begin{figure}
     \centering
     \includegraphics[scale=0.37]{images/usage.png}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{C based HDR-NN}
-
-  \begin{figure}
-    \centering
-    \includegraphics[scale=0.30]{images/c-hdrnn.png}
-    \includegraphics[scale=0.27]{images/c-ff.png}
   \end{figure}
 
 \end{frame}
@@ -583,34 +653,37 @@
 \section{Discussion}
 
 \begin{frame}
-  \frametitle{Development Experience}
+  \frametitle{Development Journey}
 
   \begin{itemize}
+    \item Linux, software packages for MCIMX6Q
     \item Implementing back propagation in \texttt{C}
-    \item Porting \texttt{libtorch} to \texttt{armv7hl}
+    \item Implementing HDR-NN in \texttt{C}, \texttt{C++ / Eigen}
+    \item Compiling \texttt{libtorch} for \texttt{armv7hl}
   \end{itemize}
 
 \end{frame}
 
-\section{Conclusion}
+\begin{frame}
+  \frametitle{Software Development \\ on Embedded Devices}
+
+  \begin{itemize}
+    \item Embedded Platforms are fragmented \\ in both \textit{hardware} and \textit{software}
+    \item Challenging to advance software
+    \item Research Approaches : Tiny ML, Tiny Training Engine
+  \end{itemize}
+
+\end{frame}
 
 \begin{frame}
   \frametitle{Future Work}
 
-%   \begin{itemize}
-%     \item Non official
-%     \item Suited for (long) scientific talks with UU style
-%     \item The colours used in this theme are based on  ``UU red'' (and shades)
-%     \item The hide[all|other]subsections switch is useful if you are having (too) many (sub-) sections
-%     \item Several look \& feel options
-%     \item Feedback appreciated: \href{mailto:daz@it.uu.se}{\texttt{daz@it.uu.se}}
-%   \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Reverse Engineering Efforts on the C300}
-
-  Development Experience
+  \begin{itemize}
+    \item Reverse Engineering Efforts on the C300
+    \item Performance engineering the \texttt{C} based implementation
+    \item Adding more target devices
+    \item Adding more implementations (TTE)
+  \end{itemize}
 
 \end{frame}
 
