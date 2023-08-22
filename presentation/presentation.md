@@ -7,13 +7,13 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 
 ## Outline
 
-### Neural Networks in Embedded Devices
+### Introduction
 ### Embedded Linux
 ### Neural Networks
 ### Benchmark Applications
 ### Discussion
 
-(_Neural Networks in Embedded Devices_)
+(_Introduction_)
 
 ## Neural Network Applications on Embedded Devices
 
