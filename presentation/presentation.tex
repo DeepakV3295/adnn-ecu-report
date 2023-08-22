@@ -107,7 +107,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Goal : Neural Network training \\ on Scania ECU}
+  \frametitle{Goal : Neural Network Training \\ on Scania ECU}
 
   \begin{figure}
     \centering
@@ -117,22 +117,23 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Goal : Neural Network training \\ on Scania ECU}
+  \frametitle{Goal : Neural Network Training \\ on Scania ECU}
 
   \onslide<1>
     Predictive vehicle maintenance using data from a fleet of connected trucks
   \vskip 0.5cm
 
-  \onslide<2>
+  \onslide<2-3>
     Why Training on the ECU?
     \begin{itemize}
   \onslide<2>
-        \item Repurpose existing ECU units to perform neural network related tasks
-        \item Training on devices to reduce network bandwidth usage, ensure data privacy, etc.
+      \item Training on devices reduces network usage, \\ ensures data privacy, etc.
+      \onslide<3>
+      \item Repurpose existing ECUs to perform \\ neural network related tasks
     \end{itemize}
 
   \vskip 0.5cm
-  \onslide<3>
+  \onslide<4>
     \textbf{Scope} \textit{Repurpose Scania ECU, train neural network model, assess training performance}
 
 \end{frame}
@@ -143,7 +144,7 @@
   \begin{table}[h]
     \centering
     \resizebox{\columnwidth}{!}{%
-    \begin{tabular}{ |p{5em}|p{11em}|p{7em}|p{9em}| }
+    \begin{tabular}{ |p{9em}|p{11em}|p{7em}|p{10em}| }
       \hline
       \rule{0pt}{4ex}
         \textbf{SoC} &
@@ -151,42 +152,55 @@
         \textbf{Architecture} &
         \textbf{Processor Core} \\
       \hline
-      \rule{0pt}{4ex}
+      \rule{0pt}{2.5ex}
         nRF51822 &
         Ultra low power, BLE &
         ARM v6-M &
         ARM Cortex M0 \\
       \hline
+      \rule{0pt}{2.5ex}
         AM2732 &
         Automotive &
         ARM v7-R &
         ARM Cortex R5 \\
       \hline
+      \rule{0pt}{2.5ex}
         AM3358 &
         Industrial / IoT &
         ARM v7-A &
         ARM Cortex A8 \\
       \hline
+      \rule{0pt}{2.5ex}
         i.MX6S &
         Multimedia applications &
         ARM v7-A &
         ARM Cortex A9 \\
       \hline
+      \rule{0pt}{2.5ex}
         BCM2711 &
         Educational / IoT &
         ARM v8-A &
         ARM Cortex-A72 \\
       \hline
-        Snapdragon - Kryo 240 &
+      \rule{0pt}{2.5ex}
+        Snapdragon 460 &
         Smartphones &
         ARM v8-A &
-        ARM Cortex-A73, ARM Cortex-A53 \\
+        ARM Cortex-A73, A53 \\
       \hline
+      \rule{0pt}{2.5ex}
+        Google Tensor &
+        Pixel 6 &
+        ARM v8.2-A &
+        ARM Cortex-X1, A76, A55 \\
+      \hline
+      \rule{0pt}{2.5ex}
         Apple A16 Bionic &
         iPhone 14 Pro &
         ARM v8.6-A &
         APL1W10 \\
       \hline
+      \rule{0pt}{2.5ex}
         Apple M1 &
         Macbooks / Mac Mini / iPads &
         ARM v8.5-A &
@@ -268,13 +282,13 @@
 \begin{frame}
   \frametitle{Embedded Linux}
 
-  \onslide<2>Kernel, Bootloaders, Device Trees \\
-  Cross Compilation, Toolchains, Root Filesystems
+  \onslide<1> Operating System for Embedded Devices \\
+  - Customized for Specific Hardware
 
   \vspace{4em}
 
-  \onslide<1> Operating System for Embedded Devices \\
-  - Customized for Specific Hardware
+  \onslide<2>Kernel, Bootloaders, Device Trees \\
+  Cross Compiling Toolchains, Root Filesystems
 
 \end{frame}
 
@@ -286,101 +300,6 @@
   \begin{figure}
     \centering
     \includegraphics[scale=0.42]{images/yp-diagram-overview.png}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{The Yocto Project}
-
-  \begin{figure}
-    \centering
-    \scalebox{0.52}{
-    \begin{tikzpicture}[font=\small]
-
-      \fill [fill=pink!20] (-0.5, -4.5) rectangle (14.5, 9.5);
-
-      \fill [fill=red!30] (0, 0) rectangle (5, 9);
-      \draw (2.5, 8.5) node {\textbf{OpenEmbedded Project}};
-
-      \draw [fill=red!30, draw=red, line width=1.4pt] (5.5, 0) rectangle (14, 9);
-      \draw (7, 8.5) node {\textbf{Yocto Project}};
-
-      \fill [orange!35, rounded corners] (6, 0.5) rectangle (11.85, 8);
-      \draw (7, 7.5) node {\textbf{Poky}};
-
-      \fill [yellow!20, rounded corners] (0.75, 1) rectangle (8.5, 7);
-      \draw (4, 6.5) node {\textbf{OpenEmbedded-Core}};
-
-      \fill [cyan!30] (1.5, 1.5) rectangle (5.5, 6);
-      \draw (2.15, 5.65) node {meta};
-
-      \fill [teal!50] (1.9, 4.1) rectangle (4.2, 5);
-      \draw (3, 4.5) node {recipes-core};
-
-      \fill [teal!50] (1.9, 3.1) rectangle (4.2, 4);
-      \draw (2.925, 3.5) node {recipes-bsp};
-
-      \fill [teal!50] (1.9, 2.1) rectangle (4.4, 3);
-      \draw (3.125, 2.5) node {recipes-kernel};
-
-      \fill [teal!50] (4.5, 3.15) rectangle (5.35, 3.95);
-      \draw (4.95, 3.5) node[text=teal] {\textbf{$\cdots$}};
-
-      \fill [cyan!30] (5.75, 4.75) rectangle (8.25, 6);
-      \draw (7, 5.45) node {meta-skeleton};
-
-      \fill [white!40] (5.75, 3.25) rectangle (8.25, 4.5);
-      \draw (7, 3.9) node {scripts};
-
-      \fill [cyan!30] (9, 5.25) rectangle (11, 6.75);
-      \draw (10, 6) node {meta-poky};
-
-      \fill [cyan!30] (9, 3.25) rectangle (11.65, 4.75);
-      \draw (10.3, 4) node {meta-poky-bsp};
-
-      \fill [white!40, rounded corners] (10.75, 1.25) rectangle (12.75, 2.5);
-      \draw (11.75, 1.9) node {\textbf{BitBake}};
-
-      \fill [white!40] (12.1, 7) rectangle (13.8, 8);
-      \draw (12.95, 7.5) node {Pseudo};
-
-      \fill [white!40] (12, 5.5) rectangle (13.8, 6.5);
-      \draw (13, 6) node {\textbf{$\cdots$}};
-
-      \fill [cyan!30] (1, -4) rectangle (11, -0.5);
-      \draw (2.5, -0.9) node {\textbf{meta-freescale}};
-
-      \fill [teal!50] (2, -2.35) rectangle (4, -1.25);
-      \draw (3, -1.75) node {recipes-bsp};
-
-      \fill [teal!50] (4.2, -2.35) rectangle (6.1, -1.25);
-      \draw (5.15, -1.75) node {recipes-fsl};
-
-      \fill [teal!50] (6.3, -2.35) rectangle (9.2, -1.25);
-      \draw (7.75, -1.75) node {recipes-graphics};
-
-      \fill [teal!50] (9.4, -2.35) rectangle (10.4, -1.25);
-      \draw (9.9, -1.75) node[text=teal] {\textbf{$\cdots$}};
-
-      \fill [teal!50] (2, -3.6) rectangle (4.05, -2.5);
-      \draw (3, -3) node {recipes-core};
-
-      \fill [teal!50] (4.25, -3.6) rectangle (6.75, -2.5);
-      \draw (5.4, -3) node {recipes-kernel};
-
-      \fill [teal!50] (6.95, -3.6) rectangle (10.4, -2.5);
-      \draw (8.65, -3) node {recipes-connectivity};
-
-      \fill [red!30] (11.5, -1.25) rectangle (13.5, -0.5);
-      \draw (12.5, -0.9) node {Entity};
-
-      \fill [cyan!30] (11.5, -2.25) rectangle (13.5, -1.5);
-      \draw (12.5, -1.9) node {Layer};
-
-      \fill [teal!50] (11.5, -3.25) rectangle (13.5, -2.5);
-      \draw (12.5, -2.9) node {Recipes};
-    \end{tikzpicture}}
   \end{figure}
 
 \end{frame}
@@ -401,9 +320,7 @@
         {
           Hosts Yocto Project \\
           Can Host an SDK \\
-          Can Build an SDK \\
-          Can Build an Image \\
-          Can Build an Application
+          Can Build SDKs,\\ Images, Applications
         };
 
       \draw [<-, very thick] (4.5, 5.2) -- (7.5, 5.2);
@@ -455,11 +372,11 @@
       \node [fill=cyan!20, draw=cyan, thick, minimum height=7em, minimum width=7em] (upstream) at (0, 0) {};
       \node [align=center] at ([yshift=-1.5em]upstream.north) {Upstream \\ Project};
       \node [align=center, font=\tiny] at ([yshift=2em]upstream.south) {Official version \\ Open Source};
-      \node [fill=yellow!20, draw=yellow!140, thick, minimum height=7em, minimum width=7em] (vendor) at ([xshift=5em]upstream.east){};
+      \node [fill=yellow!20, draw=yellow, thick, minimum height=7em, minimum width=7em] (vendor) at ([xshift=5em]upstream.east){};
       \draw [-{Latex}, very thick] (upstream.east) -- (vendor.west);
       \node [align=center] at ([yshift=-1.5em]vendor.north) {SoC vendor \\ fork};
       \node [align=center, font=\tiny] at ([yshift=2em]vendor.south) {Suppports SoC vendor \\ evaluation boards};
-      \node [fill=red!20, draw=red!140, thick, minimum height=7em, minimum width=7em] (system) at ([xshift=5em]vendor.east){};
+      \node [fill=red!20, draw=red, thick, minimum height=7em, minimum width=7em] (system) at ([xshift=5em]vendor.east){};
       \draw [-{Latex}, very thick] (vendor.east) -- (system.west);
       \node [align=center] at ([yshift=-1.5em]system.north) {Board/SoM \\ fork};
       \node [align=center, font=\tiny] at ([yshift=2em]system.south) {Supports board/SoM};
@@ -488,6 +405,20 @@
     \begin{tikzpicture}
       \node (mnist) at (0, 0) {\includegraphics{images/mnist.png}};
       \node [yshift=-0.25cm] at (mnist.south) {MNIST};
+    \end{tikzpicture}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Neural Network}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \node (network) at (0, 0)
+        {\includegraphics[scale=0.42]{images/network.png}};
+      \node at ([yshift=-2em]network.south) {$y_k = \sigma \left( \sum_{j=0}^m w_{kj} x_j \right)$};
     \end{tikzpicture}
   \end{figure}
 
@@ -597,15 +528,49 @@
 \section{Benchmark Applications}
 
 \begin{frame}
-  \frametitle{C based HDR-NN}
+  \frametitle{HDR-NN Implementations}
 
-  github.com/paperbound/hdrnn-arm
+  \hyperlink{https://github.com/paperbound/hdrnn-arm}{github.com/paperbound/hdrnn-arm}
+
+  \vspace{3em}
+
+  \begin{itemize}
+    \item \texttt{C} based HDR-NN
+    \item \texttt{C++} / \texttt{Eigen}
+    \item \texttt{C++} / \texttt{libtorch} (PyTorch)
+    \item \texttt{Python} / \texttt{Numpy}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{C based HDR-NN}
 
   \begin{figure}
     \centering
     \includegraphics[scale=0.32]{images/c-hdrnn.png}
     \includegraphics[scale=0.28]{images/c-ff.png}
   \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{C++ / Eigen based HDR-NN}
+
+  \begin{itemize}
+    \item \texttt{Eigen} is a \texttt{C++} template library \\ for linear algebra
+    \item Analogous to \texttt{Python} / \texttt{Numpy}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{C++ / libtorch  based HDR-NN}
+
+  \begin{itemize}
+    \item PyTorch doesn't support MCIMX6Q
+    \item Porting \texttt{libtorch} using QEMU
+  \end{itemize}
 
 \end{frame}
 
@@ -624,8 +589,20 @@
 
   \begin{figure}
     \centering
-    \includegraphics[scale=0.37]{images/usage.png}
+    \includegraphics[scale=0.42]{images/usage.png}
   \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Experiment Considerations}
+
+  \begin{itemize}
+    \item Try multiple shapes
+    \item Vary learning algorithm parameters
+    \item Compare Accuracies
+    \item Compare Execution Time
+  \end{itemize}
 
 \end{frame}
 
@@ -655,24 +632,23 @@
 \section{Discussion}
 
 \begin{frame}
-  \frametitle{Development Journey}
+  \frametitle{Reverse Engineering Scania ECU}
 
   \begin{itemize}
-    \item Linux, software packages for MCIMX6Q
-    \item Implementing back propagation in \texttt{C}
-    \item Implementing HDR-NN in \texttt{C}, \texttt{C++ / Eigen}
-    \item Compiling \texttt{libtorch} for \texttt{armv7hl}
+    \item Goal : Get a vanilla U-Boot running on ECU
+    \item Extract device tree information
+    \item Silent bootloader, No visibility into Board/SoM fork
   \end{itemize}
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Software Development \\ on Embedded Devices}
+  \frametitle{Neural Network Software Development \\ on Embedded Devices}
 
   \begin{itemize}
     \item Embedded Platforms are fragmented \\ in both \textit{hardware} and \textit{software}
-    \item Challenging to advance software
-    \item Research Approaches : Tiny ML, Tiny Training Engine
+    \item C is easier to target harder to Implement
+    \item Python commonly found in Neural Network Research, harder to port
   \end{itemize}
 
 \end{frame}
@@ -686,6 +662,14 @@
     \item Adding more target devices
     \item Adding more implementations (TTE)
   \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{End}
+
+  \centerline{{\Large Thank you}}
 
 \end{frame}
 
