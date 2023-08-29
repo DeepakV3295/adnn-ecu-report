@@ -1382,6 +1382,12 @@
 	opacity=0.9
 ]
 
+\tikzstyle{bigbox}=[
+	thick,
+	minimum height=9em,
+	minimum width=9em
+]
+
 \tikzstyle{next}=[
 	->,
 	very thick,

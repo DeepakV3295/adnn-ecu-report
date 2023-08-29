@@ -22,8 +22,8 @@ One such machine learning application that Scania has been developing in their \
 
 \begin{itemize}
 	\item Neural network training is computationally demanding and achieving good performance on embedded devices require careful resource management.
-	\item The full potential of implementing neural networks application on embedded devices has still not been realized. Approaches such as TensorFlow Lite, Edge Impulse, and STM Cube AI implemented along with other TinyML frameworks, enable running machine learning models targeted for small resource devices. However, these approaches are largely limited to inference capabilities. Approaches such as the Tiny Training Engine could potentially unlock the path to training neural network models on embedded devices.
-	\item An \textit{Original Equipment Manufacturer} (OEM) is responsible for the development and upkeep of the Scania ECU. However, the amount of information made available regarding the hardware design, memory layout, and operating system is restricted. To construct an embedded operating system for a customized hardware, critical details such as the device tree, memory organization, and boot flow are necessary. Obtaining this information from a functional board can be an enormous task requiring reverse engineering expertise.
+	\item The full potential of implementing neural networks application on embedded devices has still not been realized. Approaches such as TensorFlow Lite, Edge Impulse, and STM Cube AI implemented along with other TinyML frameworks, enable running machine learning models targeted for small resource devices. However, for the neural network models, these approaches are largely limited to inference capabilities. Approaches such as the Tiny Training Engine could potentially unlock the path to training neural network models on embedded devices.
+	\item The primary development of the Scania ECU was not completed in house. The information available to Scania regarding aspects of the hardware design is restricted. To construct an embedded operating system for a customized hardware, critical details such as the device tree, memory organization, and boot flow are necessary. Obtaining this information from a functional board can be a difficult task requiring reverse engineering expertise.
 \end{itemize}
 
 \subsubsection{Problem Description}
@@ -50,11 +50,13 @@ This chapter introduces several terms and techniques associated with embedded ap
 
 \section{Embedded Devices}
 
-Embedded systems perform a varied mixture of applications including industrial automation, consumer electronics, automotive, etc. and have capabilities ranging from ultra low power wireless data logging to thrust vector control on rocket ships. Depending on the application domain, embedded devices are generally designed in concert with multiple entities that are each responsible for a different component in the hardware-software stack.
+Embedded systems perform a varied mixture of applications including industrial automation, consumer electronics, automotive, etc. They have capabilities ranging from ultra low power wireless data logging to thrust vector control on rocket ships. Depending on the application domain, embedded devices are generally designed in concert with multiple entities. These entities may be industrial companies that are each responsible for a different hardware or software component.
 
 Consider an example of such an arrangement accounted in this paragraph. The semiconductor and software design company ARM produces ARM processors that are used in a significant fraction of embedded devices due to their power efficiency and versatility. \textit{Silicon vendors} such as Atmel, Qualcomm, NXP, Texas Instruments, etc. buy CPU core designs from ARM and create application processors along with a suite of electrical components in an integrated circuit referred to as a \textit{system on a chip} or SoC. Ultimately, a \textit{system maker} would select among these application processors, sensors, and other peripheral devices to design an embedded \textit{board} for a particular application domain. There are different practises that the industry adopts to create embedded devices for different applications and the example presented here is one among several. The embedded devices considered in this project derive from such a process.
 
-The configuration and functionality of peripheral devices and how they can interact with the processor on the SoC are decided by the silicon vendor. There are several architectural factors that go into this decision such as the computer organization, memory addressing model, supported instruction set architectures, etc. These decision in turn necessitates controller circuits such as for memory access, interrupt control, debug interfaces, etc. Another important component are controllers that enable communication to peripheral devices through standard serial communication buses such as Serial Peripheral Interface (SPI), Inter-Integrated Circuit (I2C), Universal Serial Bus (USB), Universal Asynchronous Receiver-Transmitter (UART) etc. More information on these protocols and their corresponding hardware connectors will be given in the next part of this section. The sum of these decision factors determine the hardware software interface of the SoC. A simplified diagram of an ARM based embedded board is presented in Figure \ref{fig:arm-scheme}
+The configuration and functionality of peripheral devices and how they can interact with the processor on the SoC are decided by the silicon vendor. There are several architectural factors that go into this decision such as the computer organization, memory addressing model, supported instruction set architectures, etc. These decision in turn necessitates controller circuits such as for memory access, interrupt control, debug interfaces, etc. Another important component are controllers that enable communication to peripheral devices. These controllers allow communication through standard serial communication buses such as Serial Peripheral Interface (SPI), Inter-Integrated Circuit (I2C), Universal Serial Bus (USB), Universal Asynchronous Receiver-Transmitter (UART), etc. The sum of the decision factors behind how the SoC is organized determine its hardware software interface.
+
+Depending on the application domain, a system maker has to select the right SoC, peripheral devices, and some additional controllers to facilitate communication with those peripherals. These components are then generally laid out on a Printed Circuit Board (PCB) there by creating the embedded board, sometimes also referred to as a System on Module (SoM). The PCB is then enclosed in some casing that also holds sensors or actuators that the embedded system requires. A simplified diagram of an ARM based embedded board is presented in Figure \ref{fig:arm-scheme}
 
 \begin{figure}[h]
 	\centering
@@ -271,9 +273,36 @@ ARM GNU toolchain is a GNU toolchain for ARM architecture that is released and m
 
 Building and maintaining Embedded Linux distributions with the Linux kernel and user mode applications require tools that can support multi-level build configurations, interface with or build a cross compiling toolchain, support \texttt{C} run times such as \textit{glibc} or \textit{musl} libc, and provide support for project management. There are several tools that provide this support such as OpenADK, The Yocto Project, Buildroot, OpenWrt, etc., with The Yocto Project and Buildroot being the most feature full and widely used Embedded Linux build systems. In comparison with Buildroot, the Yocto Project supports a greater variety of hardware and also has faster incremental build times as it caches the generated binaries \cite{yocto} making it ideal for managing Embedded Linux builds for diverse hardware devices. The Yocto Project with its ability to create tailored and optimized Linux distributions, its comprehensive toolset, and its focus on reproducibility and flexibility was chosen as the primary build system for this project and was used to generate the associated Embedded Linux and application programs.
 
-\subsubsection{The Target Embedded Device}
-
 Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware device. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\node [fill=cyan!20, draw=cyan, bigbox] (upstream) at (0, 0) {};
+		\node [align=center, font=\large] at ([yshift=-2em]upstream.north) {Upstream \\ Project};
+		\node [align=center, font=\small] at ([yshift=2em]upstream.south) {Official version \\ Open Source};
+		\node [fill=yellow!20, draw=yellow, bigbox] (vendor) at ([xshift=7em]upstream.east){};
+		\draw [-{Latex}, very thick] (upstream.east) -- (vendor.west);
+		\node [align=center, font=\large] at ([yshift=-2em]vendor.north) {SoC vendor \\ fork};
+		\node [align=center, font=\small] at ([yshift=2em]vendor.south) {Suppports SoC vendor \\ evaluation boards};
+		\node [fill=red!20, draw=red, bigbox] (system) at ([xshift=7em]vendor.east){};
+		\draw [-{Latex}, very thick] (vendor.east) -- (system.west);
+		\node [align=center, font=\large] at ([yshift=-2em]system.north) {Board/SoM \\ fork};
+		\node [align=center, font=\small] at ([yshift=2em]system.south) {Supports board/SoM};
+	\end{tikzpicture}
+	\caption{Software Sourcing for a Board Support Package}
+	\label{fig:software-versions}
+\end{figure}
+
+The process of sourcing software packages for a BSP involves several components, outlined in Figure \ref{fig:software-versions}. At the core of this process lies the \textit{Upstream Project}, which represents the official and open-source version of software components. An example of an upstream project would be the Linux source code. The upstream version is maintained by the broader community and serves as the foundation for various platforms. The development practises surrounding upstream projects are generally within the open source ethos.
+
+As the software moves downstream, it encounters forks created by SoC vendors. These \textit{SoC vendor forks} are tailored to support specific boards produced by the SoC vendors. The classic example would be of the \textit{evaluation board}. An evaluation board in this context is a hardware platform specifically designed by SoC vendors or other technology companies to showcase and evaluate the features and capabilities of a particular SoC. While the SoC vendor forks facilitate hardware-specific optimizations, they may lean more toward proprietary code and thus have a reduced level of openness compared to the upstream version.
+
+The subsequent downstream layer is of a \textit{Board/SoM fork}, where the software is adapted to cater to the intricacies of particular boards or System on Module. The fork is required to target the particular board as neither the upstream project, nor a SoC vendor fork may be easily used to get the necessary binaries to target the board. This layer introduces another level of customization and specialization but can also vary in terms of openness. In some cases, these forks might be proprietary or closely guarded, contributing to a degree of fragmentation within the embedded ecosystem. This fragmentation arises as different board and SoM makers create their own customized versions, potentially hindering interoperability and collaborative development efforts.
+
+In essence, the movement of software from upstream to downstream involves a trade-off between customization and openness. While customization is crucial for optimizing software to run efficiently on specific hardware, it's essential to strike a balance that promotes openness and collaboration. Overreliance on close-source forks can lead to ecosystem fragmentation, making it challenging to leverage the collective wisdom and expertise of the broader open-source community.
+
+\subsubsection{The Target Embedded Device}
 
 To port Linux onto a processor on a particular board requires creating a \textit{bootloader} program capable of that task as well. A bootloader is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the bootloader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
@@ -283,17 +312,9 @@ The initial target machine for the project was an ECU playing the role of a comm
 
 An important aspect for software development in general are the ideas behind Continuous Integration (CI) and Continuous Delivery (CD). CI/CD are modern software development practices that focus on automating and streamlining the process of building, testing, and deploying software. CI is the practise of frequently integrating code changes into a shared repository, performing automated tests to identify and fix issues that arise from such integration efforts, and promoting collaboration, early bug detection, and code quality improvements. CD extends the ideas in CI by automating the deployment of code to production environments. It enables rapid, reliable, and consistent software releases and aims to deliver code changes to end users quickly and efficiently. CI/CD practises foster a culture of automation and agility, allowing development teams to deliver high-quality software more frequently and with greater confidence. CI/CD has been quickly adopted to modern software development practises including embedded software development.
 
-\subsubsection{An excursion through Yocto Project's Embedded Linux build system}
-
-Embedded Linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, the number and the nature of Software Engineers using the tool, the CI/CD infrastructure, and the list of supported hardware devices. Consider a simple development scenario targetting the embedded hardware device MCIMX6Q-SDB, the primary hardware utilized for this report. The aim is to build and run an Embedded Linux distribution for the MCIMX6Q-SDB using a personal computer running Linux. Note that several of the code listings used in this discussion may break their interface, hence the emphasis is primarily on the essential concepts involved.
-
-The Yocto Project is arranged into several components out of which the core 3 components are BitBake, OpenEmbedded-Core, and Poky. BitBake is a build engine that interprets configuration files to schedule and then perform tasks. The configuration files, also called  \textit{recipes}, describe how to build a particular package such as a shared library or application program. Recipes contain information as to where to obtain the source code for a package, instructions for compiling the source code, and installing or removing that package from a distribution. OpenEmbedded-Core is a set of device and distribution independent recipes and other metadata. Poky is a reference system containing a collection of projects and tools that can be used to bootstrap a new distribution.
-
-The Yocto Project came out of the work associated with OpenEmbedded build automation framework and shares maintainership of the central parts of the OpenEmbedded build system with the OpenEmbedded project. OpenEmbedded-Core came out of a split of the recipe metadata held within OpenEmbedded. The big picture of the Yocto Project can be fairly complex and the amount of terminology and techniques associated with using the project causes the Yocto Project to have a steep learning curve. A simplified illustration of the Yocto Project is presented in Figure \ref{fig:yocto-overview}. A set of recipes (teal) sharing a common purpose are arranged into a \textit{layer} (cyan). Layers can depend on other layers, with multiple layers usually being used in a single Embedded Linux distribution. Note that a legend is also present in the bottom right of the diagram in Figure \ref{fig:yocto-overview}.
-
 \begin{figure}[h]
 	\centering
-	\begin{tikzpicture}[font=\small]
+	\begin{tikzpicture}[font=\small, scale=0.85]
 
 		\fill [fill=pink!20] (-0.5, -4.5) rectangle (14.5, 9.5);
 
@@ -382,91 +403,13 @@ The Yocto Project came out of the work associated with OpenEmbedded build automa
 	\label{fig:yocto-overview}
 \end{figure}
 
-The primary version control system used within the Yocto Project is git. The Yocto Project has several other software packages that are required for its build system, all of which are laid out in its documentation (see \href{https://docs.yoctoproject.org/}{docs.yoctoproject.org}). Furthermore, there are minimum versions for the required packages for a given version of its release (see \href{https://wiki.yoctoproject.org/wiki/Releases}{wiki.yoctoproject.org/wiki/Releases}).
+\subsubsection{An overview of the Yocto Project Embedded Linux build system}
 
-The following listing presents the typical required packages however, based on the Linux distribution of the development host the command will vary.
+Embedded Linux build systems can become fairly large and complicated software stacks depending on their supported development scenarios, the number and the nature of Software Engineers using the tool, the CI/CD infrastructure, and the list of supported hardware devices.
 
-\begin{minted}[bgcolor=lightgray]{bash}
-PACKAGE_MANAGER install bc make automake gcc gcc-c++ chrpath cpio diffstat gawk git python texinfo wget zstd lz4
-\end{minted}
+The Yocto Project is arranged into several components out of which the core 3 components are BitBake, OpenEmbedded-Core, and Poky. BitBake is a build engine that interprets configuration files to schedule and then perform tasks. The configuration files, also called  \textit{recipes}, describe how to build a particular package such as a shared library or application program. Recipes contain information as to where to obtain the source code for a package, instructions for compiling the source code, and installing or removing that package from a distribution. OpenEmbedded-Core is a set of device and distribution independent recipes and other metadata. Poky is a reference system containing a collection of projects and tools that can be used to bootstrap a new distribution.
 
-The above list is an incomplete example and relies on non-standard package names. Consulting the Yocto Project documentation provides a more accurate instruction as to the package names that are necessary to start with the Yocto Project on a given Linux distribution. An example install of the packages necessary on the Fedora 37 operating system as recommended by the Yocto Project documentation is given in the following code listing.
-
-\begin{minted}{bash}
-sudo dnf install gawk make wget tar bzip2 gzip python3 unzip perl patch diffutils diffstat git cpp gcc gcc-c++ glibc-devel texinfo chrpath ccache perl-Data-Dumper perl-Text-ParseWords perl-Thread-Queue perl-bignum socat python3-pexpect findutils which file cpio python python3-pip xz python3-GitPython python3-jinja2 SDL-devel rpcgen mesa-libGL-devel perl-FindBin perl-File-Compare perl-File-Copy perl-locale zstd lz4 hostname glibc-langpack-en
-\end{minted}
-
-For this section, consider the \textit{kirkstone} Long Term Support (LTS) release of the Yocto Project. To begin clone the Poky repository from \href{https://git.yoctoproject.com}{git.yoctoproject.com}
-
-\begin{minted}{bash}
-git clone https://git.yoctoproject.org/git/poky
-\end{minted}
-
-The Poky repository contains the OpenEmbedded-Core as well as the BitBake tool that is required for the build. NXP (previously \textit{freescale}) is the system maker and system vendor for the MCIMX6Q-SDB, and they provide a BSP layer in Yocto via the meta-freescale repository.
-
-\begin{minted}{bash}
-git clone https://git.yoctoproject.org/git/meta-freescale
-\end{minted}
-
-Checkout the kirkstone version of the different components by checking out the corresponding branches of the git repos. Using a different version of the Yocto Project would primarily mean checking out to a different branch or tag at this point.
-
-\begin{minted}{bash}
-git checkout kirkstone-4.0.11 # for poky
-\end{minted}
-
-\begin{minted}{bash}
-git checkout kirkstone # for meta-freescale
-\end{minted}
-
-Once the correct branches have been checked out, the next step is to bring the BitBake tool into the shell environment. The Poky repository contains scripts that facilitate this step. Create a directory (assumed that \texttt{\$BUILDDIR} holds the pathname) to manage the build configuration and output files, and run the setup script inside the Poky repo.
-
-\begin{minted}{bash}
-source poky/oe-init-build-env $BUILDDIR
-\end{minted}
-
-The script will set up BitBake along with some additional tools and scripts in the current shell environment and also creates a few directories in \texttt{\$BUILDDIR} along with some configuration files. Note that after sourcing the \texttt{oe-init-build-env} script, the shell switches to the \texttt{\$BUILDDIR} directory. The first configuration file to edit will be the \texttt{\$BUILDDIR/conf/bblayers.conf}. The \texttt{bblayers.conf} file contains a list of layers to be used in the Yocto Project set up. The \texttt{bitbake-layers} utility program can be used to list and modify the entries in the \texttt{bblayers.conf} file.
-
-\begin{minted}{bash}
-bitbake-layers show-layers # list layers in the Yocto Project set up
-\end{minted}
-
-The above code listings shows \texttt{bitbake-layers} being used to list the layers of Yocto Project set up. The command should then list the \texttt{meta}, \texttt{meta-poky}, and \texttt{meta-yocto-bsp} layers. The names of the layers may change with the particular version of the Yocto Project being used. The path corresponding to those layers and a priority value attached to the layers will also be shown by the \texttt{show-layers} command of \texttt{bitbake-layers}. The priority is a means for BitBake to choose between layers for searching a recipe for particular software package, since multiple layers may have instructions for the same package. The \texttt{meta-freescale} layer that was cloned in the previous command to some path \texttt{\$META\_FREESCALE\_PATH} can then be added to the Yocto Project configuration using the same utility.
-
-\begin{minted}{bash}
-bitbake-layers add-layer $META_FREESCALE_PATH
-\end{minted}
-
-The next step is to configure the build system for the MCIMX6Q-SDB. The Note that this step may also be avoided by setting the \texttt{\$MACHINE} environment variable.
-
-\begin{minted}{bash}
-# edit inside $BUILDDIR/conf/local.conf
-MACHINE = "imx6qdlsabresd"
-\end{minted}
-
-After \texttt{\$MACHINE} is configured correctly, BitBake can create a minimal image that can boot the MCIMX6Q-SDB by building the packages for \texttt{core-image-minimal} recipe. BitBake can parse a recipe file to determine a series of tasks to generate a software package or some binary artefacts. To satisfy the \texttt{core-image-minimal} recipe, BitBake has to perform a series of operations. BitBake has to parse a list of recipe files that are associated with the \texttt{core-image-minimal} recipe, examine the dependencies defined in the recipes and recursively determine all the software components that are required.
-
-\begin{minted}{bash}
-bitbake core-image-minimal # generate images for MCIMX6Q-SDB
-\end{minted}
-
-At this point the Yocto Project has been configured to find the correct metadata for building software packages and the Linux kernel for the MCIMX6Q-SDB. BitBake will proceed by first going through the \texttt{core-image-minimal} recipe to determine the order and list of tasks to be executed. After listing some information on the particular build configuration, it will then proceed to execute the tasks. The generated output images can be found in \texttt{\$BUILDDIR/tmp/deploy/images}. The path ends at the same name as the \texttt{\$MACHINE} variable name and contains several binary images. One way to use the resulting binary images to boot the MCIMX6Q-SDB is to use an SD card and the \textit{rootfs} image. The rootfs image should be named with the name of the machine, a time stamp, and the string \texttt{"rootfs"}.
-
-% TODO : Link to the Theory chapter section on Embedded Linux
-
-\begin{figure}[h]
-	\centering
-	\begin{tikzpicture}
-		\node (image) at (0, 0)
-			{\includegraphics[scale=0.34]{MCIMX6Q-SDB-BD.png}};
-		\draw[rounded corners=1ex, line width=2.1pt, yellow] (-6.5, 0.7) rectangle (-5.2, 1.9);
-	\end{tikzpicture}
-	\caption{MCIMX6Q-SDB-BD}
-	\label{fig:mcimx6q-sdb}
-\end{figure}
-
-Booting the board using this image is one way to verify the build completed by BitBake. Obtain and flash an SD card with the \textit{rootfs} image using a suitable program such as \texttt{dd}. Furthermore, the MCIMX6Q-SDB should be configured to boot from an SD card slot. The board can be configured to boot from the SD-3 slot by toggling the dip switches (shown in yellow highlights in Figure \ref{fig:mcimx6q-sdb}) to the configuration : \texttt{D1-OFF D2-ON D3,4,5,6-OFF D7-ON D8-OFF}.
-
-Assuming the previous steps were completed in a correct manner, the board should boot using the Embedded Linux that was created by BitBake using the \texttt{core-image-minimal} recipe. The Micro-B USB plug beside the previously mentioned dip switches can then be used to start a serial terminal emulator program using USB UART using a 115200 baud rate. Alternatively, the board should be accessible via the Ethernet interface also present on the MCIMX6Q-SDB.
+The Yocto Project emerged from the development of the OpenEmbedded build automation framework and jointly maintains core components of the OpenEmbedded build system. The OpenEmbedded Core originated from a separation of recipe metadata within OpenEmbedded.  The Yocto Project's overall structure can appear intricate, with a multitude of terms and techniques contributing to its steep learning curve. A simplified representation of the Yocto Project is shown in Figure \ref{fig:yocto-overview}. It depicts sets of recipes (teal) grouped into a \textit{layer} (cyan). Layers can have dependencies on other layers. Multiple layers are often used in a single Embedded Linux distribution. Note that a legend is also present in the bottom right of the diagram in Figure \ref{fig:yocto-overview}.
 
 \begin{figure}[h]
 	\centering
@@ -525,7 +468,7 @@ Assuming the previous steps were completed in a correct manner, the board should
 	\label{fig:yocto-dev}
 \end{figure}
 
-The Yocto Project can be used work on several aspects of Application and Kernel level development for Embedded Linux. Application development in the Yocto Project can be thought to have several practises such as arranging the information regarding the application packaging in a related metadata layer within BitBake recipes. The development process would also have multiple computer machines associated with it as shown in the diagram in Figure \ref{fig:yocto-dev}. In this model, the Yocto Project machine is the core environment for building the software stack, including the Linux kernel and user space applications. The development machine is used for coding, compiling, and debugging applications, while an embedded device runs the final images and executes the developed applications.
+The Yocto Project can be used work on several aspects of Application and Kernel level development for Embedded Linux. Application development in the Yocto Project can be thought to have several practises such as arranging the information regarding the application packaging in a related metadata layer within BitBake recipes. The development process would also have multiple computer machines associated with it as shown in the diagram in Figure \ref{fig:yocto-dev}. In this model, the Yocto Project machine is the core environment for building the software stack, including the Linux kernel and user space applications. The development machine is used for coding, compiling, and debugging applications, while an embedded device runs the final images and executes the developed applications. Appendix \hyperref[yocto-setup]{II} showcases an example usage of the Yocto Project.
 
 \subsection{Application development using QEMU}
 
@@ -533,7 +476,7 @@ Another common alternative to cross compiling in this manner is by using native 
 
 \subsubsection{An example Embedded Development Environment on Linux using QEMU}
 
-In this section let's consider a simple development environment capable of compiling and executing \texttt{C} programs for an \texttt{armv7} ARM processor using a personal computer running Linux. This setup leverages features of the Linux operating system running on the development host and the capabilities of the QEMU machine emulation system. The code listings in this section assumes a fedora workstation operating system and was tested using such a setup. As with the previous code listings within the section about the Yocto Project, some commands may break their interfaces, such as fedora\textquotesingle s package manager utility \texttt{dnf}. However, the general principles maybe used to create a similar setup on Linux distributions.
+In this section let's consider a simple development environment capable of compiling and executing \texttt{C} programs for an \texttt{armv7} ARM processor using a personal computer running Linux. This setup leverages features of the Linux operating system running on the development host and the capabilities of the QEMU machine emulation system. The code listings in this section were tested on a fedora workstation operating system. As with the previous code listings within the section about the Yocto Project, some commands may break their interfaces, such as fedora\textquotesingle s package manager utility \texttt{dnf}. However, the general principles maybe used to create a similar setup on Linux distributions.
 
 The Linux kernel has a feature called \texttt{binfmt\_misc} which stands for \textit{Miscellaneous Binary Format}. This feature allows for interpreter programs to be associated and invoked upon using certain binary format files. Together with the \texttt{chroot} command, \texttt{binfmt\_misc} can be leveraged to set up an environment that can use a QEMU emulator program to test and develop for a different architecture than that of the development host.
 
@@ -609,8 +552,6 @@ The possibilities in making embedded devices more involved in the neural network
 
 \subsection{Neural Network Training on Embedded Devices}
 
-Neural network training is a fundamental process in machine learning where a model learns to make predictions by adjusting its parameters based on input data. The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence, a computing device that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have specialized hardware features that allow for parallel vectorized executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. These hardware optimizations are particularly beneficial when dealing with larger datasets and complex network architectures.
-
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.28]{google-tpu.jpeg}
@@ -618,33 +559,40 @@ Neural network training is a fundamental process in machine learning where a mod
 	\label{fig:google-tpu}
 \end{figure}
 
+Neural network training is a fundamental process in machine learning where a model learns to make predictions by adjusting its parameters based on input data. The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence, a computing device that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have specialized hardware features that allow for parallel vectorized executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. These hardware optimizations are particularly beneficial when dealing with larger datasets and complex network architectures.
+
 Further specializations of hardware such as in the case of Application-Specific Integrated Circuits (ASICs) have improved upon this trend. Google's Tensor Processing Unit or TPU chip shown in Figure \ref{fig:google-tpu} is an example of such an ASIC meant to execute neural network operations, and other similar large matrix operations with great efficiency.
 
 Most of the existing embedded hardware are not especially designed for machine learning or neural network acceleration like the ASICs. Hence, it becomes important to understand the difficulties in moving the training of a neural network to the embedded devices and the capabilities of modern software systems to complete these implementations efficiently \cite{zhu2023ondevice}. On-Device training strategies also allow for the possibility of reducing the movement of data from embedded devices to achieve learning.
 
 \section{Federated Learning of Neural Networks}
 
-A significant problem in the traditional model for neural network application development in embedded devices is the consumption of network bandwidth associated with continual transmission of sensor data to the data lake. The data from different devices are combined to form the dataset that will be used to further train the model. However, this stream of data coming from the embedded device exposes the device to computer security risks such as an attacker gaining access to the behavioural data of the vehicle.
+The conventional approach to developing neural network applications on embedded devices presents a challenge due to the substantial network bandwidth consumed by continuously transmitting sensor data to a central data repository. The data from different devices are combined to form the dataset that will be used to further train the model. This data aggregation process, essential for building training datasets, exposes devices to security risks, potentially compromising sensitive behavioural information. A simplified diagram denoting the traditional model is presented in Figure \ref{fig:nn-traditional}.
 
 \begin{figure}[h]
 	\centering
 	\begin{tikzpicture}
-
 		\node (ecu) at (0,0) {\includegraphics[scale=2]{truck.png}};
-
+		\node at (ecu.south) {ECU};
 		\node (cloud) at (3.5, 2) {\includegraphics[scale=2]{db.png}};
-
+		\node at (cloud.north) {Data lake};
 		\node (server) at (7, 0) {\includegraphics[scale=2]{server.png}};
+		\node at (server.south) {Server};
 		\draw[-{Latex}, very thick, orange!90] ([xshift=14pt]server.north east) arc (355:0:0.25);
 
 		\draw[->,thick] (ecu) -- (cloud);
 		\draw[->,thick] (cloud) -- (server);
 		\draw[->,thick] (server) -- (ecu);
-
 	\end{tikzpicture}
+	\caption{Traditional neural network application architecture. Orange indicates neural network training}
+	\label{fig:nn-traditional}
 \end{figure}
 
 One way to address this problem is to rely on alternative mechanisms to perform the continual training of the model in a decentralized manner. Federated learning is a technique of training machine learning models in such a distributed way, where each client device uses its own data set to train a local model. After this local training session, the new model may be sent to a central server which will combine the different models to form a new global model. This may be then sent to the client devices for performing inference. There are several algorithmic strategies to choose from to combine the local training sessions based on the differences in the data set on the embedded devices.
+
+Training on the device optimizes bandwidth usage and minimizes latency. Instead of sending massive volumes of data over the network, only model updates which are typically much smaller are exchanged between the device and the central server. This not only conserves network resources but also accelerates the learning process, as computations occur on the device itself without waiting for data transfers. A simplified diagram representing federated learning is presented in Figure \ref{fig:nn-federated}.
+
+Federated learning allows for joint training of vast amounts of data without exchanging that data. Another aspect to consider is how the locally trained models are sent back to a central server for combining with other such models. Some form of gradient compressions strategies may be required to ensure that the model updates do not leak information about the data on board the embedded devices.
 
 \begin{figure}[h]
 	\centering
@@ -666,11 +614,14 @@ One way to address this problem is to rely on alternative mechanisms to perform 
 		}
 
 	\end{tikzpicture}
+	\caption{Federated Learning application architecture}
+	\label{fig:nn-federated}
 \end{figure}
+
+
 
 Federated learning implementations can thus differ based on how the distributed training takes place, the algorithm to combine different locally trained models, and other strategies used in completing the development loop. In the LOBSTR \cite{lobstr} and FAMOUS \cite{famous} projects Scania has developed statistical models and neural network models for anomaly detection using a federated learning approach. The statistical models are lightweight and can easily be trained with limited computational resources.
 
-Federated learning allows for joint training of vast amounts of data  without exchanging that data. Another aspect to consider is how the locally trained models are sent back to a central server for combining with other such models. Some form of gradient compressions strategies may be required to ensure that the model updates do not leak information about the data on board the embedded devices.
 
 % This thesis focuses on repurposing existing hardware (ECU) to machine learning edge devices that are tailored to train neural network in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto Project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the communicator to benchmark and experiment different neural network implementations and evaluate.
 
@@ -739,7 +690,9 @@ Once a neural network completes a training on a training set, it can then be use
 
 One of the most interesting characteristics of a neural network is its capacity to form probability weighted associations between a set of inputs and their corresponding outputs. The process of forming this association is called \textit{training} the neural network, the set of input patterns used for this purpose is called a \textit{training set}, and the algorithm by which the network is trained is called the \textit{learning algorithm}. After sufficient training, the network can also produce correct outputs to unseen inputs of the same kind.
 
-In the domain of neural network training, \textit{Stochastic Gradient Descent (SGD)} is the cornerstone learning algorithm. This technique enables neural networks to learn from data, adjust their parameters, and improve their performance over time. Visualize a vast and undulating landscape, which represents the state space of values that the neural network model can take. The objective of learning algorithm is to reach the lowest point in this landscape that corresponds to the least error in the neural network models. While a complete view of the terrain is concealed, the direction of the steepest descent underfoot can be discerned. This mirrors the role of \textit{gradient descent} in the learning algorithm.
+In the domain of neural network training, \textit{Stochastic Gradient Descent (SGD)} is the cornerstone learning algorithm. This technique enables neural networks to learn from data, adjust their parameters, and improve their performance over time. To provide a more insightful analogy, envision an expansive and undulating landscape representing the manifold possibilities of values a neural network model can have. This terrain serves as the state space for the learning algorithm. The aim of the learning algorithm is to locate the lowest point in this space. This point corresponds to the lowest error for the neural network model.
+
+While the complete view of the terrain will be hidden, the direction of the steepest descent can be understood as the path of with the least resistance. Similarly, the \textit{gradient descent} approach guides the learning algorithm by providing the values to adjust the network. In essence, SGD exploits this concept to iteratively adjust model parameters, descending towards optimal configurations, and thus facilitating the model's refinement and improved predictive capabilities over successive iterations.
 
 The goal of the SGD algorithm is to minimize a \textit{loss function}, which quantifies the discrepancy between the predicted outputs of the network and the actual target values. The gradient of this loss function provides the direction of the steepest ascent, and by moving in the opposite direction, we can descend toward the minimum. Mathematically, given a loss function $\mathcal{L}$ and parameters $w$, the gradient descent update step can be expressed as:
 
@@ -747,7 +700,7 @@ The goal of the SGD algorithm is to minimize a \textit{loss function}, which qua
     w_{new} = \theta - \eta \cdot \nabla \mathcal{L}(w)
 \end{equation}
 
-Here, $\nabla \mathcal{L}(w)$ is the gradient of the loss with respect to the current parameters $w$, and $\eta$ is the \textit{learning rate}, a hyperparameter that controls the step size. The learning rate governs the trade-off between \textit{convergence speed} and \textit{stability}. Convergence
+Here, $\nabla \mathcal{L}(w)$ is the gradient of the loss with respect to the current parameters $w$, and $\eta$ is the \textit{learning rate}, a hyperparameter that controls the step size. The learning rate governs the trade-off between \textit{convergence speed} and \textit{stability}. Convergence speed refers to how quickly a learning algorithm approaches its optimal solution while stability refers to the ability of the learning algorithm to consistently produce reliable and predictable results.
 
 Calculating the gradient over the entire dataset for each update can be computationally expensive. SGD addresses this challenge by introducing randomness and \textit{mini-batch sampling}. Instead of computing the gradient using all data points, SGD randomly selects a subset of the data called the \textit{mini-batch} for each update. This not only speeds up the computation but also adds a form of noise that can help the learning algorithm escape local minima.
 
