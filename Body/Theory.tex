@@ -37,16 +37,16 @@ The scope of the thesis is to repurpose the existing Scania ECU and explore the 
 This report is divided into three parts with multiple chapters containing several sections. The first part describes the background and introduces important information motivating the challenges in performing machine learning on embedded devices. The second part details the benchmark applications that were implemented to evaluate the processes of training neural networks on a specific target device. Lastly, the final part presents an analysis and discussion on implementing the training of a neural network.
 
 % ============================================
-%        Background
+%        Embedded Linux
 % ============================================
 
-\chapter{Background}
+\chapter{Embedded Linux}
 
 Developing and maintaining applications that rely on neural network models and run on a fleet of embedded devices has several considerations. The application deployment process should allow for continuous updates to the neural network, transfer data or model updates from the embedded devices to off-board analytics or machine learning pipelines, not interfere with the other applications on the embedded device, all the while maintaining correct representations in the neural network model. It is thus important to have an operating system that can support these applications with features such as process isolation, inter-process communication mechanisms, multitasking etc.
 
 The embedded device that is meant to run the neural network applications are the ECUs aboard a Scania vehicle. These ECUs have ARM application processor cores that are capable of running rich operating systems such as Linux distributions or real-time operating systems such as QNX, or VxWorks. All these operating systems also support hypervisors which allows for configurations where a host operating system runs standard automotive applications in addition to a guest operating system running the neural network application. This approach has the advantage of mitigating application crashes in the guest operating system and can provide a level of protection against software vulnerabilities \cite{Linux-guest-os}. The benchmark applications of interest in this report focuses on training neural network models on environments that use the Embedded Linux operating system.
 
-This chapter introduces several terms and techniques associated with embedded application development and starts with a small section on ARM based embedded boards and hardware connection interfaces. The next section gives an overview of the terminologies and processes associated with Embedded Linux and application development for Embedded Linux boards. The subsequent section introduces a discussion on neural network application development for embedded devices. The final section on federated learning motivates the efforts to study training of the neural network on embedded devices contrasting further with the conventional model of training neural network models for embedded devices.
+This chapter introduces several terms and techniques associated with embedded application development and starts with a section on ARM based embedded boards and hardware connection interfaces. The next section gives an overview of the terminologies and processes associated with Embedded Linux and application development for Embedded Linux boards.
 
 \section{Embedded Devices}
 
@@ -193,9 +193,49 @@ For network connectivity, embedded devices can integrate Ethernet ports or Wi-Fi
 
 There are even more interfaces commonly found within embedded devices such as the USB, or the Controller Area Network (CAN) communication protocol which is commonly used in automotive applications. These hardware connection interfaces are an important part of interfacing with embedded devices. They enable integrations with other sensors and devices, communication with the outside world, and control of the system. Each interface caters to specific use cases, contributing to the versatility and functionality of embedded systems across industries and applications.
 
-The upcoming sections explore the software development process for embedded devices that use the Embedded Linux operating system.
+The upcoming section explores yet more components of an embedded board, taking care to introduce the idea of the embedded linux boot sequence.
 
-\section{Embedded Linux and Application Development}
+\section{The Boot Sequence}
+
+The development, deployment, and maintenance of Embedded Linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as bootloaders, device tree layouts, flash memory, cross compiling toolchains, board support package, etc. Some of these concepts will be discussed in this section and others in the following section.
+
+A \textit{port} of an Embedded Linux distribution on an embedded hardware is said to be successfully completed when the processor on the board runs the Linux operating system of that distribution. The different stages and steps that the hardware undergoes in its path to reaching this stage depends primarily on the characteristics of the processor. The process of starting the computer is called \textit{booting} and the sequence of stages the board goes through while booting is called the \textit{boot sequence}. Embedded devices are greatly varied and hence there is great variance in how boot sequence take place.
+
+\subsection{An Overview of the Embedded Linux Boot Sequence}
+
+After power up, the processor requires initialization of its constituent hardware components. The processors usually found in ECUs will have this function performed by \textit{firmware} placed in a special purpose memory called the \textit{boot ROM}. Firmware is software that provides low level control of a devices specific hardware that is placed on embedded hardware by the silicon vendor or the system maker. The boot ROM, as the name suggests, is a type of read-only memory that is usually placed close to the processing unit. After powering on, the processor is said to come out of reset. The processor is designed to look up the memory mapped to the boot ROM after reset. The boot ROM code then starts executing on the processor and starts initializing peripheral devices, hardware busses, CPU registers, etc.
+
+After initializing the hardware, the boot ROM code is responsible for locating and loading a \textit{bootloader} program. A bootloader is responsible for placing an operating system into memory and handing over the control of the processor. At this point the boot ROM may also perform additional verification procedures such as a \textit{checksum} validation. Checksum is a small block of data derived from another usually larger block of data that is used for the purpose of detecting errors or performing data integrity checks. The boot ROM may have some way of checking the bootloader program data present inside a \textit{flash memory} and computing a checksum calculation to verify based on some notion of data integrity. The boot ROM may perform this validation before handing off the control to the bootloader program.
+
+Flash memory is a kind of non-volatile memory that can be electrically erased and reprogrammed and is commonly used for storing data and firmware. Flash memory comes in two kinds, NOR flash and NAND flash which have different performance characteristics and usage scenarios. Different flash memory standards rely on either a NOR flash or NAND flash based scheme. The \textit{embedded MultiMediaCard} (eMMC), is one among several memory card standards for solid state memory storage and uses the NAND flash.
+
+Bootloader programs are responsible for continuing the boot process and may have multiple stages with one stage loading another. The first stage of booting may deal primarily with configuring the memory controller, and the main memory such as a \textit{synchronous dynamic RAM} (SDRAM). The second stage of the boot process may then deal with identifying and preparing an operating system to complete the boot. The second stage may also have to configure additional peripheral devices, perhaps even provide an interface to select between different versions of operating systems available on across the peripheral memory devices. U-Boot is the most commonly used open source bootloader for embedded devices. U-Boot will normally be stored in some storage medium that will be accessible by the boot ROM code, usually some flash memory like the eMMC.
+
+U-Boot may also be divided into multiple stages, as described previously, on different flash memory. One such multistage division for U-Boot is into the \textit{Secondary Program Loader} (SPL) and a more fully featured U-Boot. SPL could then provide the first stage of the boot procedure and hand over control to the more fully featured U-Boot as the second stage. After getting control of the processor, U-Boot then has to take care of initializing the memory system, finding and then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the \textit{device tree}, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to dissuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
+
+U-Boot implements a subset of the Unified Extensible Firmware Interface (UEFI) specification outlining the architecture of the device firmware used to boot and its interaction interface with the operating system. The full feature set of U-Boot includes an UEFI compatible boot manager utility, a device management utility, explicit memory handling to allow data copying and kernel execution, and a command line interface (CLI) to provide access to these features.
+
+U-Boot starts by locating the kernel to be loaded. The linux kernel is usually stored in some compressed form and the first step U-Boot takes is to decompress that kernel from flash memory, onto the main memory. After U-Boot completes its tasks, it gives up control over the processor to the kernel. The control ends up with the \texttt{start\_kernel} method in the kernel code, which is an architecture independent starting point for the rest of the Linux kernel boot process. The kernel proceeds with yet more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices.
+
+The \textit{process} abstraction in Linux refers to the concept of treating running programs as independent and isolated entities that operate concurrently within the same system. Each process represents the execution of a program and is allocated its own view of memory and system resources like the CPU time and I/O operations. Processes in Linux are managed by the \textit{scheduler}. After configuring the processor, memory, and other peripherals, the kernel proceeds to complete its start up by setting up kernel data structures in memory, initializing the scheduler, setting up and allocating \textit{pages}, etc. A memory page is a fixed size block of data used in virtual memory systems serving as a unit for memory allocation, management, and data exchange between physical RAM and secondary storage devices. The virtual memory system is a memory management technique used by modern operating systems to provide an abstraction of a larger and more flexible memory space to applications than is physically available in the computer's physical RAM. It allows programs to use memory addresses that are independent of the actual physical addresses of the underlying hardware. This enables efficient memory usage, process isolation, and the ability to run larger programs than the available physical RAM would allow.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		\node [box] (rom) {Boot ROM};
+		\node [box, right=of rom] (uboot) {UBoot};
+		\node [box, right=of uboot] (kernel) {Kernel};
+		\node [box, right=of kernel] (init) {Init};
+
+		\draw [next] (rom) -- (uboot);
+		\draw [next] (uboot) -- (kernel);
+		\draw [next] (kernel) -- (init);
+	\end{tikzpicture}
+\end{figure}
+
+The kernel completes the start-up after initializing the root filesystem and spawning the \texttt{init} process, which is the first process to that starts after booting completes. The \texttt{init} process is responsible for bringing up several user level programs and system services. Processes are created through a mechanism called "forking," where an existing process (parent) generates a copy (child) with its own memory and execution state. The \texttt{init} process in this manner acts as the ancestor process for all other processes. Once the kernel has successfully initiated the init process, the user space environment is said to be instantiated and the higher-level processes and applications take over. At this point, the system becomes operational and ready for user interaction and application execution.
+
+\section{Embedded Application Development}
 
 Creating application programs and building a particular distribution of an Embedded Linux kernel requires a suite of software programs. This section presents an overview of aspects of this software stack, focusing on the categories of critical tools that facilitate development in the domain of Embedded Linux. Communicating with an embedded system requires hardware specific connectors and matching software tools. Additionally, the concept of the cross compiling toolchain will be explored, highlighting their significance in enabling developers to build software for hardware architectures different from the development machine. After that, the section explores a software system that is used to generate a bootable executable file for an Embedded Linux kernel. The concluding part of the section demonstrate the use of QEMU emulator as a means of embedded application development.
 
@@ -265,7 +305,7 @@ The software development toolchains for embedded devices are generally run on a 
 
 \subsubsection{A short introduction to the ARM GNU toolchain}
 
-A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<sys>} generally stands for the operating system or takes the special value \texttt{none} for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{<libc/abi>}. This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, or the target triple in LLVM\textquotesingle s Clang. Another naming convention used for the \texttt{<arch>} string when referring to ARM architectures is the use of strings such as \texttt{armv7} to denote the ARMv7 architecture found in ARM Cortex A (ARMv7-A), ARM Cortex R (ARMv7-R), and ARM Cortex M (ARMv7-M) cores.
+A toolchain can usually be described by a quadruple taking the general format \texttt{<arch>}-\texttt{<vendor>}-\texttt{<os>}-\texttt{<libc/abi>}. \texttt{<arch>} stands for the target CPU architecture for the binaries that will be produced by the toolchain, the system manufacturer or vendor who is responsible for the hardware is \texttt{<vendor>}, \texttt{<os>} generally stands for the operating system or takes the special value \texttt{none} for bare-metal, and the target application binary interface or \texttt{C} runtime is \texttt{<libc/abi>}. This tradition of naming toolchains exists across build automation tools, compiler projects, etc in different ways under different names such as system definitions in autoconf, or the target triple in LLVM\textquotesingle s Clang. Another naming convention used for the \texttt{<arch>} string when referring to ARM architectures is the use of strings such as \texttt{armv7} to denote the ARMv7 architecture found in ARM Cortex A (ARMv7-A), ARM Cortex R (ARMv7-R), and ARM Cortex M (ARMv7-M) cores.
 
 ARM GNU toolchain is a GNU toolchain for ARM architecture that is released and maintained by ARM and from open-source project GCC, Binutils, glibc, Newlib, and GDB. The toolchain supports \texttt{C} and \texttt{C++} languages and supports CPUs based on the A, R, and M profiles of the ARM architectures.
 
@@ -275,7 +315,7 @@ Building and maintaining Embedded Linux distributions with the Linux kernel and 
 
 Building an Embedded Linux kernel suited for a mainboard of an embedded device requires appropriate build configurations describing the kernel, its enabled feature, the device tree layout, i/o memory mapping, etc \cite{bootlin-port}. These parameters are a description of the devices on the mainboard, their interfaces to the processor, and the nature of the Embedded Linux that is to be managing the hardware device. The collection of software and configurations required to get an operating system running on a board is referred to as a \textit{Board Support Package} (BSP).
 
-\begin{figure}
+\begin{figure}[h]
 	\centering
 	\begin{tikzpicture}
 		\node [fill=cyan!20, draw=cyan, bigbox] (upstream) at (0, 0) {};
@@ -304,7 +344,7 @@ In essence, the movement of software from upstream to downstream involves a trad
 
 \subsubsection{The Target Embedded Device}
 
-To port Linux onto a processor on a particular board requires creating a \textit{bootloader} program capable of that task as well. A bootloader is responsible for placing an operating system into memory and handing over the control of the processor. The technical details as to how the bootloader has to be configured will be based on the particulars of the hardware that it will be configured for.
+To port Linux onto a processor on a particular board requires creating a bootloader program capable of that task as well. The technical details as to how the bootloader has to be configured will be based on the particulars of the hardware that it will be configured for.
 
 The initial target machine for the project was an ECU playing the role of a communicator on the truck. The BSP source code for the board however was unavailable as well as certain critical support components for the board, such as the system maker's Yocto meta layer, memory mapping for the attached devices, source codes for boot ROM firmware or the bootloader, etc. The reverse engineering efforts to attain this information were dropped due to time constraints, the details of the attempt to uncover this information is laid out in Appendix \hyperref[rtc-c300]{I}. Ultimately, the MCIMX6Q-SDB evaluation board (Figure \ref{fig:mcimx6q-sdb}) was chosen as an alternative to the ECU. The required information for the MCIMX6Q-SDB is publicly provided by processor chip vendor NXP.
 
@@ -530,109 +570,13 @@ int main()
 
 Development environments such as these are easy to set up and can prove valuable for rapid prototyping. Another use case may be as part of a CI/CD mechanism for a more complete embedded application development lifecycle.
 
-\section{Neural Network Application Development}
-
-The software development process for neural network application in industry has several steps. These steps include collecting and preparing the data, choosing a network architecture, implementing that model, training and evaluating the model, tuning the hyperparameters of the model, deploying the model to perform inference on new data, and monitoring and improving the model. This process requires several software components, network resources, computing devices, engineering personnel to come together for the effective deployment such an application.
-
-The most popular ways to write neural network models are by using machine learning frameworks such as Tensorflow, MXNet, PyTorch, Caffe, etc. all of which have Python as their primary programming language. As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Most neural network models are trained in a rich compute environments with dedicated machine learning computer systems or general purpose computer systems with plentiful operational capacities. Machine learning based companies and their service offerings such as cloud machine learning devices almost invariably target these hardware devices and provide software tools for developers to utilize on them. Developers in these devices enjoy several resources such as productivity tools that allows for CI/CD, performance profiling tools, etc \cite{Saucedo_Awesome_Production_Machine}.
-
-The programming environment for embedded devices however are not as feature full. Developer resources such as productivity tools for neural network application development and maintenance are lacking and the software stacks that are traditionally used are either too large or unsupported on the broader list of embedded hardware devices.
-
-\subsection{Choice of Programming Language and Machine Learning Framework}
-
-Another aspect to consider is the programming language and software stack used to describe a neural network application. Most machine learning models at present are written in Python and frameworks like PyTorch and Tensorflow have richer interfaces for Python compared to other programming languages. This may be unfavourable to embedded devices where a Python application may take up higher memory and have longer latencies. The programming language of choice for embedded applications is \texttt{C} and \texttt{C++} which are supported by the machine learning frameworks but not to the same extent as their Python interfaces.
-
-Machine learning frameworks also utilize multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute device its running on, Tensorflow determines the operations involved, execution order, etc. and execute the computation. At this stage Tensorflow may also use other software libraries such as Intel's oneMKL \cite{oneMKL} or XNNPACK \cite{XNNPACK} to perform the calculations.
-
-\subsection{Neural Network Inference on Embedded Devices}
-
-The typical deployment of neural network models on embedded devices follows a pattern of gathering sensor data from the embedded device onto an external data lake, training a neural network model using this data on workstations or cloud devices, then implementing the neural network model inference on the embedded device. Preferably the implementation utilize linear algebra kernel libraries that are made specifically for the embedded device and the popular machine learning frameworks may provide an avenue to transfer models written in them to target the embedded device.
-
-The possibilities in making embedded devices more involved in the neural network development process has been explored in research avenues such as TinyML \cite{tinyml}, and other efforts motivated by interests in getting the neural network applications ready for mobile devices such as Tensorflow Lite \cite{tfl} and PyTorch Mobile \cite{pytorch-mobile}. However, the primary approach in these cases is with a focus on making the neural network model inference step faster on these embedded devices. Efforts in enabling On-Device Training where the significant parts of the neural network model training happens on the embedded device is an area of active research.
-
-\subsection{Neural Network Training on Embedded Devices}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=0.28]{google-tpu.jpeg}
-	\caption{Google's TPU Chip}
-	\label{fig:google-tpu}
-\end{figure}
-
-Neural network training is a fundamental process in machine learning where a model learns to make predictions by adjusting its parameters based on input data. The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence, a computing device that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have specialized hardware features that allow for parallel vectorized executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. These hardware optimizations are particularly beneficial when dealing with larger datasets and complex network architectures.
-
-Further specializations of hardware such as in the case of Application-Specific Integrated Circuits (ASICs) have improved upon this trend. Google's Tensor Processing Unit or TPU chip shown in Figure \ref{fig:google-tpu} is an example of such an ASIC meant to execute neural network operations, and other similar large matrix operations with great efficiency.
-
-Most of the existing embedded hardware are not especially designed for machine learning or neural network acceleration like the ASICs. Hence, it becomes important to understand the difficulties in moving the training of a neural network to the embedded devices and the capabilities of modern software systems to complete these implementations efficiently \cite{zhu2023ondevice}. On-Device training strategies also allow for the possibility of reducing the movement of data from embedded devices to achieve learning.
-
-\section{Federated Learning of Neural Networks}
-
-The conventional approach to developing neural network applications on embedded devices presents a challenge due to the substantial network bandwidth consumed by continuously transmitting sensor data to a central data repository. The data from different devices are combined to form the dataset that will be used to further train the model. This data aggregation process, essential for building training datasets, exposes devices to security risks, potentially compromising sensitive behavioural information. A simplified diagram denoting the traditional model is presented in Figure \ref{fig:nn-traditional}.
-
-\begin{figure}[h]
-	\centering
-	\begin{tikzpicture}
-		\node (ecu) at (0,0) {\includegraphics[scale=2]{truck.png}};
-		\node at (ecu.south) {ECU};
-		\node (cloud) at (3.5, 2) {\includegraphics[scale=2]{db.png}};
-		\node at (cloud.north) {Data lake};
-		\node (server) at (7, 0) {\includegraphics[scale=2]{server.png}};
-		\node at (server.south) {Server};
-		\draw[-{Latex}, very thick, orange!90] ([xshift=14pt]server.north east) arc (355:0:0.25);
-
-		\draw[->,thick] (ecu) -- (cloud);
-		\draw[->,thick] (cloud) -- (server);
-		\draw[->,thick] (server) -- (ecu);
-	\end{tikzpicture}
-	\caption{Traditional neural network application architecture. Orange indicates neural network training}
-	\label{fig:nn-traditional}
-\end{figure}
-
-One way to address this problem is to rely on alternative mechanisms to perform the continual training of the model in a decentralized manner. Federated learning is a technique of training machine learning models in such a distributed way, where each client device uses its own data set to train a local model. After this local training session, the new model may be sent to a central server which will combine the different models to form a new global model. This may be then sent to the client devices for performing inference. There are several algorithmic strategies to choose from to combine the local training sessions based on the differences in the data set on the embedded devices.
-
-Training on the device optimizes bandwidth usage and minimizes latency. Instead of sending massive volumes of data over the network, only model updates which are typically much smaller are exchanged between the device and the central server. This not only conserves network resources but also accelerates the learning process, as computations occur on the device itself without waiting for data transfers. A simplified diagram representing federated learning is presented in Figure \ref{fig:nn-federated}.
-
-Federated learning allows for joint training of vast amounts of data without exchanging that data. Another aspect to consider is how the locally trained models are sent back to a central server for combining with other such models. Some form of gradient compressions strategies may be required to ensure that the model updates do not leak information about the data on board the embedded devices.
-
-\begin{figure}[h]
-	\centering
-	\begin{tikzpicture}[rounded corners, opacity=0.87]
-
-		\readlist\Trucks {1,2,3,4}
-		\foreachitem \x \in \Trucks
-		{
-			\node (ecu \x) at ({0 + 2.5 * (\x-1)}, 0) {\includegraphics[scale=2]{truck.png}};
-		}
-
-		\node[inner xsep=21pt] (server) at (3.5, 2) {\includegraphics[scale=1.8]{server.png}};
-		\draw[-{Latex}, very thick, orange!90] ([yshift=-7pt]server.north east) arc (355:0:0.25);
-
-		\foreachitem \x \in \Trucks
-		{
-			\draw[<->,thick] (ecu \x.north) -- (server);
-			\draw[-{Latex}, very thick, orange!50] ([yshift=-7pt]ecu \x.north east) arc (355:0:0.25);
-		}
-
-	\end{tikzpicture}
-	\caption{Federated Learning application architecture}
-	\label{fig:nn-federated}
-\end{figure}
-
-
-
-Federated learning implementations can thus differ based on how the distributed training takes place, the algorithm to combine different locally trained models, and other strategies used in completing the development loop. In the LOBSTR \cite{lobstr} and FAMOUS \cite{famous} projects Scania has developed statistical models and neural network models for anomaly detection using a federated learning approach. The statistical models are lightweight and can easily be trained with limited computational resources.
-
-
-% This thesis focuses on repurposing existing hardware (ECU) to machine learning edge devices that are tailored to train neural network in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto Project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the communicator to benchmark and experiment different neural network implementations and evaluate.
-
-
 % ============================================
-%        Theory
+%        Neural Networks in Embedded Devices
 % ============================================
 
-\chapter{Theory}
+\chapter{Neural Networks in Embedded Devices}
 
-The first section in this chapter lays out an overview of the training process of neural networks. The following section introduces some terminology associated with software development for embedded devices, contextualized in Embedded Linux.
+Neural networks are computational models inspired by the human brain, designed to learn from data and make intelligent predictions, finding applications in various fields like image recognition and natural language processing. The neural network applications that are used in embedded devices involve implementing these models on compact hardware, enabling intelligent decision-making directly on devices like IoT sensors and smartphones, reducing the need for constant data transfer to central servers and enhancing real-time capabilities. This chapter lays out an overview of the neural network, focusing on the training process of neural networks.
 
 \section{Neural Networks}
 
@@ -710,38 +654,94 @@ Calculating the gradient over the entire dataset for each update can be computat
 
 Another important improvement to how the learning algorithm works is in techniques used to calculate the gradient weights. The \textit{backpropagation} algorithm is a critical mechanism used to update the weights of a neural network during the training process. It involves computing the gradients of the network's loss function with respect to its parameters by traversing the network in reverse order, from output to input layers. These gradients quantify the impact of each parameter on the overall error, enabling the network to adjust its parameters in a direction that minimizes the error. Backpropagation in SGD enhances the convergence of the optimization process by iteratively adjusting weights based on the computed gradients and a small learning rate, ultimately guiding the network towards better performance and improved ability to generalize to unseen data.
 
-\section{Embedded Linux}
+\section{Neural Network Application Development}
 
-As presented in the previous chapter, the development, deployment, and maintenance of Embedded Linux distributions and their user mode applications are usually managed using capable build systems. Configuring these systems requires understanding concepts such as bootloaders, device tree layouts, flash memory, cross compiling toolchains, board support package, etc. with the later two having already been introduced in the preceding chapter.
+The software development process for neural network application in industry has several steps. These steps include collecting and preparing the data, choosing a network architecture, implementing that model, training and evaluating the model, tuning the hyperparameters of the model, deploying the model to perform inference on new data, and monitoring and improving the model. This process requires several software components, network resources, computing devices, engineering personnel to come together for the effective deployment such an application.
 
-Porting an Embedded Linux distribution on some embedded hardware completes successfully when the processor on the board is able to run the Linux operating system. Depending on hardware several paths may be taken by the processor to reach this stage after powering on. This process of starting the computer is called \textit{booting} and the sequence of stages the board goes through is called \textit{boot sequence}. Embedded devices are greatly varied and hence there is great variance in how boot sequence take place. The next part of this section introduces yet more concepts and terminology around the boot sequence for a commonly used embedded board running an Embedded Linux.
+The most popular ways to write neural network models are by using machine learning frameworks such as Tensorflow, MXNet, PyTorch, Caffe, etc. all of which have Python as their primary programming language. As most neural network applications are written in frameworks like PyTorch and Tensorflow, they have thriving ecosystems that provide rich developer support. Most neural network models are trained in a rich compute environments with dedicated machine learning computer systems or general purpose computer systems with plentiful operational capacities. Machine learning based companies and their service offerings such as cloud machine learning devices almost invariably target these hardware devices and provide software tools for developers to utilize on them. Developers in these devices enjoy several resources such as productivity tools that allows for CI/CD, performance profiling tools, etc \cite{Saucedo_Awesome_Production_Machine}.
 
-\subsection{An Overview of the Standard Boot Sequence}
+The programming environment for embedded devices however are not as feature full. Developer resources such as productivity tools for neural network application development and maintenance are lacking and the software stacks that are traditionally used are either too large or unsupported on the broader list of embedded hardware devices.
 
-After power up, the processor requires initialization of its constituent hardware components. The processors usually found in ECUs will have this function performed by \textit{firmware} placed in a special purpose memory called \textit{boot ROM}. Firmware is software that provides low level control of a devices specific hardware that is placed on embedded hardware by the silicon vendor or the system maker. The boot ROM, as the name suggests, is a type of read-only memory that is usually placed close to the processing unit. After powering on, the processor is said to come out of reset. The processor is designed to look up the memory mapped to the boot ROM after reset. The boot ROM code then starts executing on the processor and starts initializing peripheral devices, hardware busses, CPU registers, etc. After initializing the hardware, the boot ROM code is responsible for locating and loading a bootloader program. At this point the boot ROM may also perform additional verification procedures such as \textit{checksum} validation. Checksum is a small block of data derived from another usually larger block of data that is used for the purpose of detecting errors or performing data integrity checks. The boot ROM may have some way of checking the data present inside a flash memory and computing a checksum calculation to verify based on some notion of data integrity. This location is usually on some external memory to the processor such as an \textit{embedded MultiMediaCard} (eMMC). eMMC is one among several memory card standards for solid state memory storage.
+\subsection{Choice of Programming Language and Machine Learning Framework}
 
-Bootloader programs are responsible for continuing the boot process and may have multiple stages with one stage loading another. The first stage of booting may deal primarily with configuring the memory controller, and the main memory such as a \textit{synchronous dynamic RAM} (SDRAM). The second stage of the boot process may then deal with identifying and preparing an operating system to complete the boot. The second stage may also have to configure additional peripheral devices, perhaps even provide an interface to select between different versions of operating systems available on across the peripheral memory devices. U-Boot is the most commonly used open source bootloader for embedded devices. U-Boot will normally be stored in some storage medium that will be accessible by the boot ROM code, usually some flash memory. Flash memory is a kind of non-volatile memory that can be electrically erased and reprogrammed and is commonly used for storing data and firmware. Flash memory comes in two kinds, NOR flash and NAND flash which have different performance characteristics and usage scenarios. Different flash memory standards rely on either a NOR flash or NAND flash based scheme, for e.g. the eMMC standard uses NAND flash.
+Another aspect to consider is the programming language and software stack used to describe a neural network application. Most machine learning models at present are written in Python and frameworks like PyTorch and Tensorflow have richer interfaces for Python compared to other programming languages. This may be unfavourable to embedded devices where a Python application may take up higher memory and have longer latencies. The programming language of choice for embedded applications is \texttt{C} and \texttt{C++} which are supported by the machine learning frameworks but not to the same extent as their Python interfaces.
 
-U-Boot may also be divided into multiple stages, as described previously, on different flash memory. One such multistage division for U-Boot is into the \textit{Secondary Program Loader} (SPL) and a more fully featured U-Boot. SPL could then provide the first stage of the boot procedure and hand over control to the more fully featured U-Boot as the second stage. After getting control of the processor, U-Boot then has to take care of initializing the memory system, finding then loading the Linux kernel into an appropriate location in memory, generate boot parameters for the kernel, and copy other required data for the kernel. The kernel is also commonly stored on a flash memory on board. One of the configuration data that U-Boot has to pass to the kernel is the device tree, which is a data structure describing the hardware layout. Device trees were adopted in Linux and the embedded industry in general to allow mainline Linux and U-Boot to use the device tree to run on a particular board configuration, and to dissuade the creation of U-Boot and Linux forks to target marginally different boards \cite{device-tree}.
+Machine learning frameworks also utilize multiple software libraries meant for specific aspects of performing machine learning calculations. For instance, a neural network model described in Python using Keras gets converted to a computational graph representation in Tensorflow. Then depending on the model, its invocation, and the compute device its running on, Tensorflow determines the operations involved, execution order, etc. and execute the computation. At this stage Tensorflow may also use other software libraries such as Intel's oneMKL \cite{oneMKL} or XNNPACK \cite{XNNPACK} to perform the calculations.
 
-U-Boot implements a subset of the Unified Extensible Firmware Interface (UEFI) specification outlining the architecture of the device firmware used to boot and its interaction interface with the operating system. The full feature set of U-Boot includes an UEFI compatible boot manager utility, a device management utility, explicit memory handling to allow data copying and kernel execution, and a command line interface (CLI) to provide access to these features.
+\subsection{Neural Network Inference on Embedded Devices}
 
-U-Boot starts by locating the kernel to be loaded. The linux kernel is usually stored in some compressed form and the first step U-Boot takes is to decompress that kernel from flash memory, onto the main memory. After U-Boot completes its tasks, it gives up control over the processor to the kernel. The control ends up with the \texttt{start\_kernel} method in the kernel code, which is an architecture independent starting point for the rest of the Linux kernel boot process. The kernel proceeds with yet more configuration steps such as configuring the memory, processor, peripherals, cache, and other hardware devices.
+The typical deployment of neural network models on embedded devices follows a pattern of gathering sensor data from the embedded device onto an external data lake, training a neural network model using this data on workstations or cloud devices, then implementing the neural network model inference on the embedded device. Preferably the implementation utilize linear algebra kernel libraries that are made specifically for the embedded device and the popular machine learning frameworks may provide an avenue to transfer models written in them to target the embedded device.
 
-The \textit{process} abstraction in Linux refers to the concept of treating running programs as independent and isolated entities that operate concurrently within the same system. Each process represents the execution of a program and is allocated its own view of memory and system resources like the CPU time and I/O operations. Processes in Linux are managed by the \textit{scheduler}. After configuring the processor, memory, and other peripherals, the kernel proceeds to complete its start up by setting up kernel data structures in memory, initializing the scheduler, setting up and allocating \textit{pages}, etc. A memory page is a fixed size block of data used in virtual memory systems serving as a unit for memory allocation, management, and data exchange between physical RAM and secondary storage devices. The virtual memory system is a memory management technique used by modern operating systems to provide an abstraction of a larger and more flexible memory space to applications than is physically available in the computer's physical RAM. It allows programs to use memory addresses that are independent of the actual physical addresses of the underlying hardware. This enables efficient memory usage, process isolation, and the ability to run larger programs than the available physical RAM would allow.
+The possibilities in making embedded devices more involved in the neural network development process has been explored in research avenues such as TinyML \cite{tinyml}, and other efforts motivated by interests in getting the neural network applications ready for mobile devices such as Tensorflow Lite \cite{tfl} and PyTorch Mobile \cite{pytorch-mobile}. However, the primary approach in these cases is with a focus on making the neural network model inference step faster on these embedded devices. Efforts in enabling On-Device Training where the significant parts of the neural network model training happens on the embedded device is an area of active research.
+
+\subsection{Neural Network Training on Embedded Devices}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.28]{google-tpu.jpeg}
+	\caption{Google's TPU Chip}
+	\label{fig:google-tpu}
+\end{figure}
+
+Neural network training is a fundamental process in machine learning where a model learns to make predictions by adjusting its parameters based on input data. The bulk of the mathematical operations involved in training a neural network are simply addition and multiplication instructions of floating point values. Hence, a computing device that is executing a learning algorithm for some neural network is issuing a series of floating point addition and multiplication instructions. Modern computers have specialized hardware features that allow for parallel vectorized executions of these multiply and add instructions, all in an effort to improve the training efficiency of neural networks. These hardware optimizations are particularly beneficial when dealing with larger datasets and complex network architectures.
+
+Further specializations of hardware such as in the case of Application-Specific Integrated Circuits (ASICs) have improved upon this trend. Google's Tensor Processing Unit or TPU chip shown in Figure \ref{fig:google-tpu} is an example of such an ASIC meant to execute neural network operations, and other similar large matrix operations with great efficiency.
+
+Most of the existing embedded hardware are not especially designed for machine learning or neural network acceleration like the ASICs. Hence, it becomes important to understand the difficulties in moving the training of a neural network to the embedded devices and the capabilities of modern software systems to complete these implementations efficiently \cite{zhu2023ondevice}. On-Device training strategies also allow for the possibility of reducing the movement of data from embedded devices to achieve learning.
+
+\section{Federated Learning of Neural Networks}
+
+The conventional approach to developing neural network applications on embedded devices contain a challenge due to the substantial network bandwidth consumed by continuously transmitting sensor data to a central data repository. The data from different devices are combined to form the dataset that will be used to further train the model. This data aggregation process, essential for building training datasets, exposes devices to security risks, potentially compromising sensitive behavioural information. A simplified diagram denoting the traditional model is presented in Figure \ref{fig:nn-traditional}.
 
 \begin{figure}[h]
 	\centering
 	\begin{tikzpicture}
-		\node [box] (rom) {Boot ROM};
-		\node [box, right=of rom] (uboot) {UBoot};
-		\node [box, right=of uboot] (kernel) {Kernel};
-		\node [box, right=of kernel] (init) {Init};
+		\node (ecu) at (0,0) {\includegraphics[scale=2]{truck.png}};
+		\node at (ecu.south) {ECU};
+		\node (cloud) at (3.5, 2) {\includegraphics[scale=2]{db.png}};
+		\node at (cloud.north) {Data lake};
+		\node (server) at (7, 0) {\includegraphics[scale=2]{server.png}};
+		\node at (server.south) {Server};
+		\draw[-{Latex}, very thick, orange!90] ([xshift=14pt]server.north east) arc (355:0:0.25);
 
-		\draw [next] (rom) -- (uboot);
-		\draw [next] (uboot) -- (kernel);
-		\draw [next] (kernel) -- (init);
+		\draw[->,thick] (ecu) -- (cloud);
+		\draw[->,thick] (cloud) -- (server);
+		\draw[->,thick] (server) -- (ecu);
 	\end{tikzpicture}
+	\caption{Traditional neural network application architecture. Orange indicates neural network training}
+	\label{fig:nn-traditional}
 \end{figure}
 
-The kernel completes the start-up after initializing the root filesystem and spawning the \texttt{init} process, which is the first process to that starts after booting completes. The \texttt{init} process is responsible for bringing up several user level programs and system services. Processes are created through a mechanism called "forking," where an existing process (parent) generates a copy (child) with its own memory and execution state. The \texttt{init} process in this manner acts as the ancestor process for all other processes. Once the kernel has successfully initiated the init process, the user space environment is said to be instantiated and the higher-level processes and applications take over. At this point, the system becomes operational and ready for user interaction and application execution.
+One way to address this problem is to rely on alternative mechanisms to perform the continual training of the model in a decentralized manner. Federated learning is a technique of training machine learning models in such a distributed way, where each client device uses its own data set to train a local model. After this local training session, the new model may be sent to a central server which will combine the different models to form a new global model. This may be then sent to the client devices for performing inference. There are several algorithmic strategies to choose from to combine the local training sessions based on the differences in the data set on the embedded devices.
+
+Training on the device optimizes bandwidth usage and minimizes latency. Instead of sending massive volumes of data over the network, only model updates which are typically much smaller are exchanged between the device and the central server. This not only conserves network resources but also accelerates the learning process, as computations occur on the device itself without waiting for data transfers. A simplified diagram representing federated learning is presented in Figure \ref{fig:nn-federated}.
+
+Federated learning allows for joint training of vast amounts of data without exchanging that data. Another aspect to consider is how the locally trained models are sent back to a central server for combining with other such models. Some form of gradient compressions strategies may be required to ensure that the model updates do not leak information about the data on board the embedded devices.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[rounded corners, opacity=0.87]
+
+		\readlist\Trucks {1,2,3,4}
+		\foreachitem \x \in \Trucks
+		{
+			\node (ecu \x) at ({0 + 2.5 * (\x-1)}, 0) {\includegraphics[scale=2]{truck.png}};
+		}
+
+		\node[inner xsep=21pt] (server) at (3.5, 2) {\includegraphics[scale=1.8]{server.png}};
+		\draw[-{Latex}, very thick, orange!90] ([yshift=-7pt]server.north east) arc (355:0:0.25);
+
+		\foreachitem \x \in \Trucks
+		{
+			\draw[<->,thick] (ecu \x.north) -- (server);
+			\draw[-{Latex}, very thick, orange!50] ([yshift=-7pt]ecu \x.north east) arc (355:0:0.25);
+		}
+
+	\end{tikzpicture}
+	\caption{Federated Learning application architecture}
+	\label{fig:nn-federated}
+\end{figure}
+
+Federated learning implementations can thus differ based on how the distributed training takes place, the algorithm to combine different locally trained models, and other strategies used in completing the development loop. In the LOBSTR \cite{lobstr} and FAMOUS \cite{famous} projects Scania has developed statistical models and neural network models for anomaly detection using a federated learning approach. The statistical models are lightweight and can easily be trained with limited computational resources.
+
+% This thesis focuses on repurposing existing hardware (ECU) to machine learning edge devices that are tailored to train neural network in the most efficient possible way. We try to reverse engineer the old communicator model to build a custom Yocto Project tailored for ML. As alternative test ECU we use an evaluation board that has similar specifications as the communicator to benchmark and experiment different neural network implementations and evaluate.
