@@ -2,7 +2,7 @@
 
 The traditional model for deploying neural network applications on embedded devices has over time developed the neural network inference step. The popular frameworks for machine learning such as PyTorch and Tensorflow provide approaches for porting neural network models written using those frameworks with a focus on allowing for model inference on embedded platforms. Under this paradigm, training would be completed on more powerful hardware and the data would have to be collected separately to allow for the continual training of the neural network model. Targetting even smaller devices with Tensorflow based neural network models is possible for neural network inference applications via Tensorflow Lite Micro \cite{tflm} further expanding the range of platforms that this paradigm applies. Efforts to allow training as well in these frameworks require more effort due to the memory and computation intensive nature of the training process. Another reason for the delay in adopting training on board is fragmented nature of embedded ecosystem and the difficulties involved in streamlining features for any machine learning framework that would have to support the varied hardware platforms in the ecosystem.
 
-This part of the report contains the description of multiple application programs that train a neural network model for the purpose of benchmarking the training step on an embedded device. The neural network structure, the learning algorithm, and the dataset remain the same across the implementations however they are completed in a traditional general purpose neural network frameworks as well as straightforward implementations in \texttt{C}, \texttt{C++}, and Python. The design of the neural network is based on a textbook example and is kept configurable to allow for testing across different neural network architectures. Greater detail on the design is presented in the first chapter, followed by another chapter describing the different implementations.
+This part of the report contains the description of multiple application programs that train a neural network model for the purpose of benchmarking the training step on an embedded device. The neural network structure, the learning algorithm, and the dataset remain the same across the implementations however they are completed in a traditional general purpose neural network frameworks as well as straightforward implementations in \texttt{C}, \texttt{C++}, and Python. The design of the neural network is based on a textbook example and is kept configurable to allow for testing across different neural network architectures. Greater detail on the design is presented in the first chapter, followed by another chapter describing the different implementations. Note that the code for the application programs are present on \href{https://github.com/paperbound/hdrnn-arm}{github.com/paperbound/hdrnn-arm}
 
 % ============================================
 %        Design
@@ -254,11 +254,9 @@ The iMX6 series is designed for high performance low power applications and targ
 
 With the primary focus on training, MNIST dataset was primarily loaded in an easily readable format appropriate to the corresponding paradigms and the correctness verification routines and execution statistics measurement runs were separated. The benchmark executions did not produce disk I/O after the dataset was read, unlike the correctness verification runs which produced the final weights from the execution runs that were subsequently compared with the other benchmark program execution output weights.
 
-% TODO : Fill in greater detail on the different implementations
-
 \subsection{The Reference HDR-NN in Python}
 
-This is the baseline implementation and follows close to the implementation exhibited on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library NumPy. The following listing shows the function that performs feedforward pass in the Network.
+This is the baseline implementation and follows close to the implementation exhibited on \href{http://neuralnetworksanddeeplearning.com}{neuralnetworksanddeeplearning.com}. The implementation uses the n-dimensional array data structure present in the popular Python programming language library NumPy. The following listing shows the function that performs feedforward pass in the Network. Note that in the rest of the report this implementation is also referred to by the shorthand \texttt{python-numpy}.
 
 \begin{minted}[fontsize=\small]{python}
 class Network(object):
@@ -275,15 +273,83 @@ def feedforward(self, a):
 	return a
 \end{minted}
 
-% \subsection[Tensorflow Lite]{Tensorflow Lite based HDR-NN}
+\subsection{C based HDR-NN}
 
-% Developing ANNs on tensorflow using Keras is straightforward with good support and well documented APIs. Building the same model for a Tensorflow Lite (TFLite) was more involved however still straightforward
+The \texttt{C} implementation had the least amount of external dependencies, other than the \texttt{C} standard library. The data structures of the neural network contain float arrays within structs as shown in the listing below. The learning algorithm was implemented to remain identical with those used in the other implementations.
+
+The \texttt{C} implementation has the most lines of code, somewhat reflecting its complexity in terms of completing the implementation. The shorthand for this implementation is \texttt{c-math.h}.
+
+\begin{minted}[fontsize=\small]{c}
+/* HDR Neural Network */
+typedef struct
+{
+	float bias;
+	float *weights;
+	float *nabla_w;
+} Neuron;
+
+typedef struct LayerT
+{
+	int size;
+	int incidents;
+	Neuron *neurons;
+	float *activations;
+	float *z_values;
+	float *nabla_b;
+	struct LayerT *next;
+	struct LayerT *previous;
+} Layer; // Network layers except for input
+
+typedef struct
+{
+	Layer *layers;
+	int depth;
+} Network; // HDRNN
+\end{minted}
+
+\subsection{C++ based HDR-NN}
+
+The \texttt{C++} implementation used the n-dimensional arrays of popular \texttt{C++} linear algebra library, Eigen. It is a straight forward port of the same structure and learning algorithm as the NumPy based Python implementation. A portion of the learning algorithm is shown in the listing below. The shorthand for this implementation is \texttt{cpp-eigen}.
+
+Compared to the \texttt{C} version, the \texttt{C++} version uses the richer language feature set of \texttt{C++} such as namespaces, classes, etc. The \texttt{C++} implementation uses the popular build automation tool \texttt{CMake} instead of the GNU autotools setup adopted by the \texttt{C} implementation.
+
+\begin{minted}[fontsize=\small]{cpp}
+void mini_batch_sgd()
+{
+	// Initialize Nabla matrixes
+	std::vector<nabla> nablas;
+	for (std::size_t i = 0; i < network.size(); i++)
+		nablas.push_back(
+				nabla(network[i].weights.rows(),
+					network[i].weights.cols())
+				);
+
+	// Go through the training data by batches
+	for (std::size_t i = 0; i < mnist_loader::train.size()
+				; i += BATCH_SIZE)
+	{
+		// Perform Backpropagation on the batch
+		for (std::size_t j = 0; j < BATCH_SIZE; j++)
+			back_propogate(nablas,
+					mnist_loader::train[i+j].data,
+					mnist_loader::train[i+j].label);
+
+		// Update the weights and biases of the network
+		for (std::size_t j = 0; j < network.size(); j++)
+			network[j].update(nablas[j]);
+
+		// Zero out the nabla matrixes
+		for (std::size_t j = 0; j < nablas.size(); j++)
+			nablas[j].zero_out();
+	}
+}
+\end{minted}
 
 \subsection{PyTorch based HDR-NN}
 
 Developing ANNs using PyTorch is straightforward with good support and well documented APIs. There were two primary choices for programming language to write the neural network in PyTorch, namely Python and C++. The PyTorch project does not provide binaries for either language choice for \texttt{armv7hl} however with the source code of the project being available, the libtorch binaries were generated as mention in the previous section.
 
-The implementation used the MNIST made available by Torchvision library which is maintained under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the NumPy based Python implementation.
+The implementation used the MNIST made available by Torchvision library which is maintained under the PyTorch project and configured a Module to implement the same learning algorithm as that outlined in the NumPy based Python implementation. The shorthand for this implementation is \texttt{cpp-libtorch}.
 
 \begin{minted}[fontsize=\small]{cpp}
 struct Net : torch::nn::Module
@@ -328,75 +394,4 @@ struct Net : torch::nn::Module
 	// Use one of many "standard library" modules.
 	std::vector<torch::nn::Linear> fc_list{};
 };
-\end{minted}
-
-
-\subsection{C based HDR-NN}
-
-The \texttt{C} implementation had the least amount of external dependencies, other than the \texttt{C} standard library. The data structures of the neural network contain float arrays within structs as shown in the listing below. The learning algorithm was implemented to remain identical with those used in the other implementations.
-
-\begin{minted}[fontsize=\small]{c}
-/* HDR Neural Network */
-typedef struct
-{
-	float bias;
-	float *weights;
-	float *nabla_w;
-} Neuron;
-
-typedef struct LayerT
-{
-	int size;
-	int incidents;
-	Neuron *neurons;
-	float *activations;
-	float *z_values;
-	float *nabla_b;
-	struct LayerT *next;
-	struct LayerT *previous;
-} Layer; // Network layers except for input
-
-typedef struct
-{
-	Layer *layers;
-	int depth;
-} Network; // HDRNN
-\end{minted}
-
-\subsection{C++ based HDR-NN}
-
-The \texttt{C++} implementation used the n-dimensional arrays of popular \texttt{C++} linear algebra library, Eigen. It is a straight forward port of the same structure and learning algorithm as the NumPy based Python implementation. A portion of the learning algorithm is shown in the listing below.
-
-Compared to the \texttt{C} version, the \texttt{C++} version uses the richer language feature set of \texttt{C++} such as namespaces, classes, etc. The \texttt{C++} implementation uses the popular build automation tool \texttt{CMake} instead of the GNU autotools setup adopted by the \texttt{C} implementation.
-
-\begin{minted}[fontsize=\small]{cpp}
-void mini_batch_sgd()
-{
-	// Initialize Nabla matrixes
-	std::vector<nabla> nablas;
-	for (std::size_t i = 0; i < network.size(); i++)
-		nablas.push_back(
-				nabla(network[i].weights.rows(),
-					network[i].weights.cols())
-				);
-
-	// Go through the training data by batches
-	for (std::size_t i = 0; i < mnist_loader::train.size()
-				; i += BATCH_SIZE)
-	{
-		// Perform Backpropagation on the batch
-		for (std::size_t j = 0; j < BATCH_SIZE; j++)
-			back_propogate(nablas,
-					mnist_loader::train[i+j].data,
-					mnist_loader::train[i+j].label);
-
-		// Update the weights and biases of the network
-		for (std::size_t j = 0; j < network.size(); j++)
-			network[j].update(nablas[j]);
-
-		// Zero out the nabla matrixes
-		for (std::size_t j = 0; j < nablas.size(); j++)
-			nablas[j].zero_out();
-	}
-}
 \end{minted}

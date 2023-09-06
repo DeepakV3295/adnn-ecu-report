@@ -6,7 +6,7 @@ A hand digit recognition neural network (HDR-NN) model is implemented in \texttt
 
 HDR-NN is implemented in different paradigms, specifically \texttt{C}, \texttt{C++}, Python, and PyTorch. Each of these applications contain a fully connected feedforward neural network composed of multiple layers of neurons connected in a directed graph. The model has a constant input size of 784 which correspond to the 28 x 28 pixel dimensions of the images of the MNIST dataset. The output size of the network is 10, corresponding to the 10 possible digits that the image contains. The number and size of the hidden layers are configurable in each of the different implementations.
 
-The MNIST dataset was selected to train the model, which contains 60,000 training images and 10,000 test images of handwritten digits. The model is trained using stochastic gradient descent, which is an optimization algorithm used to minimize a loss function. The back propagation algorithm is used to calculate the gradients of the loss function with respect to the weights of the network. Finally, the mean square error loss function is used to measure the difference between the predicted output and the actual output of the network. The values of the biases and weights are initialized randomly with the PNGR random generator and a starting seed which are chosen to be identical for the different benchmark applications. The training hyperparameters for the benchmark runs are set to 1 epoch with a batch size of 10, a learning rate of 3, with the network using the sigmoid activation function.
+The MNIST dataset was selected to train the model, which contains 60,000 training images and 10,000 test images of handwritten digits. The model is trained using stochastic gradient descent, which is an optimization algorithm used to minimize a loss function. The back propagation algorithm is used to calculate the gradients of the loss function with respect to the weights of the network. Finally, the mean square error loss function is used to measure the difference between the predicted output and the actual output of the network. The training hyperparameters for the benchmark runs are set to 1 epoch with a batch size of 10, a learning rate of 3, with the network using the sigmoid activation function.
 
 It is essential that the hardware utilized for benchmarking closely resemble the i.MX6 processor on Scania ECUs, as this will make it easier to replicate the experiment on a repurposed ECU and will also provide the most precise results. The MCIMX6Q-SDB evaluation board has four 32-bit Cortex A9 cores. The Cortex A9 core is equipped with ARM V7 instruction set architecture and a powerful VFPv3 floating point unit with NEON SIMD capabilities. The processor has 32 KB instruction and data L1 caches, 1 MB L2 cache and 1 GB DDR3 SDRAM memory. The benchmark applications are designed to be run on a single core of the i.MX6 processor, although it supports quad-core, to ensure the experiment is straightforward and easier to manage. This will also guarantee that the results are precise and accurate.
 
@@ -15,8 +15,6 @@ The Yocto project is used to create an Embedded Linux distribution for the \text
 The accuracy of the model is evaluated after each training epoch on the MNIST test set. After the training of the model for 30 epochs, the final weights and biases of the network and the accuracy on the test set are saved for analysis. This data is used to verify the correctness of the neural network model in each benchmark application.
 
 The GNU time program is a great tool for monitoring the performance of applications. It allows us to measure the execution time and peak memory usage, which is used to compare the effectiveness of training the neural network model on the custom hardware implemented with different paradigms.
-
-A python script was developed to run the experiment, executing each of the benchmark applications (\texttt{C}, \texttt{C++}, Python, PyTorch) one after the other. Every benchmark application is designed to be repeated 10 times, and all the measurements for each of the hidden layer configurations are saved for each of these iterations. The average values of the model accuracy, execution time and peak memory usage across all iterations are utilized for the analysis.
 
 % ============================================
 %        Measurement
@@ -79,7 +77,9 @@ The general suite of compiler optimizations from GCC 11.3 are clever enough to u
 
 \section{Profiling Analysis}
 
-A \texttt{perf\_events} based record was conducted using the \texttt{perf} utility for all the programs. Flame graphs were generated for the same as shown attached in Appendix \hyperref[hdrnn-profile]{III} revealing the areas where the applications were spending the most time on.
+A \texttt{perf\_events} based record was conducted using the \texttt{perf} utility for all the programs. A stack profiling was made from the CPU during the benchmark program execution. Stack profiling is a crucial aspect of CPU profiling that involves the collection of data on the sequence of function calls in an application's execution. Linux's \texttt{perf\_events} perform stack trace sampling, capturing the hierarchy of function calls. A sampled stack trace might reveal a series of function calls, illustrating the code-path ancestry. To manage the data volume, profiler sampling rate was set to 99 times per second for the duration of a single epoch of training in the benchmark program. Flame graphs are a visualization technique developed to tackle complex profiles. They depict CPU time distribution across function calls, making it easier to pinpoint performance issues.
+
+Flame graphs were generated for the benchmark applications are attached in Appendix \hyperref[hdrnn-profile]{III} revealing the areas where each of the applications were spending the most time on.
 
 \subsection{Memory Profile}
 
@@ -110,6 +110,7 @@ As the benchmark applications are developed to be identical by keeping the same 
 The primary measures used to evaluate the program performance was execution time and memory utilization while the applications completed their neural network training.
 
 \subsection{Execution Time}
+
 The training time of the neural network applications increases exponentially as the network size increases by the power of 2 because the number of parameters in a fully connected network increases exponentially as the number of neurons increases. This leads to an increase in the amount of calculations needed for the network to learn, resulting in a longer run time for the training process. This behaviour can be observed in Figure \ref{hdrnn-exectime} where the execution time increases drastically as number of parameters increases.
 
 \begin{figure}[!ht]
@@ -120,7 +121,8 @@ The training time of the neural network applications increases exponentially as 
 \end{figure}
 
 \subsection{Peak Memory Usage}
-Regardless of the hidden layer sizes, the peak memory utilization remains constant for the neural network application across all implementations. The \texttt{C++}, Eigen implementation has the lowest run time memory footprint, while Python NumPy is the least efficient.
+
+Regardless of the hidden layer sizes, the peak memory utilization remains constant for the neural network application across all implementations. The \texttt{cpp-eigen} implementation has the lowest run time memory footprint, while \texttt{python-numpy} is the least efficient.
 
 \begin{table}[h]
 	\centering
@@ -140,7 +142,7 @@ Regardless of the hidden layer sizes, the peak memory utilization remains consta
 	\caption[Peak Memory Utilization]{Peak Memory Utilized for a single epoch during training based on Maximum Resident Set Size measure (MB)}
 \end{table}
 
-Note that the device RAM is 1024 MB however the peak memory utilization for both \texttt{C} and NumPy are higher than this value. This can be explained by over allocation of memory by the operating system utilizing the swap space. The peak memory utilization measure is using the Maximum resident set size measure, which is roughly the total amount of physical memory assigned to a process at a given point in time. It does not count pages that have been swapped out, or that are mapped from a file but not currently loaded into physical memory.
+Note that the device RAM is 1024 MB however the peak memory utilization for both \texttt{c-math.h} and \texttt{python-numpy} are higher than this value. This can be explained by over allocation of memory by the operating system utilizing the swap space. The peak memory utilization measure is using the Maximum resident set size measure, which is roughly the total amount of physical memory assigned to a process at a given point in time. It does not count pages that have been swapped out, or that are mapped from a file but not currently loaded into physical memory.
 
 % ============================================
 %        Discussion
@@ -148,41 +150,63 @@ Note that the device RAM is 1024 MB however the peak memory utilization for both
 
 \chapter{Discussion}
 
-This chapter contains discussions on the experience while working on the project with the first section examining the process of developing the benchmark applications. The last section describes in brief the distribution of work on the project between the two authors.
-
-% TODO : Introduce discussion of Benchmark results. Compare the different implementations
+This chapter contains discussions on the benchmark application performance and on the experience while working on the project. The first section compares the performance of the different implementations while the second section examines the process of developing the benchmark applications. The last section describes in brief the distribution of work on the project between the two authors.
 
 \section{Comparing Benchmark Applications}
 
-As the benchmark applications share identical structures and configurations, it is expected that the model accuracy will be consistent. Figure \ref{hdrnn-accuracy} illustrates that the various implementations perform comparably across different parameter counts. However, an anomaly arises when the parameter count exceeds 101,770, as seen in the accuracy drop of the \texttt{C} implementation, possibly due to an unidentified bug.
+As the benchmark applications share identical structures and configurations, it is expected that the model accuracy will be consistent. Figure \ref{hdrnn-accuracy} illustrates that the various implementations perform comparably across different parameter counts. The accuracy values of the different implementations are the most similar for the shapes that are between 8 and 64.
 
-\begin{figure}[!ht]
+However, there are anomalous behaviour in the different implementation such as the drastic loss in accuracy for the \texttt{c-math.h} implementation due to an undiscovered bug. Another aspect of the performance is that the memory consumption of the programs do not seem to increase much by the varying the size of the neural network model. Although the memory consumption invariably increases for an increase in the number of parameters of the neural network model \ref{fig:memory-shape}, this increase is however not a significant part of the program memory as a whole.
+
+Figure \ref{fig:comparison-libtorch} shows the comparison of \texttt{cpp-libtorch} with the other implementations. It is calculated as the percentage of 1 - ($\frac{x}{y}$) where $x$ is performance value of \texttt{cpp-libtorch} and $y$ is performance value of the other application. Figures \ref{fig:comparison-cmath}, \ref{fig:comparison-eigen}, and \ref{fig:comparison-numpy} all contain a similar comparison. The performance metrics chosen were accuracy and execution time. Note that for the accuracy graphs, values to the left of 0 are better, since that would give higher accuracy. For the execution time graphs, values to the right of 0 are better since that corresponds to smaller execution time.
+
+\begin{figure}[ht]
 	\centering
-	\includegraphics[scale=0.40]{exec_time_comparisons}
-	\caption[Execution Time vs Model Parameters]{Percentage difference in accuracies between the implementations.}
-	\label{fig:comparison-exec-time}
+	\scalebox{0.81}{\input{Body/images/comparison-accuracy-libtorch.pgf}}
+	\scalebox{0.81}{\input{Body/images/comparison-exectime-libtorch.pgf}}
+	\caption{Percentage difference in performance of \texttt{cpp-libtorch} with the other implementations.}
+	\label{fig:comparison-libtorch}
 \end{figure}
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[scale=0.30]{peak_memory_comparisons}
-	\caption[Peak Memory Utilisation]{Percentage difference in peak memory utilized between the implementations}
-	\label{fig:comparison-peak-memory}
+	\scalebox{0.81}{\input{Body/images/comparison-accuracy-cmath.pgf}}
+	\scalebox{0.81}{\input{Body/images/comparison-exectime-cmath.pgf}}
+	\caption{Percentage difference in performance of \texttt{c-math.h} with the other implementations.}
+	\label{fig:comparison-cmath}
 \end{figure}
 
-Figures \ref{fig:comparison-exec-time} and \ref{fig:comparison-peak-memory} show the comparison between \texttt{C}-\texttt{C++} Eigen, \texttt{C++} Eigen-\texttt{Python} Numpy and \texttt{C}-\texttt{Python} Numpy. It is calculated as the percentage of 1 - ($\frac{x}{y}$) where $x$ is performance value of the application which has lower value and $y$ is performance value of the application that has higher number.
+\begin{figure}[ht]
+	\centering
+	\scalebox{0.81}{\input{Body/images/comparison-accuracy-eigen.pgf}}
+	\scalebox{0.81}{\input{Body/images/comparison-exectime-eigen.pgf}}
+	\caption{Percentage difference in performance of \texttt{cpp-eigen} with the other implementations.}
+	\label{fig:comparison-eigen}
+\end{figure}
 
-\subsection{C vs Eigen}
+\begin{figure}[ht]
+	\centering
+	\scalebox{0.81}{\input{Body/images/comparison-accuracy-numpy.pgf}}
+	\scalebox{0.81}{\input{Body/images/comparison-exectime-numpy.pgf}}
+	\caption{Percentage difference in performance of \texttt{python-numpy} with the other implementations.}
+	\label{fig:comparison-numpy}
+\end{figure}
 
-For smaller models, \texttt{C} exhibits superior speed over Eigen (e.g., 38\% faster for a network size of 1600). As the model complexity grows, \texttt{C++} Eigen's performance surpasses \texttt{C}, with execution time differences less than 15\%. However, there are noticeable differences that emerge at larger network sizes. Both the \texttt{C} and \texttt{C++} Eigen proves 26\% faster than Eigen. Further investigation is needed to pinpoint the source of this anomaly. Eigen excels in memory utilization, outperforming \texttt{C} by 30\%.
+\subsection{\texttt{python-numpy}}
 
-\subsection{C vs Numpy}
+\texttt{python-numpy} is the least performant with respect to both its execution time and memory consumption. Comparing the accuracy values as show in \ref{fig:comparison-numpy} shows that there are swings in both directions, meaning that for some shapes \texttt{python-numpy} shows up with better accuracies and worse accuracies for yet other shapes. Execution times for \texttt{python-numpy} is consistently worse compared to other implementations, regardless of the shape of the neural network. The difference between \texttt{c-math} and \texttt{python-numpy} for smaller neural network shapes goes slightly above a factor of 10. For larger neural network sizes \texttt{cpp-libtorch} beats out \texttt{python-numpy} by a factor of 5.
 
-Notably, \texttt{C} consistently outperforms Numpy. In the case of a network size of 101,770, \texttt{C} exhibits a remarkable 62\% speed advantage. Numpy, however, consumes 17\% more runtime memory compared to \texttt{C}.
+\subsection{\texttt{c-math.h}}
 
-\subsection{Eigen vs Numpy}
+\texttt{c-math.h} accuracy is similar to other implementations except around the extremes as mentioned previously. Execution time for \texttt{c-math.h} is better than \texttt{cpp-eigen} and \texttt{python-numpy} for all shapes of the neural network model. \texttt{c-math.h} beats \texttt{cpp-libtorch} for smaller ranges of the neural network model shapes by a factor of near 2 however for larger networks \texttt{cpp-libtorch} becomes faster. For the largest neural network model shape \texttt{c-math.h} is slower by a factor of 2 compared to the faster \texttt{cpp-libtorch}. \texttt{c-math.h} is still faster than the other implementations by at least 25\% for all shapes.
 
-Similar to the \texttt{C} comparison, Eigen consistently outpaces Numpy across various network sizes, maintaining similar speed differentials. Eigen shines in memory efficiency, surpassing Numpy by 42\%.
+\subsection{\texttt{cpp-eigen}}
+
+\texttt{cpp-eigen} accuracies are comparable to the other implementations. The execution times for \texttt{cpp-eigen} is consistently better than \texttt{python-numpy} but worse than the \texttt{c-math.h} implementation. For smaller neural network model shapes, \texttt{cpp-eigen} has better execution times than \texttt{cpp-libtorch}. \texttt{cpp-libtorch} has better execution times for larger neural network model shapes.
+
+\subsection{\texttt{cpp-libtorch}}
+
+\texttt{cpp-libtorch} sometimes presents worse accuracies compared to \texttt{c-math.h} and \texttt{cpp-eigen} however, \texttt{cpp-libtorch} has the best the accuracy for the smallest neural network model shape of 2 hidden neurons. Execution time for \texttt{cpp-libtorch} is consistently better than \texttt{python-numpy} however for smaller neural network model shapes, \texttt{c-math.h} and \texttt{cpp-eigen} both have better execution times. For shapes from 32 onward, \texttt{cpp-libtorch} exhibits faster execution times than any other implementation.
 
 \section{Developer Experience}
 
@@ -223,6 +247,10 @@ The initial mandate on the project was to repurpose the Scania ECU to provide a 
 \subsection{Porting to Scania ECU}
 
 Repurposing the Scania ECU is a technical challenge that was left incomplete during the project. The experience as detailed in Appendix \hyperref[rtc-c300]{II} and throughout the report. The attempt concluded without having ported the Embedded Linux onto the board. Further information on the device tree layout may be extracted by leveraging the \texttt{/proc/device-tree} Linux interface and a binary disassembly of the bootloader on-board the device could reveal more information about the memory layout. These efforts were dropped in favour of continuing the work on the MCIMX6Q-SDB.
+
+\subsection{Benchmark Applications}
+
+Adding more implementations to the benchmark application would make the overall benchmark better. Efforts were made to add a \texttt{Rust} implementation, however cross compiling to the target MCIMX6Q proved difficult. Another aspect to improve the all the existing benchmark implementations would be to fix the initial state of the neural network models. The values of the biases and weights are initialized randomly with a \textit{Pseudo Random Number Generator} (PRNG) and a starting seed. If the implementation of the PRNG could be made the same, then the similarity of the implementation of the algorithm could be compared effectively by comparing the final weights that are produced.
 
 \subsection{On Device Training}
 
