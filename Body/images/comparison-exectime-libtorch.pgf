@@ -866,7 +866,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=4.825421in,y=0.220972in,,top]{\color{textcolor}\sffamily\fontsize{9.000000}{10.800000}\selectfont vs cpp-libtorch}%
+\pgftext[x=4.825421in,y=0.220972in,,top]{\color{textcolor}\sffamily\fontsize{9.000000}{10.800000}\selectfont vs python-numpy}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetrectcap%
