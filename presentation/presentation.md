@@ -35,6 +35,20 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - Trucks are another example of embedded systems
 - Embedded Device example is an Electronic Control Unit ECU aboard a Scania truck
 
+## Traditional Paradigm
+
+- Embedded devices collects data to a Database, Data collected at Databased, and used by a Server to perform neural network model training (figure)
+- Neural network development and training on a resource rich environment (server)
+- Inference applications on the ECU
+- Training and Inference separated
+- Requires utilizing bandwidth to send data
+
+## Federated Learning
+
+- Data privacy concerns pioneered federated learning approaches
+- Models further trained on ECU, data kept on device
+- Central Server performs aggregation
+
 ## Goal : Neural Network Training on Scania ECU
 
 (one)
@@ -156,21 +170,6 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - Show an example not in the set
 
 (_Benchmark Applications_)
-
-
-## Traditional Paradigm
-
-- Embedded devices collects data to a Database, Data collected at Databased, and used by a Server to perform neural network model training (figure)
-- Neural network development and training on a resource rich environment (server)
-- Inference applications on the ECU
-- Training and Inference separated
-- Requires utilizing bandwidth to send data
-
-## Federated Learning
-
-- Data privacy concerns pioneered federated learning approaches
-- Models further trained on ECU, data kept on device
-- Central Server performs aggregation
 
 ## HDR-NN Implementations
 

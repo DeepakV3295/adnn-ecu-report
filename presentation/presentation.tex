@@ -117,6 +117,60 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Traditional Paradigm}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+
+      \node (ecu) at (0,0) {\includegraphics[scale=2]{../Body/images/truck.png}};
+      \node [font=\small] at (ecu.south) {ECU};
+      \draw[very thick, blue!90] ([yshift=-7pt,xshift=-7pt]ecu.north west)-- (ecu.north west) -- ([xshift=-5pt]ecu.north west) -- ([xshift=2pt,yshift=7pt]ecu.north west);
+
+      \node (cloud) at (3.5, 2)
+        {\includegraphics[scale=2]{../Body/images/db.png}};
+      \node [font=\small] at (cloud.north) {Database};
+
+      \node (server) at (7, 0) {\includegraphics[scale=2]{../Body/images/server.png}};
+      \node [font=\small] at (server.south) {Server};
+      \draw[-{Latex}, very thick, orange!90] ([xshift=14pt]server.north east) arc (355:0:0.25);
+
+      \draw[->,thick] (ecu) -- (cloud);
+      \draw[->,thick] (cloud) -- (server);
+      \draw[->,thick] (server) -- (ecu);
+
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Federated Learning}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[opacity=0.87]
+
+      \readlist\Trucks {1,2,3,4}
+      \foreachitem \x \in \Trucks
+      {
+        \node (ecu \x) at ({0 + 2.5 * (\x-1)}, 0) {\includegraphics[scale=2]{../Body/images/truck.png}};
+      }
+
+      \node[inner xsep=21pt] (server) at (3.5, 2) {\includegraphics[scale=1.8]{../Body/images/server.png}};
+      \draw[-{Latex}, very thick, orange!90] ([yshift=-7pt]server.north east) arc (355:0:0.25);
+
+      \foreachitem \x \in \Trucks
+      {
+        \draw[<->,thick] (ecu \x.north) -- (server);
+        \draw[-{Latex}, very thick, orange!50] ([yshift=-7pt]ecu \x.north east) arc (355:0:0.25);
+        \draw[very thick, blue!70] ([yshift=-14pt,xshift=-7pt]ecu \x.north west)-- ([yshift=-7pt]ecu \x.north west) -- ([xshift=-5pt, yshift=-7pt]ecu \x.north west) -- ([xshift=2pt]ecu \x.north west);
+      }
+
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
   \frametitle{Goal : Neural Network Training \\ on Scania ECU}
 
   \onslide<1>
@@ -470,60 +524,6 @@
     \end{tikzpicture}
   \end{figure}
 
-\end{frame}
-
-\begin{frame}
-  \frametitle{Traditional Paradigm}
-
-  \begin{figure}
-    \centering
-    \begin{tikzpicture}
-
-      \node (ecu) at (0,0) {\includegraphics[scale=2]{../Body/images/truck.png}};
-      \node [font=\small] at (ecu.south) {ECU};
-      \draw[very thick, blue!90] ([yshift=-7pt,xshift=-7pt]ecu.north west)-- (ecu.north west) -- ([xshift=-5pt]ecu.north west) -- ([xshift=2pt,yshift=7pt]ecu.north west);
-
-      \node (cloud) at (3.5, 2)
-        {\includegraphics[scale=2]{../Body/images/db.png}};
-      \node [font=\small] at (cloud.north) {Database};
-
-      \node (server) at (7, 0) {\includegraphics[scale=2]{../Body/images/server.png}};
-      \node [font=\small] at (server.south) {Server};
-      \draw[-{Latex}, very thick, orange!90] ([xshift=14pt]server.north east) arc (355:0:0.25);
-
-      \draw[->,thick] (ecu) -- (cloud);
-      \draw[->,thick] (cloud) -- (server);
-      \draw[->,thick] (server) -- (ecu);
-
-    \end{tikzpicture}
-  \end{figure}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Federated Learning}
-
-  \begin{figure}
-    \centering
-    \begin{tikzpicture}[opacity=0.87]
-
-      \readlist\Trucks {1,2,3,4}
-      \foreachitem \x \in \Trucks
-      {
-        \node (ecu \x) at ({0 + 2.5 * (\x-1)}, 0) {\includegraphics[scale=2]{../Body/images/truck.png}};
-      }
-
-      \node[inner xsep=21pt] (server) at (3.5, 2) {\includegraphics[scale=1.8]{../Body/images/server.png}};
-      \draw[-{Latex}, very thick, orange!90] ([yshift=-7pt]server.north east) arc (355:0:0.25);
-
-      \foreachitem \x \in \Trucks
-      {
-        \draw[<->,thick] (ecu \x.north) -- (server);
-        \draw[-{Latex}, very thick, orange!50] ([yshift=-7pt]ecu \x.north east) arc (355:0:0.25);
-        \draw[very thick, blue!70] ([yshift=-14pt,xshift=-7pt]ecu \x.north west)-- ([yshift=-7pt]ecu \x.north west) -- ([xshift=-5pt, yshift=-7pt]ecu \x.north west) -- ([xshift=2pt]ecu \x.north west);
-      }
-
-    \end{tikzpicture}
-  \end{figure}
 \end{frame}
 
 \section{Benchmark Applications}
