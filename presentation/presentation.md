@@ -15,16 +15,18 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 
 (_Introduction_)
 
+## Embedded Devices
+
+- Embedded platforms are varied: small computer boxes in trucks, smartphones, voting machines, educational platforms, and more (robots, rockets, RFID, refrigeration ...)
+- application domains are varied from automotive, IoT, smart factories, etc
+
 ## Neural Network Applications on Embedded Devices
 
 - Used in smart speakers for voice commands
 - Autonomous driving (lots of money going into that)
 - Skydio autonomous drones
+- Medical Bots
 
-## Embedded Devices
-
-- Embedded platforms are varied: small computer boxes in trucks, smartphones, voting machines, educational platforms, and more (robots, rockets, RFID, refrigeration ...)
-- application domains are varied from automotive, IoT, smart factories, etc
 
 ## Goal : Neural Network Training on Scania ECU
 
@@ -47,6 +49,20 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - Big benefit of training on device is not having to perform costly data movement
 - Hint at _federated learning_ (talking soon about different neural network application system architecture paradigms)
 
+## Traditional Paradigm
+
+- Embedded devices collects data to a Database, Data collected at Databased, and used by a Server to perform neural network model training (figure)
+- Neural network development and training on a resource rich environment (server)
+- Inference applications on the ECU
+- Training and Inference separated
+- Requires utilizing bandwidth to send data
+
+## Federated Learning
+
+- Data privacy concerns pioneered federated learning approaches
+- Models further trained on ECU, data kept on device
+- Central Server performs aggregation
+
 ## Goal : Neural Network Training on Scania ECU
 
 (three)
@@ -62,15 +78,17 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - programs that train a neural network model
 - assess their training performances
 
+## Embedded Devices : Hardware Outline
+
+- Outline of an ARM board
+- ARM (licences CPU design), silicon vendor (NXP, Texas Instruments), system maker (ACME, Variscite, Actia)
+
+
 ## ARM Boards : Examples
 
 - Coming back again to Embedded Devices; ARM based boards cut across application domains, simplifies the picture (also on the Scania ECU)
 - Microcontroller : simpler architecture, low cost, energy efficient | Real-time : automotive airbags, solid state devices | Application : general purpose, high performance
 
-## ARM Boards : Outline
-
-- Outline of an ARM board
-- ARM (licences CPU design), silicon vendor (NXP, Texas Instruments), system maker (ACME, Variscite, Actia)
 
 (_Embedded Linux_)
 
@@ -150,20 +168,6 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - Inference is when _weights_ and _biases_ are used for some task
 - Application here is Classification
 - Show an example not in the set
-
-## Traditional Paradigm
-
-- Embedded devices collects data to a Database, Data collected at Databased, and used by a Server to perform neural network model training (figure)
-- Neural network development and training on a resource rich environment (server)
-- Inference applications on the ECU
-- Training and Inference separated
-- Requires utilizing bandwidth to send data
-
-## Federated Learning
-
-- Data privacy concerns pioneered federated learning approaches
-- Models further trained on ECU, data kept on device
-- Central Server performs aggregation
 
 (_Benchmark Applications_)
 

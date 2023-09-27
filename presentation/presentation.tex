@@ -30,7 +30,7 @@
 
 \usepackage[english]{babel} % or whatever
 \usepackage[utf8]{inputenc} % or whatever
-
+\usepackage[yyyymmdd]{datetime}
 \usepackage{mathptmx}
 \usepackage{helvet}
 
@@ -49,8 +49,8 @@
   Uppsala University
 }
 
-\date[HDR-NN]
-{\today}
+\date[{\today}]
+
 
 %% \logo{...}
 
@@ -82,17 +82,6 @@
 \section{Introduction}
 
 \begin{frame}
-  \frametitle{Neural Network Applications \\ on Embedded Devices}
-
-  \begin{figure}
-    \centering
-    \includegraphics[scale=0.42]{images/smart-speaker}
-    \includegraphics[scale=0.42]{images/tesla}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}
   \frametitle{Embedded Devices}
 
   \begin{figure}
@@ -102,6 +91,17 @@
     \includegraphics[scale=0.27]{images/smart-phone}
     \includegraphics[scale=0.07]{images/accupoll-embedded-computer}\hspace{2em}
     \includegraphics[scale=0.175]{../Body/images/bbb}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Neural Network Applications \\ on Embedded Devices}
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.42]{images/smart-speaker}
+    \includegraphics[scale=0.42]{images/tesla}
   \end{figure}
 
 \end{frame}
@@ -135,6 +135,72 @@
   \vskip 0.5cm
   \onslide<4>
     \textbf{Scope} \textit{Repurpose Scania ECU, train neural network model, assess training performance}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Embedded Devices : Hardware Outline}
+
+  \centerline{\textbf{ARM} | \textbf{Silicon Vendor} | \textbf{System Maker}}
+
+  \begin{figure}[h]
+    \centering
+    \resizebox{\columnwidth}{!}{%
+    \begin{tikzpicture}[font=\small, >=Stealth]
+
+      \fill [fill=orange!30] (0, 0) rectangle (14, 5);
+      \draw (7, 5.25) node {Board};
+
+      \fill [fill=yellow!30] (4, 0) rectangle (10, 4.5);
+      \draw (7, 4.25) node {System on Chip};
+
+      \draw [fill=cyan!40, draw=cyan] (6, 2) rectangle (8, 4);
+      \draw (7, 3) node[align=center, font=\normalsize]
+        {ARM \\ Cortex A9};
+
+      \draw [line width=0.42em] (7, 2) -- (7, 0);
+      \draw (7.5, 1.5) node[align=center, font=\tiny]
+        {Internal \\ SoC bus};
+
+      \draw [fill=green!40, draw=green] (4.25, 1.1) rectangle (5.8, 1.95);
+      \draw (5, 1.5) node[align=center] {SPI \\ controller};
+      \draw [<-, very thick] (5.8, 1.5) -- (7, 1.5);
+
+      \draw [fill=green!40, draw=green] (4.25, 0.1) rectangle (5.8, 0.95);
+      \draw (5, 0.5) node {UART};
+      \draw [<-, very thick] (5.8, 0.5) -- (7, 0.5);
+
+      \draw [fill=purple!30, draw=purple] (1.5, 1) rectangle (3, 2);
+      \draw (2.25, 1.5) node[align=center] {SPI \\ device};
+      \draw [<-, very thick] (3, 1.5) -- (4.25, 1.5);
+
+      \draw [very thick] (3.65, 1.5) -- (3.65, 3);
+
+      \draw [fill=purple!30, draw=purple] (1.5, 2.5) rectangle (3, 3.5);
+      \draw (2.25, 3) node[align=center] {SPI \\ device};
+      \draw [<-, very thick] (3, 3) -- (3.65, 3);
+
+      \draw [fill=green!40, draw=green] (8.2, 0.6) rectangle (9.75, 1.45);
+      \draw (9, 1) node[align=center] {I2C \\ controller};
+      \draw [->, very thick] (7, 1) -- (8.2, 1);
+
+      \draw [very thick] (10.4, 1) -- (10.4, 4);
+
+      \draw [fill=purple!30, draw=purple] (11, 0.5) rectangle (12.5, 1.5);
+      \draw (11.75, 1) node[align=center] {I2C \\ device};
+      \draw [->, very thick] (9.75, 1) -- (11, 1);
+
+      \draw [fill=purple!30, draw=purple] (11, 2) rectangle (12.5, 3);
+      \draw (11.75, 2.5) node[align=center] {I2C \\ device};
+      \draw [->, very thick] (10.4, 2.5) -- (11, 2.5);
+
+      \draw [fill=purple!30, draw=purple] (11, 3.5) rectangle (12.5, 4.5);
+      \draw (11.75, 4) node[align=center] {I2C \\ device};
+      \draw [->, very thick] (10.4, 4) -- (11, 4);
+
+    \end{tikzpicture}%
+    }
+  \end{figure}
 
 \end{frame}
 
@@ -211,71 +277,6 @@
   \end{table}
 \end{frame}
 
-\begin{frame}
-  \frametitle{ARM Boards : Outline}
-
-  \centerline{\textbf{ARM} | \textbf{Silicon Vendor} | \textbf{System Maker}}
-
-  \begin{figure}[h]
-    \centering
-    \resizebox{\columnwidth}{!}{%
-    \begin{tikzpicture}[font=\small, >=Stealth]
-
-      \fill [fill=orange!30] (0, 0) rectangle (14, 5);
-      \draw (7, 5.25) node {Board};
-
-      \fill [fill=yellow!30] (4, 0) rectangle (10, 4.5);
-      \draw (7, 4.25) node {System on Chip};
-
-      \draw [fill=cyan!40, draw=cyan] (6, 2) rectangle (8, 4);
-      \draw (7, 3) node[align=center, font=\normalsize]
-        {ARM \\ Cortex A9};
-
-      \draw [line width=0.42em] (7, 2) -- (7, 0);
-      \draw (7.5, 1.5) node[align=center, font=\tiny]
-        {Internal \\ SoC bus};
-
-      \draw [fill=green!40, draw=green] (4.25, 1.1) rectangle (5.8, 1.95);
-      \draw (5, 1.5) node[align=center] {SPI \\ controller};
-      \draw [<-, very thick] (5.8, 1.5) -- (7, 1.5);
-
-      \draw [fill=green!40, draw=green] (4.25, 0.1) rectangle (5.8, 0.95);
-      \draw (5, 0.5) node {UART};
-      \draw [<-, very thick] (5.8, 0.5) -- (7, 0.5);
-
-      \draw [fill=purple!30, draw=purple] (1.5, 1) rectangle (3, 2);
-      \draw (2.25, 1.5) node[align=center] {SPI \\ device};
-      \draw [<-, very thick] (3, 1.5) -- (4.25, 1.5);
-
-      \draw [very thick] (3.65, 1.5) -- (3.65, 3);
-
-      \draw [fill=purple!30, draw=purple] (1.5, 2.5) rectangle (3, 3.5);
-      \draw (2.25, 3) node[align=center] {SPI \\ device};
-      \draw [<-, very thick] (3, 3) -- (3.65, 3);
-
-      \draw [fill=green!40, draw=green] (8.2, 0.6) rectangle (9.75, 1.45);
-      \draw (9, 1) node[align=center] {I2C \\ controller};
-      \draw [->, very thick] (7, 1) -- (8.2, 1);
-
-      \draw [very thick] (10.4, 1) -- (10.4, 4);
-
-      \draw [fill=purple!30, draw=purple] (11, 0.5) rectangle (12.5, 1.5);
-      \draw (11.75, 1) node[align=center] {I2C \\ device};
-      \draw [->, very thick] (9.75, 1) -- (11, 1);
-
-      \draw [fill=purple!30, draw=purple] (11, 2) rectangle (12.5, 3);
-      \draw (11.75, 2.5) node[align=center] {I2C \\ device};
-      \draw [->, very thick] (10.4, 2.5) -- (11, 2.5);
-
-      \draw [fill=purple!30, draw=purple] (11, 3.5) rectangle (12.5, 4.5);
-      \draw (11.75, 4) node[align=center] {I2C \\ device};
-      \draw [->, very thick] (10.4, 4) -- (11, 4);
-
-    \end{tikzpicture}%
-    }
-  \end{figure}
-
-\end{frame}
 
 \section{Embedded Linux}
 
@@ -305,7 +306,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Yocto Project : Development}
+  \frametitle{Development Setup}
 
   \begin{figure}
     \centering
@@ -597,10 +598,9 @@
 \begin{frame}
   \frametitle{Experiment Considerations}
 
-  \begin{itemize}
+  \begin{itemize} 
     \item Try multiple shapes
-    \item Vary learning algorithm parameters
-    \item Compare Accuracies
+m    \item Compare Accuracies
     \item Compare Execution Time
   \end{itemize}
 
@@ -618,6 +618,43 @@
 \end{frame}
 
 \begin{frame}
+
+  \begin{figure}[ht]
+	\centering
+	\scalebox{0.64}{\input{../Body/images/comparison-accuracy-libtorch.pgf}}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{figure}[ht]
+	\centering
+	\scalebox{0.64}{\input{../Body/images/comparison-accuracy-eigen.pgf}}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{figure}[ht]
+	\centering
+	\scalebox{0.64}{\input{../Body/images/comparison-accuracy-numpy.pgf}}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{figure}[ht]
+	\centering
+	\scalebox{0.64}{\input{../Body/images/comparison-accuracy-cmath.pgf}}
+  \end{figure}
+
+\end{frame}
+
+
+\begin{frame}
   \frametitle{Training Time}
 
   \begin{figure}[!ht]
@@ -629,6 +666,42 @@
 
 \end{frame}
 
+
+\begin{frame}
+
+  \begin{figure}[ht]
+	\centering
+	\scalebox{0.64}{\input{../Body/images/comparison-exectime-libtorch.pgf}}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{figure}[ht]
+	\centering
+	\scalebox{0.64}{\input{../Body/images/comparison-exectime-eigen.pgf}}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{figure}[ht]
+	\centering
+	\scalebox{0.64}{\input{../Body/images/comparison-exectime-numpy.pgf}}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{figure}[ht]
+	\centering
+	\scalebox{0.64}{\input{../Body/images/comparison-exectime-cmath.pgf}}
+  \end{figure}
+
+\end{frame}
 \section{Discussion}
 
 \begin{frame}
