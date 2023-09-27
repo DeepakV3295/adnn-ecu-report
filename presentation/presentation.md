@@ -49,20 +49,6 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - Big benefit of training on device is not having to perform costly data movement
 - Hint at _federated learning_ (talking soon about different neural network application system architecture paradigms)
 
-## Traditional Paradigm
-
-- Embedded devices collects data to a Database, Data collected at Databased, and used by a Server to perform neural network model training (figure)
-- Neural network development and training on a resource rich environment (server)
-- Inference applications on the ECU
-- Training and Inference separated
-- Requires utilizing bandwidth to send data
-
-## Federated Learning
-
-- Data privacy concerns pioneered federated learning approaches
-- Models further trained on ECU, data kept on device
-- Central Server performs aggregation
-
 ## Goal : Neural Network Training on Scania ECU
 
 (three)
@@ -115,7 +101,7 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - Yocto Project is one among several (Buildroot, OpenWrt)
 - YP is highly configurable, targets a large space, trade off is in learning curve and complexity
 
-## Yocto Project : Development
+## Development Setup
 
 - Several ways to use YP, our setup was (figure)
 - Development Machine (application software development, compiled using an SDK, testing via QEMU emulation)
@@ -170,6 +156,21 @@ Work by Prasanth and Deepak for Master's Thesis at Uppsala University
 - Show an example not in the set
 
 (_Benchmark Applications_)
+
+
+## Traditional Paradigm
+
+- Embedded devices collects data to a Database, Data collected at Databased, and used by a Server to perform neural network model training (figure)
+- Neural network development and training on a resource rich environment (server)
+- Inference applications on the ECU
+- Training and Inference separated
+- Requires utilizing bandwidth to send data
+
+## Federated Learning
+
+- Data privacy concerns pioneered federated learning approaches
+- Models further trained on ECU, data kept on device
+- Central Server performs aggregation
 
 ## HDR-NN Implementations
 
